@@ -10,20 +10,21 @@ import numpy as np
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA_DIR = os.path.join(BASE_DIR, "data")
-TUNE_FILE = os.path.join(DATA_DIR, "no_leak_days_tune.npz")
+TUNE_FILE = os.path.join(DATA_DIR, "no_leak_days_all_tune.npz")
 OUT_FILE = os.path.join(DATA_DIR, "expected_baseline.npz")
 NOISE_SD = 0.3
 
 def build_baseline(tune_path=TUNE_FILE, out_path=OUT_FILE):
-    print(f"Loading 14 no-leak tuning days from {tune_path}...")
+    if not os.path.exists(tune_path):
+        tune_path = os.path.join(DATA_DIR, "no_leak_days_tune.npz")
+    print(f"Loading no-leak tuning days from {tune_path}...")
     data = np.load(tune_path)
-    clean_p = data["clean_pressures"]   # shape: (14, 8641, 8)
-    noisy_p = data["noisy_pressures"]   # shape: (14, 8641, 8)
+    clean_p = data["clean_pressures"]   # shape: (n_days, 8641, 8)
     times = data["times"]               # shape: (8641,)
     sensor_ids = data["sensor_ids"]     # 8 sensors
     
     n_days, n_steps, n_sensors = clean_p.shape
-    assert n_days == 14, f"Expected 14 tuning days, found {n_days}"
+    print(f"Loaded {n_days} tuning/validation days.")
     
     # 1. Mean and std by time of day across the 14 tuning days
     expected_mean = np.mean(clean_p, axis=0) # shape (8641, 8)

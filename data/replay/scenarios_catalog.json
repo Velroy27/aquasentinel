@@ -1,52 +1,79 @@
 [
   {
     "id": "scenario_01",
-    "filename": "scenario_01_pipeburst_node164.json",
-    "leak_node": "164",
-    "leak_size_lps": 215.11,
-    "leak_area_m2": 0.01,
-    "start_t": 120,
-    "duration": 600,
-    "description": "High-severity pipe burst at sensor junction 164 during morning peak demand"
+    "filename": "scenario_01_sensor_node123.json",
+    "leak_node": "123",
+    "leak_size_lps": 146.3,
+    "leak_area_m2": 0.0065,
+    "start_t": 300,
+    "duration": 1200,
+    "category": "sensor_junction",
+    "description": "High-severity leak at sensor junction 123 during night low-demand (2:00)"
   },
   {
     "id": "scenario_02",
-    "filename": "scenario_02_leak_node15.json",
-    "leak_node": "15",
-    "leak_size_lps": 54.89,
+    "filename": "scenario_02_sensor_node10.json",
+    "leak_node": "10",
+    "leak_size_lps": 17.1,
     "leak_area_m2": 0.0075,
-    "start_t": 180,
-    "duration": 600,
-    "description": "Medium test leak at sensor junction 15 during midday demand"
+    "start_t": 300,
+    "duration": 1200,
+    "category": "sensor_junction",
+    "description": "Medium test leak at sensor junction 10 during morning peak demand (6:00)"
   },
   {
     "id": "scenario_03",
-    "filename": "scenario_03_small_node20.json",
-    "leak_node": "20",
-    "leak_size_lps": 49.49,
-    "leak_area_m2": 0.005,
-    "start_t": 240,
-    "duration": 600,
-    "description": "Small leak at non-sensor junction 20 near nodes 10 and 15 during evening peak"
+    "filename": "scenario_03_nonsensor_node101.json",
+    "leak_node": "101",
+    "leak_size_lps": 107.7,
+    "leak_area_m2": 0.0065,
+    "start_t": 300,
+    "duration": 1200,
+    "category": "non_sensor_success",
+    "description": "Pipe burst at non-sensor junction 101 (correctly detected and localized in top-1)"
   },
   {
     "id": "scenario_04",
-    "filename": "scenario_04_burst_node60.json",
-    "leak_node": "60",
-    "leak_size_lps": 260.8,
-    "leak_area_m2": 0.01,
-    "start_t": 150,
-    "duration": 600,
-    "description": "Sudden nocturnal pipe burst at junction 60 during low-demand night hours"
+    "filename": "scenario_04_nonsensor_node103.json",
+    "leak_node": "103",
+    "leak_size_lps": 112.5,
+    "leak_area_m2": 0.0065,
+    "start_t": 300,
+    "duration": 1200,
+    "category": "non_sensor_success",
+    "description": "Burst at non-sensor junction 103 during morning peak (detected and localized in top-3)"
   },
   {
     "id": "scenario_05",
-    "filename": "scenario_05_unseen_node184.json",
-    "leak_node": "184",
-    "leak_size_lps": 147.16,
+    "filename": "scenario_05_nonsensor_node101_midday.json",
+    "leak_node": "101",
+    "leak_size_lps": 127.9,
     "leak_area_m2": 0.0075,
-    "start_t": 200,
-    "duration": 600,
-    "description": "Held-out test leak size (0.0075 m2) at sensor junction 184"
+    "start_t": 300,
+    "duration": 1200,
+    "category": "non_sensor_success",
+    "description": "Held-out test leak (0.0075 m2) at non-sensor junction 101 during afternoon peak"
+  },
+  {
+    "id": "scenario_06",
+    "filename": "scenario_06_small_missed_node119.json",
+    "leak_node": "119",
+    "leak_size_lps": 45.5,
+    "leak_area_m2": 0.002,
+    "start_t": 300,
+    "duration": 1200,
+    "category": "small_leak_missed",
+    "description": "Small leak (0.002 m2) at Node 119: honestly undetected (max clean drop 0.19m under sensor noise floor)"
+  },
+  {
+    "id": "scenario_07",
+    "filename": "scenario_07_sensor_fault_stuck.json",
+    "leak_node": null,
+    "leak_size_lps": 0.0,
+    "leak_area_m2": 0.0,
+    "start_t": 300,
+    "duration": 1200,
+    "category": "sensor_fault",
+    "description": "Sensor fault disturbance: Sensor 208 stuck-at reading from t=300s (correctly flagged as sensor fault, no leak alert)"
   }
 ]

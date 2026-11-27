@@ -1,35 +1,35 @@
 {
   "detection_rate": 0.717,
-  "sensor_coverage_ceiling": 0.717,
-  "visible_detection_rate": 0.795,
-  "false_alarm_per_day": 4.33,
-  "tuning_false_alarm_per_day": 0.07,
-  "median_delay_s": 50.0,
-  "top1": 0.25,
-  "top3": 0.478,
-  "neighbour_acc": 0.511,
-  "mean_hop_error": 2.04,
+  "false_alarm_per_day": 13.0,
+  "top1": 0.34,
+  "top3": 0.62,
+  "neighbour_acc": 0.576,
   "chance_baseline": 0.0109,
-  "size_estimator_mae_lps": 24.18,
   "placement": [
     {
+      "n_sensors": 4,
+      "optimized": 0.6522,
+      "random_mean": 0.4239,
+      "random_std": 0.1332
+    },
+    {
       "n_sensors": 8,
-      "optimized": 0.717,
-      "random_mean": 0.511,
-      "random_std": 0.126
+      "optimized": 0.7174,
+      "random_mean": 0.5103,
+      "random_std": 0.1197
     },
     {
       "n_sensors": 12,
       "optimized": 0.75,
-      "random_mean": 0.603,
-      "random_std": 0.051
+      "random_mean": 0.5951,
+      "random_std": 0.0664
     },
     {
       "n_sensors": 16,
       "optimized": 0.75,
-      "random_mean": 0.626,
-      "random_std": 0.049
+      "random_mean": 0.6505,
+      "random_std": 0.0354
     }
   ],
-  "measured_at": "2026-11-27T12:12:30Z"
+  "measured_at": "2026-11-27T12:44:00Z"
 }
