@@ -8,11 +8,12 @@
       "184"
     ],
     "coverage_optimized": 0.6522,
-    "coverage_random_mean": 0.4245,
-    "coverage_random_std": 0.1327,
-    "localization_top3_optimized": 0.5,
-    "localization_top3_random_mean": 0.3327,
-    "localization_top3_random_std": 0.0811
+    "coverage_random_mean": 0.4,
+    "coverage_random_std": 0.1135,
+    "localization_top3_optimized": 0.3297,
+    "localization_top3_random_mean": 0.1889,
+    "localization_top3_random_std": 0.0518,
+    "eval_method": "retrained_knn_cosine_proxy"
   },
   "budget_8": {
     "n_sensors": 8,
@@ -27,11 +28,12 @@
       "123"
     ],
     "coverage_optimized": 0.7174,
-    "coverage_random_mean": 0.5217,
-    "coverage_random_std": 0.1045,
-    "localization_top3_optimized": 0.6005,
-    "localization_top3_random_mean": 0.6005,
-    "localization_top3_random_std": 0.0
+    "coverage_random_mean": 0.5495,
+    "coverage_random_std": 0.1092,
+    "localization_top3_optimized": 0.4312,
+    "localization_top3_random_mean": 0.3833,
+    "localization_top3_random_std": 0.0595,
+    "eval_method": "retrained_knn_cosine_proxy"
   },
   "budget_12": {
     "n_sensors": 12,
@@ -50,11 +52,12 @@
       "20"
     ],
     "coverage_optimized": 0.75,
-    "coverage_random_mean": 0.6027,
-    "coverage_random_std": 0.0853,
-    "localization_top3_optimized": 0.6405,
-    "localization_top3_random_mean": 0.6005,
-    "localization_top3_random_std": 0.0
+    "coverage_random_mean": 0.6082,
+    "coverage_random_std": 0.0744,
+    "localization_top3_optimized": 0.4964,
+    "localization_top3_random_mean": 0.4946,
+    "localization_top3_random_std": 0.0667,
+    "eval_method": "retrained_knn_cosine_proxy"
   },
   "budget_16": {
     "n_sensors": 16,
@@ -77,10 +80,11 @@
       "61"
     ],
     "coverage_optimized": 0.75,
-    "coverage_random_mean": 0.625,
-    "coverage_random_std": 0.0555,
-    "localization_top3_optimized": 0.6705,
-    "localization_top3_random_mean": 0.6005,
-    "localization_top3_random_std": 0.0
+    "coverage_random_mean": 0.6424,
+    "coverage_random_std": 0.0449,
+    "localization_top3_optimized": 0.5217,
+    "localization_top3_random_mean": 0.5978,
+    "localization_top3_random_std": 0.0444,
+    "eval_method": "retrained_knn_cosine_proxy"
   }
 }

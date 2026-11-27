@@ -458,3 +458,80 @@ Status: **COMPLETED**
 | **80% Prediction Interval Coverage**| N/A | 68.4% (under-covered) | **76.0% (conformal)** |
 | **4-Sensor Random Top-3 Spread** | N/A | 50.0% $\pm$ 0.0% | **33.3% $\pm$ 8.1%** |
 | **Model Sizes (< 50 MB constraint)** | N/A | All $< 12\text{ MB}$ | **1.17 MB / 11.25 MB / 5.91 MB** |
+
+
+---
+
+## Fix Pass: Placement, Visibility Reconciliation, Smoothing Calibration & Disturbance Analysis
+
+### 1. Sensor Placement Random Evaluation Fix
+- **Root Cause of Fallback ($60.1\% \pm 0.0\%$)**: In the previous script, for budgets $N \ge 8$, `rng.choice(n_eval_sensors, size=min(n_eval_sensors, 4))` selected the entire 8-sensor slice identically every trial rather than sampling 20 independent sets of $N$ sensors from across all 92 network junctions.
+- **Methodology**: Evaluated 20 distinct random sensor placements drawn from all 92 junctions for each budget $N \in [4, 8, 12, 16]$. A fast kNN cosine-distance localizer proxy (trained on all 92 junctions across training leak sizes) was retrained independently on the selected sensor subset for every trial and tested across the test scenarios with sensor noise realizations.
+- **Updated Benchmark Results (`data/placement_results.json`)**:
+  | Budget | Coverage (Opt) | Coverage (20 Random Mean $\pm$ Std) | Top-3 (Opt) | Top-3 (20 Random Mean $\pm$ Std) |
+  |:---:|:---:|:---:|:---:|:---:|
+  | **4 Sensors** | **65.2%** | 40.0% $\pm$ 11.3% | **33.0%** | **18.9% $\pm$ 5.2%** |
+  | **8 Sensors** | **71.7%** | 54.9% $\pm$ 10.9% | **43.1%** | **38.3% $\pm$ 6.0%** |
+  | **12 Sensors**| **75.0%** | 60.8% $\pm$ 7.4% | **49.6%** | **49.5% $\pm$ 6.7%** |
+  | **16 Sensors**| **75.0%** | 64.2% $\pm$ 4.5% | **52.2%** | **59.8% $\pm$ 4.4%** |
+
+---
+
+### 2. Visibility Definition vs Physical Coverage Ceiling
+- **Definition 1: Steady-State Baseline Physical Network Coverage (71.7%)**:
+  - Measured at steady-state base demand across training sizes ($0.005$ and $0.010\text{ m}^2$).
+  - A junction $j$ is defined as physically covered if a leak at $j$ produces a steady-state pressure drop $\Delta P \ge 0.90\text{ m}$ ($3\sigma$ noise floor) at one or more of the 8 fixed sensors under base conditions.
+  - In Net3, exactly **66 of 92 junctions (71.74%)** meet this criterion. The remaining 26 junctions are in peripheral, high-elevation, or low-resistance zones where leak flow cannot induce a 0.9m drop at any of the 8 sensors.
+- **Definition 2: Dynamic Scenario Visibility (954 of 1,104 runs = 86.4%)**:
+  - Evaluated on dynamic extended-period simulations across held-out sizes ($0.0065$ and $0.0075\text{ m}^2$) at various diurnal times of day (including peak demand hours where baseline flow velocity is high and drops are magnified).
+  - Out of 1,104 test runs (368 scenarios $\times$ 3 noise seeds), **954 runs (86.4%)** have an empirical clean drop $\Delta P_{\text{clean}} \ge 0.90\text{ m}$ during the dynamic window.
+  - Across the 92 junctions, 81 junctions produce at least one dynamic scenario exceeding 0.9m during daily peak demand hours, while only 66 do so under average steady-state conditions.
+- **Reconciliation**:
+  - 71.7% is the static, conservative network coverage floor under base demand.
+  - 86.4% (954/1,104) is the dynamic operational visibility observed across diurnal operating points on the held-out test sizes. Both values are reported explicitly without conflation.
+
+---
+
+### 3. Neighbour Smoothing Gamma Calibration
+- Evaluated on training leak sizes:
+  - Without smoothing ($\gamma = 0.0$): Top-1 = **34.0%**, Top-3 = **62.0%**, 1-Hop = **57.6%**, Mean Hop Error = **2.06**
+  - With smoothing ($\gamma = 0.10$): Top-1 = **34.1%**, Top-3 = **62.3%**, 1-Hop = **57.7%**, Mean Hop Error = **2.05**
+- **Conclusion**: The gain from topological smoothing on Top-3 ($+0.3\%$) and Top-1 ($+0.1\%$) is well within statistical noise ($\sim \pm 1.5\%$). We report the un-smoothed baseline as the primary metric (**62.0%**), noting that topological smoothing offers marginal hop-error improvement (2.06 $\to$ 2.05).
+
+---
+
+### 4. Localizer Reliability Table & Calibration (Phase 1f)
+- Evaluated on the 1,104 held-out test runs with temperature parameter $T = 0.50$:
+  | Confidence Bin | Count | Mean Confidence | Empirical Accuracy | Calibration Error |
+  |:---:|:---:|:---:|:---:|:---:|
+  | **[0.0, 0.1)** | 5 | 0.092 | 0.000 | -0.092 |
+  | **[0.1, 0.2)** | 147 | 0.153 | 0.068 | -0.085 |
+  | **[0.2, 0.3)** | 152 | 0.256 | 0.178 | -0.078 |
+  | **[0.3, 0.4)** | 195 | 0.352 | 0.205 | -0.147 |
+  | **[0.4, 0.5)** | 169 | 0.449 | 0.308 | -0.141 |
+  | **[0.5, 0.6)** | 130 | 0.546 | 0.323 | -0.223 |
+  | **[0.6, 0.7)** | 89 | 0.646 | 0.472 | -0.174 |
+  | **[0.7, 0.8)** | 69 | 0.752 | 0.493 | -0.259 |
+  | **[0.8, 0.9)** | 70 | 0.848 | 0.800 | -0.048 |
+  | **[0.9, 1.0)** | 78 | 0.952 | 0.923 | -0.029 |
+- **Expected Calibration Error (ECE)**: **0.1316 (13.2%)**.
+- **Observation**: Highly confident predictions ($\ge 0.80$) are well calibrated (80–92% empirical accuracy). Predictions in the intermediate range (0.30–0.70) exhibit over-confidence due to multi-modal fingerprint ambiguities across topologically symmetrical branches.
+
+---
+
+### 5. Disturbance Magnitudes & Analysis of Pump-Step Alerts
+- **Disturbance Magnitudes in `data/disturbances.npz`**:
+  - **Fire-Flow Demand Surges (N=10)**:
+    - Magnitudes: **173.9 to 228.9 lps** sudden demand increase for 10–30 min.
+    - Pressure Drop: **0.09 to 0.24 m** across sensors (under the 0.3m noise floor and well below the 1.0m detection threshold).
+    - Leak Alert Rate: **0.0% (0 / 10)**.
+  - **Tank Level Shifts (N=10)**:
+    - Magnitudes: **1.5 to 3.0 m** head shift.
+    - Leak Alert Rate: **0.0% (0 / 10)** (fully rejected by common-mode compensation).
+  - **Sensor Faults (N=10)**:
+    - Stuck-at (4 runs): 0% alerts.
+    - Drift & Dropout (6 runs): 0% leak alerts, 100% flagged as `sensor_fault`.
+  - **Pump 10 Step Switches (N=10)**:
+    - **CLOSED Actions (5 runs)**: Pump 10 was already closed; pressure shifts are $\approx 0.1\text{ m}$. Alert rate: **0.0% (0 / 5)**.
+    - **OPEN Actions (5 runs)**: Pump 10 starts abruptly at $t = 300\text{s}$, producing a sudden **28.5 m** suction head drop at Node 10, and a **1.4 to 2.0 m** head drop across downstream sensors (Node 208, 15, 60, 123).
+    - **Why Pump Steps Alert 50% of the Time**: Because Pump 10 draws from Node 10 and delivers to the distribution grid, turning the pump ON creates a physical, localized suction drop ($> 28\text{ m}$) that propagates as a real 1.5–2.0m pressure drop to nearby nodes. The detector correctly identifies this large physical pressure drop, but since the common-mode rejection handles network-wide uniform shifts rather than localized pump suction transients, all 5 "OPEN" scenarios trigger a transient alert ($5 / 10 = 50.0\%$).
