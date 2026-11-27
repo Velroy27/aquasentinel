@@ -1,4 +1,5 @@
 # AquaSentinel Persistence Layer (SQLite with background batch writer)
+from contextlib import closing
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Optional
@@ -44,8 +45,9 @@ class Database:
         if not self.enabled:
             return
         try:
-            with self._get_connection() as conn:
-                conn.executescript('''
+            with closing(self._get_connection()) as conn:
+                with conn:
+                    conn.executescript('''
                     CREATE TABLE IF NOT EXISTS runs (
                         id TEXT PRIMARY KEY,
                         scenario_id TEXT,
@@ -140,7 +142,7 @@ class Database:
             except Exception:
                 return
 
-        with self._get_connection() as conn:
+        with closing(self._get_connection()) as conn:
             with conn:
                 for action, data in batch:
                     try:
@@ -209,6 +211,9 @@ class Database:
     def enqueue(self, action: str, data: Any) -> bool:
         if not self.enabled:
             return True
+        if self._worker_thread is None or not self._worker_thread.is_alive():
+            self._stop_event.clear()
+            self._start_worker()
         try:
             self._queue.put_nowait((action, data))
             return True
@@ -236,12 +241,13 @@ class Database:
         self._stop_event.set()
         if self._worker_thread and self._worker_thread.is_alive():
             self._worker_thread.join(timeout=3.0)
+        self._worker_thread = None
 
     def is_healthy(self) -> bool:
         if not self.enabled:
             return True
         try:
-            with self._get_connection() as conn:
+            with closing(self._get_connection()) as conn:
                 conn.execute("SELECT 1;").fetchone()
             return True
         except Exception:
@@ -251,7 +257,7 @@ class Database:
         if not self.enabled:
             return []
         try:
-            with self._get_connection() as conn:
+            with closing(self._get_connection()) as conn:
                 rows = conn.execute("SELECT * FROM runs ORDER BY started_at DESC LIMIT 50;").fetchall()
                 return [dict(r) for r in rows]
         except Exception as e:
@@ -262,7 +268,7 @@ class Database:
         if not self.enabled:
             return []
         try:
-            with self._get_connection() as conn:
+            with closing(self._get_connection()) as conn:
                 if run_id:
                     rows = conn.execute("SELECT * FROM alerts WHERE run_id = ? ORDER BY t ASC;", (run_id,)).fetchall()
                 else:
@@ -276,7 +282,7 @@ class Database:
         if not self.enabled:
             return None
         try:
-            with self._get_connection() as conn:
+            with closing(self._get_connection()) as conn:
                 alert_row = conn.execute("SELECT * FROM alerts WHERE id = ?;", (alert_id,)).fetchone()
                 if not alert_row:
                     return None
@@ -303,7 +309,7 @@ class Database:
             return []
         clamped_limit = max(1, min(limit, 2000))
         try:
-            with self._get_connection() as conn:
+            with closing(self._get_connection()) as conn:
                 query = "SELECT t, node_id, pressure_m, flow_lps, received_at FROM readings"
                 params = []
                 clauses = []
@@ -339,8 +345,8 @@ class Database:
         if not self.enabled:
             return {"alert": None, "localization": None, "loss": None}
         try:
-            with self._get_connection() as conn:
-                alert_row = conn.execute("SELECT * FROM alerts ORDER BY created_at DESC LIMIT 1;").fetchone()
+            with closing(self._get_connection()) as conn:
+                alert_row = conn.execute("SELECT * FROM alerts WHERE status NOT IN ('resolved', 'interrupted') ORDER BY created_at DESC LIMIT 1;").fetchone()
                 if not alert_row:
                     return {"alert": None, "localization": None, "loss": None}
                 

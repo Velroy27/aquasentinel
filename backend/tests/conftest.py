@@ -1,4 +1,13 @@
-# Pytest fixtures and test environment setup
+import os
+import tempfile
+
+if "AQUASENTINEL_DB_PATH" not in os.environ:
+    _temp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+    _temp_db.close()
+    os.environ["AQUASENTINEL_DB_PATH"] = _temp_db.name
+
+os.environ["AQUASENTINEL_ALLOW_STUB_ALERTS"] = "1"
+
 import pytest
 from backend.main import ml_bridge, pipeline, replay_engine
 import backend.main as main_mod

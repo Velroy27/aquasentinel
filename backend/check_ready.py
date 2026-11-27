@@ -14,6 +14,14 @@ base_sp = Path(sys.base_prefix) / "Lib" / "site-packages"
 if base_sp.exists() and str(base_sp) not in sys.path:
     sys.path.append(str(base_sp))
 
+import os
+import tempfile
+
+if "AQUASENTINEL_DB_PATH" not in os.environ:
+    _temp_db = tempfile.NamedTemporaryFile(suffix=".db", delete=False)
+    _temp_db.close()
+    os.environ["AQUASENTINEL_DB_PATH"] = _temp_db.name
+
 from backend.config import DATA_DIR, DATA_REPLAY_DIR, MOCK_DIR
 from backend.main import app, pipeline, replay_engine, db, ml_bridge
 

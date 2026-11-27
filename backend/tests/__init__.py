@@ -1,1 +1,1 @@
-﻿"AquaSentinel Tests Package"
+"AquaSentinel Tests Package"

@@ -316,12 +316,13 @@ class ReplayStartModel(BaseModel):
 async def websocket_stream(websocket: WebSocket):
     q = await ws_manager.connect(websocket)
     try:
-        if pipeline.cached_alert:
-            await websocket.send_json(pipeline.cached_alert)
-        if pipeline.cached_localization:
-            await websocket.send_json(pipeline.cached_localization)
-        if pipeline.cached_loss:
-            await websocket.send_json(pipeline.cached_loss)
+        if pipeline.active_alert_id:
+            if pipeline.cached_alert:
+                await q.put(pipeline.cached_alert)
+            if pipeline.cached_localization:
+                await q.put(pipeline.cached_localization)
+            if pipeline.cached_loss:
+                await q.put(pipeline.cached_loss)
 
         while True:
             await websocket.receive_text()
@@ -391,16 +392,23 @@ async def get_results():
 
 @app.get("/api/placement")
 async def get_placement(n: int = Query(default=8, ge=1, le=92)):
-    data_placement = DATA_DIR / "placement.json"
-    if data_placement.exists():
-        try:
-            with open(data_placement, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                if str(n) in data:
-                    return data[str(n)]
-        except Exception:
-            pass
+    if n in (4, 8, 12, 16):
+        data_placement = DATA_DIR / "placement_results.json"
+        if data_placement.exists():
+            try:
+                with open(data_placement, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                b_key = f"budget_{n}"
+                if b_key in data:
+                    item = data[b_key]
+                    return {
+                        "sensors": [str(s) for s in item.get("sensors", [])],
+                        "coverage": float(item.get("coverage_optimized", 0.0))
+                    }
+            except Exception as e:
+                logger.warning("Failed to load placement_results.json: %s", e)
 
+    logger.info("Placement budget n=%d falling back to mock placement", n)
     mock_placement = MOCK_DIR / "placement.json"
     if mock_placement.exists():
         with open(mock_placement, "r", encoding="utf-8") as f:
@@ -446,6 +454,11 @@ async def ingest_reading(reading: SensorReadingModel):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content={"error": "ML warming up"}
         )
+    if _valid_nodes and reading.node_id not in _valid_nodes:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Unknown node_id '{reading.node_id}'. Must be a valid network junction."
+        )
     await pipeline.ingest_single_reading(reading.model_dump())
     return {"status": "ingested", "node_id": reading.node_id, "t": reading.t}
 
@@ -461,6 +474,7 @@ async def health_check():
         "ml_mode": ml_bridge.get_mode(),
         "ml_avg_latency_ms": ml_bridge.get_avg_latency_ms(),
         "stub_calls": ml_bridge.stub_calls,
+        "stub_calls_run": ml_bridge.stub_calls_run,
         "last_stub_reason": ml_bridge.last_stub_reason,
         "is_warming_up": is_warming_up,
         "db_ok": db_ok,

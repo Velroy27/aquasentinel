@@ -1,1 +1,1 @@
-﻿"AquaSentinel Backend Package"
+"AquaSentinel Backend Package"
