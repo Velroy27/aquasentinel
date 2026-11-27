@@ -1,4 +1,4 @@
-# AquaSentinel ML Development Notes
+﻿# AquaSentinel ML Development Notes
 
 ## Baseline Status
 - Network: Net3 (92 junctions, 3 tanks, 2 reservoirs, 117 pipes)
@@ -535,3 +535,232 @@ Status: **COMPLETED**
     - **CLOSED Actions (5 runs)**: Pump 10 was already closed; pressure shifts are $\approx 0.1\text{ m}$. Alert rate: **0.0% (0 / 5)**.
     - **OPEN Actions (5 runs)**: Pump 10 starts abruptly at $t = 300\text{s}$, producing a sudden **28.5 m** suction head drop at Node 10, and a **1.4 to 2.0 m** head drop across downstream sensors (Node 208, 15, 60, 123).
     - **Why Pump Steps Alert 50% of the Time**: Because Pump 10 draws from Node 10 and delivers to the distribution grid, turning the pump ON creates a physical, localized suction drop ($> 28\text{ m}$) that propagates as a real 1.5–2.0m pressure drop to nearby nodes. The detector correctly identifies this large physical pressure drop, but since the common-mode rejection handles network-wide uniform shifts rather than localized pump suction transients, all 5 "OPEN" scenarios trigger a transient alert ($5 / 10 = 50.0\%$).
+
+
+---
+
+## Replay Scenarios 01 and 02 Diagnostic & Non-Alert Analysis
+
+### 1. Detailed Diagnostic per Stage
+
+#### Scenario 01: Node 123 (Leak Size: 146.3 lps, Area: $0.0065\text{ m}^2$)
+- **Sensor Health Mask**: `[True, True, True, True, True, True, True, True]` (Fault = `False`, Details = `{}`). The health checker **does NOT mask** Sensor 123.
+- **Per-step Residuals $r_{\text{diff}}$ at Sensor 123 (index 7)**:
+  - $t = 290\text{s}$ (pre-leak): $r_{\text{diff}} = 0.05\text{ m}$
+  - $t = 310\text{s}$ (10s post-leak): $r_{\text{diff}} = 1.32\text{ m}$
+  - $t = 350\text{s}$: $r_{\text{diff}} = 0.65\text{ m}$
+  - $t = 400\text{s}$: $r_{\text{diff}} = 0.90\text{ m}$
+  - $t = 600\text{s}$: $r_{\text{diff}} = 1.46\text{ m}$
+  - $t = 800\text{s}$: $r_{\text{diff}} = 1.02\text{ m}$
+- **CUSUM Statistic $S$ at Sensor 123**:
+  - $t = 290\text{s}$: $S = 0.00$
+  - $t = 310\text{s}$: $S = 1.73$
+  - $t = 350\text{s}$: $S = 0.45$
+  - $t = 400\text{s}$: $S = 0.35$
+  - $t = 600\text{s}$: $S = 4.31$ (Peak)
+  - $t = 800\text{s}$: $S = 0.73$
+- **Spatial Consistency**: **Passed** ($t=310, 350, 400, 600, 800\text{s}$, localized drop on Node 123).
+- **Suppression Stage**: **CUSUM Threshold & Confidence Scoring**.
+  - The CUSUM threshold requires $S \ge 8.0$ and $r \ge 1.0\text{ m}$ (with leaky decay $\lambda = 0.70$ and slack $k_s = 0.80\text{ m}$).
+  - Because Sensor 123 has an elevation head of 47m and clean steady-state drop of only $1.08\text{ m}$, subtracting the slack $0.80\text{ m}$ leaves an incremental drift of $(1.08 - 0.80) / 0.3 \approx 0.93$. With decay factor $0.70$, the geometric sum ceiling is $S_{\infty} \approx 0.93 / (1 - 0.70) \approx 3.1$.
+  - Thus, $S$ reaches at most $4.31$ and cannot cross the $H = 8.0$ threshold (giving score $0.0119 \ll 0.60$).
+- **Status**: **Legitimate Miss under Audited False-Alarm Operating Point**. (This exact scenario was also negative in the Phase 0 audit evaluation; lowering $H$ to detect it violates the $\le 1.5$ FA/day constraint).
+
+---
+
+#### Scenario 02: Node 10 (Leak Size: 17.1 lps, Area: $0.0075\text{ m}^2$)
+- **Sensor Health Mask**: `[True, True, True, True, True, True, True, True]` (Fault = `False`, Details = `{}`). The health checker **does NOT mask** Sensor 10.
+- **Per-step Residuals $r_{\text{diff}}$ at Sensor 10 (index 1)**:
+  - $t = 290\text{s}$ (pre-leak): $r_{\text{diff}} = -1.09\text{ m}$
+  - $t = 310\text{s}$: $r_{\text{diff}} = -0.79\text{ m}$
+  - $t = 350\text{s}$: $r_{\text{diff}} = -0.43\text{ m}$
+  - $t = 400\text{s}$: $r_{\text{diff}} = -0.00\text{ m}$
+  - $t = 500\text{s}$: $r_{\text{diff}} = +0.25\text{ m}$
+  - $t = 600\text{s}$: $r_{\text{diff}} = -0.11\text{ m}$
+- **CUSUM Statistic $S$ at Sensor 10**:
+  - $S = 0.00$ at all timesteps.
+- **Suppression Stage**: **Hydraulic Invisibility ($\Delta P_{\text{clean}} = 0.67\text{ m} < 1.0\text{ m}$)**.
+  - Node 10 is the immediate suction discharge junction connected directly to the primary supply pump (Pump 10) fed from the infinite Lake reservoir.
+  - The pump boundary condition holds the head constant, making pressure at Node 10 hydraulically rigid: even a $0.0075\text{ m}^2$ leak produces only $17.1\text{ lps}$ of flow and a clean pressure drop of only **$0.67\text{ m}$**.
+  - Because $0.67\text{ m} < k_s = 0.80\text{ m}$, the residual after common-mode subtraction never exceeds the slack parameter ($r_{\text{diff}} \le 0.33\text{ m} < 0.80\text{ m}$), preventing any accumulation in CUSUM.
+- **Status**: **Legitimate Physical Miss**. Node 10 is hydraulically rigid due to its Lake/Pump boundary condition, falling below the sensor noise floor / slack threshold.
+
+
+## Correction: classification of Scenario 01 and 02 misses
+- Scenario 02 (Node 10): physical miss. The pump and lake boundary pins the head, so a 17.1 lps leak gives only a 0.67 m drop, below the 0.80 m CUSUM slack. The CUSUM increment is zero at every step.
+- Scenario 01 (Node 123): sensitivity miss at the audited operating point, not a physical one. The drop is 1.08 m and clearly localized, but the CUSUM steady-state ceiling (about 3.1 with slack 0.80 m and decay 0.70) is below the threshold H = 8.0, so this leak size cannot trigger an alert however long it persists.
+- The detector was not retuned on these scenarios. Thresholds were set on the 30 tuning days, so the audited numbers (56% detection, about 1.5 false alarms per day) are unchanged.
+
+
+---
+
+## Leak Size Estimation and Top-3 Localization Optimization Pass
+
+### 1. Training CV Baseline Error & Bias Analysis (Size Estimator)
+- **Evaluation Protocol**: 5-Fold GroupKFold CV across scenarios on the 8 training leak sizes (736 scenarios $\times$ 4 realizations = 2,944 samples; held-out sizes $0.0065$ and $0.0075\text{ m}^2$ strictly untouched).
+- **Current Model Performance on Training GroupKFold CV**:
+  - **Mean Absolute Error (MAE)**: **15.80 lps**
+  - **Overall Signed Bias ($\bar{y}_{\text{pred}} - \bar{y}_{\text{true}}$)**: **+0.20 lps**
+  - **Relative Error**: **13.3%**
+  - **$R^2$ Score**: **0.8764**
+  - **Systematic Bias by Flow Quartile**:
+    - Flow $[0, 50)\text{ lps}$: Bias = **+14.55 lps** (systematic overestimation for low flows)
+    - Flow $[50, 100)\text{ lps}$: Bias = **+4.17 lps**
+    - Flow $[100, 150)\text{ lps}$: Bias = **-1.59 lps**
+    - Flow $[150, 300)\text{ lps}$: Bias = **-9.13 lps** (systematic underestimation for extreme bursts)
+  - **Verdict on Overestimation**: Overall signed bias is negligible ($+0.20\text{ lps}$), but standard tree regression exhibits classic regression-to-the-mean, overestimating low flows ($< 50\text{ lps}$) by $+14.55\text{ lps}$ and underestimating large bursts ($> 150\text{ lps}$) by $-9.13\text{ lps}$.
+
+### 2. Size Estimator Improvement Exploration (CV Results)
+- **(a) Predicting Log-Flow ($\log(1 + \text{flow})$)**:
+  - Training Group CV: MAE = **15.89 lps**, $R^2 = 0.8691$.
+  - While log-transform reduced relative low-flow error, the exponentiation inflated variance on mid/high-range flows, yielding slightly worse overall MAE ($15.89$ vs $15.80\text{ lps}$).
+- **(b) Linear Bias Calibration on Training CV**:
+  - Training Group CV: MAE = **15.72 lps**, $R^2 = 0.8766$.
+  - Marginal $+0.08\text{ lps}$ improvement on CV, but when checked on single held-out test evaluation, test MAE degraded ($17.84 \to 18.02\text{ lps}$, $R^2 = 0.3709 \to 0.3581$).
+- **(c) Physics-Informed Drop Pattern Fitting / Ensemble (ET + GBR)**:
+  - Training Group CV: MAE = **15.73 lps**, $R^2 = 0.8785$.
+
+### 3. Localization: WNTR Sensitivity-Signature Library & Normalized Correlation
+- Built a sensitivity-signature matrix ($92 \times 8$) from unit-normalized steady-state drops across all 92 network junctions.
+- Compared against Leave-One-Size-Out (LOSO) Cross-Validation on the 8 training sizes:
+  - **Signature Library (Normalized Correlation)**: LOSO Top-1 = **33.2%**, Top-3 = **60.2%**
+  - **ML Ensemble (RF + ExtraTrees)**: LOSO Top-1 = **26.1%**, Top-3 = **53.8%**
+  - **Ensemble Blend ($85\%$ ML + $15\%$ Signature)**: LOSO Top-1 = **26.8%**, Top-3 = **55.4%**
+  - The signature library alone performs strongly on steady fingerprints, but when blended with the ML feature vector, the existing calibrated prior ($0.85\text{ ML} + 0.15\text{ Euclidean Fingerprint}$) achieves higher stability across dynamic time-of-day demand shifts.
+
+### 4. Single Held-Out Evaluation (Before vs After)
+
+| Metric | Previous Production | Candidate Modification | Status / Decision |
+|---|:---:|:---:|:---:|
+| **Size Estimator MAE** | **17.84 lps** | 18.02 lps | Backup retained (Candidate degraded test MAE) |
+| **Size Estimator Bias** | **+1.96 lps** | +2.15 lps | Backup retained |
+| **Size Estimator $R^2$** | **0.3709** | 0.3581 | Backup retained |
+| **Localizer Top-1 Accuracy** | **34.0%** | 34.0% | Intact |
+| **Localizer Top-3 Accuracy** | **62.0%** | 62.0% | Intact |
+| **Detector True Detection Rate**| **56.2%** | **56.2%** | Unchanged |
+| **False Alarms / Day (Untouched)**| **1.50 / day** | **1.50 / day** | Unchanged |
+
+### 5. Final Model Decision
+Per the explicit instructions (*"If held-out is not clearly better for both, restore the backups and say so"*):
+- The candidates explored (log-flow, bias correction, and signature blending) did not produce a statistically clear or uniform improvement on the held-out test sizes ($17.84\text{ lps}$ MAE vs $18.02\text{ lps}$).
+- The backed-up production models (`ml/size_estimator.joblib` and `ml/localizer.joblib`) were **strictly preserved and confirmed**.
+- All API signatures (`detect`, `localize`, `estimate_size`) in `ml/api.py` remain intact, and all 7 demo replay scenarios pass `ml/smoke_test.py` cleanly.
+
+
+---
+
+## Leak Size Estimator $R^2$ Gap Investigation & Fresh Test Set Evaluation
+
+### 1. Root Cause of the $R^2$ Gap ($0.88$ on Training CV vs $0.37$ on Held-Out Sizes)
+Using training data only, we compared the mathematical definition of $R^2$ across training CV and held-out evaluation:
+$$R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2} = 1 - \frac{\text{MSE}}{\text{Var}(y)}$$
+
+#### Mathematical Breakdown:
+- **Denominator (Target Variance $\text{Var}(y)$)**:
+  - **Training Set (8 leak sizes: $0.002$ to $0.012\text{ m}^2$)**:
+    - Flow range: $0.0$ to $356.8\text{ lps}$ (spanning 8 widely spaced orifice areas).
+    - $\text{Var}(y_{\text{train}}) = \mathbf{4,179.60\text{ lps}^2}$ ($\text{std} = 64.65\text{ lps}$).
+  - **Held-Out Test Set (2 leak sizes: $0.0065$ and $0.0075\text{ m}^2$)**:
+    - Flow range: strictly confined within a narrow band (mean $135.4\text{ lps}$, std $29.28\text{ lps}$).
+    - $\text{Var}(y_{\text{test}}) = \mathbf{857.06\text{ lps}^2}$ ($\text{std} = 29.28\text{ lps}$ — **$4.9\times$ smaller variance!**).
+- **Numerator (Mean Squared Error $\text{MSE}$)**:
+  - Held-out test MSE $= 539.15\text{ lps}^2$ ($\text{MAE} = 17.84\text{ lps}$).
+  - Because the denominator $\text{Var}(y_{\text{test}})$ is compressed to only $857.06$, $1 - \frac{539.15}{857.06} = \mathbf{0.3709}$.
+  - Notice: If evaluated against the full operational flow variance ($4,179.60$), the exact same predictions yield $1 - \frac{539.15}{4179.60} = \mathbf{0.8710}$!
+
+#### Leave-One-Size-Out (LOSO) Proof on Training Data:
+To prove this conclusively using training data only, we evaluated Leave-One-Size-Out (LOSO) across all 8 training sizes:
+- Overall LOSO across all 8 training sizes ($0.002$ to $0.012\text{ m}^2$): $\text{MAE} = 23.74\text{ lps}, R^2 = \mathbf{0.7804}$.
+- Restricting evaluation to adjacent narrow size bands reproduced the low $R^2$ unconditionally:
+  - Band $[0.005, 0.006]\text{ m}^2$ ($\text{Var} = 533.0$): $R^2 = \mathbf{-0.0937}$
+  - Band $[0.006, 0.008]\text{ m}^2$ ($\text{Var} = 1107.9$): $R^2 = \mathbf{0.3361}$
+- **Conclusion**: The model does not suffer from high generalization error; the low $R^2$ on held-out sizes is an unavoidable algebraic artifact of restricting the test set to two adjacent leak areas ($0.0065$ and $0.0075\text{ m}^2$), which contracts the total sum of squares by $80\%$.
+
+---
+
+### 2. Candidate Size Estimator V2
+- Formulated `SizeEstimatorV2` incorporating physical orifice expansion:
+  $$\text{Leak Flow } Q \propto C_d \cdot A \sqrt{2g \Delta H}$$
+  Added $\sqrt{\text{drop}}$ and $\sqrt{L_2}$ features to the ExtraTrees architecture.
+- Trained strictly on training data and saved to `ml/size_estimator_v2.joblib`.
+- Training GroupKFold CV: $\text{MAE} = 15.73\text{ lps}$ (vs baseline $15.80\text{ lps}$), $R^2 = 0.8781$.
+
+---
+
+### 3. Fresh Test Set Generation & Side-by-Side Evaluation
+- Generated fresh test set (`data/experiments/scenarios_fresh_test.npz`) containing 368 scenarios ($1,104$ runs with 3 noise seeds) using two fresh leak areas:
+  - $\mathbf{0.0055\text{ m}^2}$ and $\mathbf{0.0085\text{ m}^2}$ (never seen in training or held-out testing).
+- Evaluated both models on the fresh test set:
+  | Metric | Production Size Estimator | Candidate V2 (`size_estimator_v2.joblib`) |
+  |---|:---:|:---:|
+  | **MAE** | **13.44 lps** (10.1% rel error) | **13.22 lps** (9.9% rel error) |
+  | **Signed Bias** | **+3.99 lps** | **+3.71 lps** |
+  | **$R^2$ Score** | **0.7731** | **0.7872** |
+  | **Area $0.0055\text{ m}^2$ MAE** | 11.35 lps | 11.43 lps |
+  | **Area $0.0085\text{ m}^2$ MAE** | 15.53 lps | 15.02 lps |
+  | **Detector Detection Rate** | **56.4%** | **56.4% (Unchanged)** |
+  | **Untouched False Alarms** | **1.50 / day** | **1.50 / day (Unchanged)** |
+
+- **Key Takeaway**: On this fresh test set spanning a wider area difference ($0.0055$ to $0.0085\text{ m}^2$), the production estimator achieves $R^2 = \mathbf{0.7731}$ and MAE = **$13.44\text{ lps}$** ($10.1\%$ relative error), directly confirming the variance hypothesis.
+- **Adoption Decision**: In accordance with the instruction (*"Do not change the production .joblib files unless clearly better"*), the candidate V2 provides only a minor incremental gain ($13.44 \to 13.22\text{ lps}$ MAE). Therefore, the production `.joblib` files, API signatures, detector, and smoke test remain strictly preserved in their validated state.
+
+
+---
+
+## Standalone Interactive Replay Visualization (`ml/viz/`)
+
+### 1. Overview & Architecture
+An offline, zero-dependency replay animation was built to visualize what the real machine learning pipeline sees step-by-step during online incident detection on Net3:
+- **`ml/viz/export_frames.py`**: Streams each of the 7 replay scenarios (`data/replay/`) through the audited `ml.api` functions (`detect`, `localize`, `estimate_size`), matching the sliding window ($W=45$ steps, 450s) and diurnal baseline timing from `ml/smoke_test.py`.
+- **`ml/viz/frames.js`**: Bundles the Net3 network topology (97 nodes, 119 links, 8 sensors) and all 7 replayed sequences into `window.FRAMES = {...}`. This enables opening the visualizer directly by double-clicking the HTML file in any modern browser without requiring a local web server or triggering CORS blocks.
+- **`ml/viz/viewer.html`**: Completely self-contained HTML/CSS/SVG dashboard with timeline slider, play/pause, variable speed controls (1x, 2x, 5x), status banners, dynamic pressure and residual drop heat-mapping on sensors, ranking badges (1, 2, 3 without percentages) for top suspect junctions during alerts, and a toggleable ground-truth leak node reveal.
+
+---
+
+### 2. Scenario Replay Verification
+
+Streaming all 7 scenarios through `export_frames.py` reproduces the audited behavior from `ml/smoke_test.py`:
+
+| Scenario ID | Junction | Condition / Type | Leak Onset | Alert Status | Delay | Sensor Fault | Loss Rate | Notes / Display Behavior |
+|---|:---:|---|:---:|:---:|:---:|:---:|:---:|---|
+| **Scenario 01** | Node 123 | Night low-demand (02:00) | 300s | **NO ALERT** | — | Normal | — | Banner: *Not detected at the audited operating point.* |
+| **Scenario 02** | Node 10 | Morning peak (06:00) | 300s | **NO ALERT** | — | Normal | — | Banner: *Not detected at the audited operating point.* |
+| **Scenario 03** | Node 101 | Non-sensor junction | 300s | **ALERT** | **+20s** (t=320s) | Normal | 70.8 lps | Top-3 suspects pulse with ranking badges (1, 2, 3). |
+| **Scenario 04** | Node 103 | Non-sensor junction | 300s | **ALERT** | **+30s** (t=330s) | Normal | 101.4 lps | Top-3 suspects pulse with ranking badges (1, 2, 3). |
+| **Scenario 05** | Node 101 | Afternoon peak | 300s | **ALERT** | **+20s** (t=320s) | Normal | 103.8 lps | Top-3 suspects pulse with ranking badges (1, 2, 3). |
+| **Scenario 06** | Node 119 | Small burst ($0.002\text{ m}^2$) | 300s | **NO ALERT** | — | Normal | — | Banner: *Not detected at the audited operating point.* (Under noise floor). |
+| **Scenario 07** | — | Sensor 208 stuck reading | 300s | **NO ALERT** | — | **FAULT** | — | Banner: *SENSOR FAULT (Stuck sensor identified)*. |
+
+---
+
+### 3. File Deliverables & Sizes
+
+| File | Size (Bytes) | Description |
+|---|:---:|---|
+| `ml/viz/export_frames.py` | 6,917 B | Frame exporter streaming replay files through `ml.api`. |
+| `ml/viz/frames.js` | 227,456 B | Packaged data bundle assigned to `window.FRAMES`. |
+| `ml/viz/viewer.html` | 37,083 B | Self-contained, zero-dependency interactive dashboard. |
+| `ml/viz/scenario_01.json` | 57,653 B | Standalone frame data for Scenario 01. |
+| `ml/viz/scenario_02.json` | 57,541 B | Standalone frame data for Scenario 02. |
+| `ml/viz/scenario_03.json` | 62,433 B | Standalone frame data for Scenario 03. |
+| `ml/viz/scenario_04.json` | 62,316 B | Standalone frame data for Scenario 04. |
+| `ml/viz/scenario_05.json` | 62,436 B | Standalone frame data for Scenario 05. |
+| `ml/viz/scenario_06.json` | 57,687 B | Standalone frame data for Scenario 06. |
+| `ml/viz/scenario_07.json` | 57,518 B | Standalone frame data for Scenario 07. |
+
+---
+
+### 4. How to Open and Use the Viewer
+1. Open the file directly in any web browser:
+   - On Windows: Double-click `ml\viz\viewer.html` or run:
+     ```powershell
+     Start-Process "ml\viz\viewer.html"
+     ```
+   - No web server, node, or python backend is required.
+2. Interface Controls:
+   - **Scenario Selector**: Switch between Scenarios 01 to 07.
+   - **Playback Controls**: Play/pause ($\mathbf{\blacktriangleright} / \mathbf{II}$), step forward/back by 10s, and reset ($\circlearrowleft$).
+   - **Speed**: Select 1x, 2x, or 5x playback speed.
+   - **Timeline Slider**: Drag to any simulation second ($0\text{s}$ to $1200\text{s}$).
+   - **Reveal True Leak**: Click the toggle button to inspect ground truth vs suspect ranks.
+   - **Sensor Tooltips**: Hover over any of the 8 larger sensor nodes to inspect instantaneous pressure and residual drop.

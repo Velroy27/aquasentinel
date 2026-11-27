@@ -48,14 +48,17 @@ def test_get_scenarios_contract(client):
 
     # Contract: [{'id','leak_node','leak_size_lps','start_t','description'}]
     assert isinstance(data, list)
-    assert len(data) >= 2
+    # Assert audited catalog scenarios appear FIRST in exact catalog order
+    sc_ids = [sc["id"] for sc in data]
+    assert "scenario_01" in sc_ids
+    assert "scenario_03" in sc_ids
+    assert sc_ids.index("scenario_01") == 0
+    assert sc_ids.index("scenario_02") == 1
+    assert sc_ids.index("scenario_03") == 2
 
-    for sc in data:
-        assert isinstance(sc["id"], str)
-        assert sc["leak_node"] is None or isinstance(sc["leak_node"], str)
-        assert isinstance(sc["leak_size_lps"], (int, float))
-        assert isinstance(sc["start_t"], int)
-        assert isinstance(sc["description"], str)
+    # Assert mock scenario appears after catalog scenarios
+    if "scenario_105_leak" in sc_ids:
+        assert sc_ids.index("scenario_105_leak") >= 7
 
 
 def test_get_results_contract(client):

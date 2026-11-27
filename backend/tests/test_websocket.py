@@ -42,25 +42,31 @@ def test_websocket_stream_messages(client):
 def test_websocket_contract_schema_types(client):
     pipeline.reset_state(clear_buffers=True)
 
+    def recv_non_ping(ws):
+        while True:
+            m = ws.receive_json()
+            if m.get("type") != "ping":
+                return m
+
     with client.websocket_connect("/ws/stream") as ws:
         # Step 0: normal
         client.post("/api/ingest", json={"t": 0, "node_id": "105", "pressure_m": 52.0, "flow_lps": None})
-        m0 = ws.receive_json()
+        m0 = recv_non_ping(ws)
         assert m0["type"] == "readings"
 
         # Step 1: normal
         client.post("/api/ingest", json={"t": 10, "node_id": "105", "pressure_m": 52.0, "flow_lps": None})
-        m1 = ws.receive_json()
+        m1 = recv_non_ping(ws)
         assert m1["type"] == "readings"
 
         # Step 2: sharp pressure drop to trigger anomaly
         client.post("/api/ingest", json={"t": 20, "node_id": "105", "pressure_m": 38.0, "flow_lps": 5.0})
         
         # We expect: readings -> alert -> localization -> loss
-        m_readings = ws.receive_json()
+        m_readings = recv_non_ping(ws)
         assert m_readings["type"] == "readings"
 
-        m_alert = ws.receive_json()
+        m_alert = recv_non_ping(ws)
         assert m_alert["type"] == "alert"
         assert isinstance(m_alert["id"], str)
         assert isinstance(m_alert["t"], int)
@@ -68,7 +74,7 @@ def test_websocket_contract_schema_types(client):
         assert isinstance(m_alert["score"], float)
         assert isinstance(m_alert["detector"], str)
 
-        m_loc = ws.receive_json()
+        m_loc = recv_non_ping(ws)
         assert m_loc["type"] == "localization"
         assert isinstance(m_loc["alert_id"], str)
         assert isinstance(m_loc["top3"], list)
@@ -78,7 +84,7 @@ def test_websocket_contract_schema_types(client):
             assert isinstance(item["prob"], float)
         assert isinstance(m_loc["probs"], dict)
 
-        m_loss = ws.receive_json()
+        m_loss = recv_non_ping(ws)
         assert m_loss["type"] == "loss"
         assert isinstance(m_loss["alert_id"], str)
         assert isinstance(m_loss["est_leak_lps"], (int, float))

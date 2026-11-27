@@ -3,10 +3,12 @@ from collections import deque
 from typing import Any, Callable, Coroutine, Optional
 import asyncio
 import logging
+import math
 import time
 
 from backend.config import (
-    DEDUP_RESET_COUNT,
+    MIN_STEPS_FOR_DETECT,
+    RESOLVE_CLEAR_WINDOWS,
     SEVERITY_CRITICAL_THRESHOLD,
     SEVERITY_HIGH_THRESHOLD,
     SEVERITY_MEDIUM_THRESHOLD,
@@ -45,23 +47,34 @@ class Pipeline:
         self.node_buffers: dict[str, deque[dict[str, Any]]] = {}
         self.recent_steps: deque[dict[str, Any]] = deque(maxlen=WINDOW_SIZE)
 
+        # Pending ingest buffer for grouping single readings by t
+        self.pending_ingest_t: Optional[int] = None
+        self.pending_ingest_readings: list[dict[str, Any]] = []
+
         # State tracking
         self.current_run_id: Optional[str] = None
+        self.current_speed: float = 1.0
         self.active_alert_id: Optional[str] = None
         self.alert_t: Optional[int] = None
         self.est_leak_lps: float = 0.0
         self.non_anomaly_count: int = 0
         self.latest_t: int = 0
+        self.fault_active: bool = False
+
+        # Stub tracking per run
+        self.run_had_stub: bool = False
+
+        # Throttling tracking
+        self.window_eval_counter: int = 0
+        self.last_detect_res: Optional[dict[str, Any]] = None
+        self._last_throttle_log_t: float = 0.0
 
         # Cached latest messages for new WS clients
         self.cached_alert: Optional[dict[str, Any]] = None
         self.cached_localization: Optional[dict[str, Any]] = None
         self.cached_loss: Optional[dict[str, Any]] = None
 
-        # Lock to ensure thread/task safety during concurrent ingest
         self._lock = asyncio.Lock()
-
-        # Load initial state from DB if available
         self._load_initial_db_state()
 
     def _load_initial_db_state(self) -> None:
@@ -73,11 +86,13 @@ class Pipeline:
         except Exception as e:
             logger.error("Error loading initial state from DB: %s", e)
 
-    def set_current_run(self, run_id: Optional[str]) -> None:
+    def set_current_run(self, run_id: Optional[str], speed: float = 1.0) -> None:
         self.current_run_id = run_id
+        self.current_speed = max(0.1, speed)
+        self.run_had_stub = (self.ml_bridge.get_mode() == "stub")
 
     def reset_state(self, clear_buffers: bool = True) -> None:
-        """Resets active leak state and optionally clears window buffers."""
+        """Resets active leak state and clears window buffers."""
         if self.active_alert_id and self.db:
             self.db.enqueue("UPDATE_ALERT_STATUS", {"id": self.active_alert_id, "status": "resolved"})
 
@@ -85,9 +100,20 @@ class Pipeline:
         self.alert_t = None
         self.est_leak_lps = 0.0
         self.non_anomaly_count = 0
-        self.cached_loss = None
+        self.run_had_stub = (self.ml_bridge.get_mode() == "stub")
+        self.window_eval_counter = 0
+        self.last_detect_res = None
+        self._last_throttle_log_t = 0.0
+
+        self.fault_active = False
+        self.pending_ingest_t = None
+        self.pending_ingest_readings.clear()
+
+        # Cached messages represent the current active run/alert only. Do not
+        # replay resolved state to newly connected WebSocket clients.
         self.cached_alert = None
         self.cached_localization = None
+        self.cached_loss = None
 
         if clear_buffers:
             self.node_buffers.clear()
@@ -101,15 +127,32 @@ class Pipeline:
             except Exception as e:
                 logger.error("Error broadcasting message of type %s: %s", msg.get("type"), e)
 
+    async def flush_pending_ingest(self, active_run: Optional[str] = None) -> None:
+        """Flushes any buffered pending readings into a step and evaluates it."""
+        if self.pending_ingest_t is not None and self.pending_ingest_readings:
+            step_obj = {
+                "type": "readings",
+                "t": self.pending_ingest_t,
+                "readings": list(self.pending_ingest_readings)
+            }
+            self.recent_steps.append(step_obj)
+            await self._broadcast(step_obj)
+            run = active_run or self.current_run_id
+            if len(self.recent_steps) >= MIN_STEPS_FOR_DETECT:
+                await self._evaluate_window(list(self.recent_steps), self.pending_ingest_t, run)
+            elif self.active_alert_id is not None:
+                await self._update_loss_tick(self.pending_ingest_t)
+            self.pending_ingest_t = None
+            self.pending_ingest_readings.clear()
+
     async def ingest_single_reading(self, reading: dict[str, Any], run_id: Optional[str] = None) -> None:
-        """Handles ingestion from HTTP POST /api/ingest."""
+        """Handles ingestion from HTTP POST /api/ingest by grouping readings by t into full steps."""
         async with self._lock:
             try:
                 t = int(reading.get("t", self.latest_t))
                 self.latest_t = max(self.latest_t, t)
                 active_run = run_id or self.current_run_id
 
-                # Save reading to DB
                 self.db.enqueue("INSERT_READINGS", {
                     "run_id": active_run,
                     "readings": [reading]
@@ -120,20 +163,30 @@ class Pipeline:
                     self.node_buffers[node_id] = deque(maxlen=WINDOW_SIZE)
                 self.node_buffers[node_id].append(reading)
 
-                # Formulate a step for detection
-                step_obj = {"t": t, "readings": [reading]}
-                self.recent_steps.append(step_obj)
-
-                # Broadcast readings message as contract defines:
-                # 'readings': {'type': 'readings', 't': t, 'readings': [reading,...]}
+                # Broadcast reading immediately so WebSocket clients receive live telemetry
                 await self._broadcast({
                     "type": "readings",
                     "t": t,
                     "readings": [reading]
                 })
 
-                # Process pipeline logic if we have sufficient steps
-                if len(self.recent_steps) >= min(WINDOW_SIZE, 3):
+                # Grouping by t for the ML sliding window buffer (self.recent_steps):
+                # If the last step in recent_steps is for timestamp t, group reading into it
+                if self.recent_steps and self.recent_steps[-1]["t"] == t:
+                    step_readings = self.recent_steps[-1]["readings"]
+                    idx = next((i for i, r in enumerate(step_readings) if str(r.get("node_id")) == node_id), -1)
+                    if idx >= 0:
+                        step_readings[idx] = reading
+                    else:
+                        step_readings.append(reading)
+                else:
+                    self.recent_steps.append({
+                        "type": "readings",
+                        "t": t,
+                        "readings": [reading]
+                    })
+
+                if len(self.recent_steps) >= MIN_STEPS_FOR_DETECT:
                     await self._evaluate_window(list(self.recent_steps), t, active_run)
                 elif self.active_alert_id is not None:
                     await self._update_loss_tick(t)
@@ -145,48 +198,112 @@ class Pipeline:
         """Handles ingestion from Replay engine."""
         async with self._lock:
             try:
+                # If there were pending single ingest readings from another source, flush first
+                if self.pending_ingest_t is not None and self.pending_ingest_readings:
+                    await self.flush_pending_ingest(active_run=run_id)
+
                 t = int(step.get("t", self.latest_t))
                 self.latest_t = t
                 readings = step.get("readings", [])
                 active_run = run_id or self.current_run_id
 
-                # Record readings batch to DB
                 self.db.enqueue("INSERT_READINGS", {
                     "run_id": active_run,
                     "readings": readings
                 })
 
-                # Update per-node buffers
                 for r in readings:
                     nid = str(r.get("node_id", ""))
                     if nid not in self.node_buffers:
                         self.node_buffers[nid] = deque(maxlen=WINDOW_SIZE)
                     self.node_buffers[nid].append(r)
 
-                self.recent_steps.append(step)
+                step_formatted = {
+                    "type": "readings",
+                    "t": t,
+                    "readings": readings
+                }
+                self.recent_steps.append(step_formatted)
 
-                # Broadcast readings
                 await self._broadcast({
                     "type": "readings",
                     "t": t,
                     "readings": readings
                 })
 
-                # Evaluate window
-                await self._evaluate_window(list(self.recent_steps), t, active_run)
+                if len(self.recent_steps) >= MIN_STEPS_FOR_DETECT:
+                    await self._evaluate_window(list(self.recent_steps), t, active_run)
+                elif self.active_alert_id is not None:
+                    await self._update_loss_tick(t)
 
             except Exception as e:
                 logger.error("Error processing replay step at t=%d: %s", step.get("t", -1), e, exc_info=True)
 
     async def _evaluate_window(self, window: list[Any], t: int, active_run: Optional[str]) -> None:
-        """Runs detection, deduplication, localization, and loss calculation."""
-        detect_res = await self.ml_bridge.detect(window)
+        """Runs detection with speed guard throttling, sensor fault handling, deduplication, localization, and loss calculation."""
+        if len(window) < MIN_STEPS_FOR_DETECT:
+            return
+
+        # Speed Guard check
+        avg_latency = self.ml_bridge.get_avg_latency_ms()
+        n_skip = 1
+        if avg_latency > 1000.0:
+            interval_ms = (10.0 / max(0.1, self.current_speed)) * 1000.0
+            n_skip = min(5, max(1, math.ceil(avg_latency / interval_ms)))
+
+        if n_skip > 1:
+            self.window_eval_counter += 1
+            if (self.window_eval_counter % n_skip != 0) and (self.last_detect_res is not None):
+                detect_res = self.last_detect_res
+            else:
+                now_mono = time.monotonic()
+                if now_mono - self._last_throttle_log_t > 5.0:
+                    logger.warning(
+                        "ML average latency %.1f ms exceeds 1000 ms; throttling evaluation to every %d windows",
+                        avg_latency, n_skip
+                    )
+                    self._last_throttle_log_t = now_mono
+                detect_res = await self.ml_bridge.detect(window)
+                self.last_detect_res = detect_res
+        else:
+            detect_res = await self.ml_bridge.detect(window)
+            self.last_detect_res = detect_res
+
+        if self.ml_bridge.last_result_was_stub:
+            self.run_had_stub = True
+
         is_anomaly = detect_res.get("anomaly", False)
         score = float(detect_res.get("score", 0.0))
+        is_fault = detect_res.get("sensor_fault", False)
+
+        # Sensor fault handling
+        if is_fault:
+            if not self.fault_active:
+                self.fault_active = True
+                detail = detect_res.get("detail", {"sensor_fault": True, "score": score})
+                fault_msg = {
+                    "type": "fault",
+                    "t": t,
+                    "detail": detail
+                }
+                logger.warning("SENSOR FAULT detected at t=%d: %s", t, detail)
+                self.db.enqueue("INSERT_ALERT", {
+                    "id": f"FLT-{int(time.time() * 1000)}",
+                    "run_id": active_run,
+                    "t": t,
+                    "severity": "medium",
+                    "score": score,
+                    "detector": "sensor_health",
+                    "status": "sensor_fault"
+                })
+                await self._broadcast(fault_msg)
+            # When detector reports sensor fault, do not create leak alert, localization, or loss
+            return
+        else:
+            self.fault_active = False
 
         if is_anomaly:
             self.non_anomaly_count = 0
-            # Deduplication: ONLY ONE alert per leak event
             if self.active_alert_id is None:
                 alert_id = f"ALT-{int(time.time() * 1000)}"
                 severity = score_to_severity(score)
@@ -201,11 +318,13 @@ class Pipeline:
                     "score": score,
                     "detector": "statistical"
                 }
+                if self.run_had_stub:
+                    alert_msg["stub"] = True
+
                 self.cached_alert = alert_msg
                 logger.info("NEW ALERT created: id=%s t=%d severity=%s score=%.3f",
                             alert_id, t, severity, score)
 
-                # Persist alert to DB
                 self.db.enqueue("INSERT_ALERT", {
                     "id": alert_id,
                     "run_id": active_run,
@@ -217,14 +336,19 @@ class Pipeline:
                 })
                 await self._broadcast(alert_msg)
 
-                # Localization
                 loc_res = await self.ml_bridge.localize(window, self.valid_nodes)
+                if self.ml_bridge.last_result_was_stub:
+                    self.run_had_stub = True
+
                 loc_msg = {
                     "type": "localization",
                     "alert_id": alert_id,
                     "top3": loc_res.get("top3", []),
                     "probs": loc_res.get("probs", {})
                 }
+                if self.run_had_stub:
+                    loc_msg["stub"] = True
+
                 self.cached_localization = loc_msg
                 self.db.enqueue("INSERT_LOCALIZATION", {
                     "alert_id": alert_id,
@@ -233,17 +357,20 @@ class Pipeline:
                 })
                 await self._broadcast(loc_msg)
 
-                # Size estimation
                 est_size = await self.ml_bridge.estimate_size(window)
+                if self.ml_bridge.last_result_was_stub:
+                    self.run_had_stub = True
                 self.est_leak_lps = est_size
 
-                # Initial loss message at t=alert_t: litres_lost_cum = 0.0
                 initial_loss_msg = {
                     "type": "loss",
                     "alert_id": alert_id,
                     "est_leak_lps": self.est_leak_lps,
                     "litres_lost_cum": 0.0
                 }
+                if self.run_had_stub:
+                    initial_loss_msg["stub"] = True
+
                 self.cached_loss = initial_loss_msg
                 self.db.enqueue("INSERT_LOSS", {
                     "alert_id": alert_id,
@@ -253,14 +380,11 @@ class Pipeline:
                 })
                 await self._broadcast(initial_loss_msg)
             else:
-                # Alert already active; update cumulative loss for current t
                 await self._update_loss_tick(t)
         else:
-            # Non-anomaly window
             if self.active_alert_id is not None:
                 self.non_anomaly_count += 1
-                await self._update_loss_tick(t)
-                if self.non_anomaly_count >= DEDUP_RESET_COUNT:
+                if self.non_anomaly_count >= RESOLVE_CLEAR_WINDOWS:
                     logger.info("Leak resolved after %d consecutive non-anomaly windows: alert_id=%s",
                                 self.non_anomaly_count, self.active_alert_id)
                     self.db.enqueue("UPDATE_ALERT_STATUS", {"id": self.active_alert_id, "status": "resolved"})
@@ -268,6 +392,11 @@ class Pipeline:
                     self.alert_t = None
                     self.est_leak_lps = 0.0
                     self.non_anomaly_count = 0
+                    self.cached_loss = None
+                    self.cached_alert = None
+                    self.cached_localization = None
+                else:
+                    await self._update_loss_tick(t)
 
     async def _update_loss_tick(self, t: int) -> None:
         if self.active_alert_id is None or self.alert_t is None:
@@ -282,6 +411,9 @@ class Pipeline:
             "est_leak_lps": self.est_leak_lps,
             "litres_lost_cum": litres
         }
+        if self.run_had_stub:
+            loss_msg["stub"] = True
+
         self.cached_loss = loss_msg
         self.db.enqueue("INSERT_LOSS", {
             "alert_id": self.active_alert_id,
@@ -292,7 +424,6 @@ class Pipeline:
         await self._broadcast(loss_msg)
 
     async def tick_simulated_loss(self, t: int) -> None:
-        """Called each simulated second by the replay or loss ticker."""
         async with self._lock:
             if self.active_alert_id is not None and self.alert_t is not None and t >= self.alert_t:
                 await self._update_loss_tick(t)

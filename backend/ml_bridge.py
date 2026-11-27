@@ -1,4 +1,5 @@
 # AquaSentinel ML Bridge & Stub Fallbacks
+from collections import deque
 from pathlib import Path
 from typing import Any, Optional
 import asyncio
@@ -6,17 +7,31 @@ import concurrent.futures
 import logging
 import math
 import sys
+import time
 
-from backend.config import ML_TIMEOUT_S, REPO_ROOT
+from backend.config import ML_TIMEOUT_S, REPO_ROOT, WARMUP_TIMEOUT_S
 
 logger = logging.getLogger("aquasentinel.ml_bridge")
 
-# Add repository root to sys.path to allow importing from /ml if present
+# Add system site-packages if needed to locate numpy/joblib/sklearn
+base_sp = Path(sys.base_prefix) / "Lib" / "site-packages"
+if base_sp.exists() and str(base_sp) not in sys.path:
+    sys.path.append(str(base_sp))
+
+# Add repository root to sys.path to allow importing from /ml
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+# Optional numpy import for type checking
+try:
+    import numpy as np
+    HAS_NUMPY = True
+except ImportError:
+    HAS_NUMPY = False
+
 # Real vs Stub flag
-ML_MODE = "stub"
+_initial_mode = "stub"
+ML_MODE = _initial_mode
 _real_detect = None
 _real_localize = None
 _real_estimate_size = None
@@ -26,20 +41,59 @@ try:
     _real_detect = _ml_detect
     _real_localize = _ml_localize
     _real_estimate_size = _ml_est
-    ML_MODE = "real"
+    _initial_mode = "real"
     logger.info("Successfully loaded ML module from ml.api")
-except ImportError:
-    ML_MODE = "stub"
-    logger.warning("using ML stubs")
+except ImportError as e:
+    _initial_mode = "stub"
+    logger.warning("ImportError importing ml.api: %s; using ML stubs", e)
 except Exception as e:
-    ML_MODE = "stub"
+    _initial_mode = "stub"
     logger.warning("Failed importing ml.api: %s; using ML stubs", e)
+
+ML_MODE = _initial_mode
+
+
+def _to_python_bool(val: Any) -> bool:
+    if hasattr(val, "item"):
+        val = val.item()
+    return bool(val)
+
+
+def _to_python_float(val: Any, default: float = 0.0) -> float:
+    if hasattr(val, "item"):
+        val = val.item()
+    try:
+        f = float(val)
+        if math.isnan(f) or math.isinf(f):
+            return default
+        return f
+    except (TypeError, ValueError):
+        return default
+
+
+def _is_valid_scalar_bool(val: Any) -> bool:
+    if isinstance(val, bool):
+        return True
+    if HAS_NUMPY and isinstance(val, np.bool_):
+        return True
+    return False
+
+
+def _is_valid_scalar_float(val: Any) -> bool:
+    if isinstance(val, bool):
+        return False
+    if isinstance(val, (int, float)):
+        return not (math.isnan(val) or math.isinf(val))
+    if HAS_NUMPY and isinstance(val, (np.floating, np.integer)):
+        f = float(val)
+        return not (math.isnan(f) or math.isinf(f))
+    return False
 
 
 def stub_detect(window: list[Any]) -> dict[str, Any]:
-    """Conservative fallback detector based on within-sensor pressure movement."""
+    """Deterministic stub for detect(window) -> {'anomaly': bool, 'score': float, 'sensor_fault': bool}."""
     if not window:
-        return {"anomaly": False, "score": 0.05}
+        return {"anomaly": False, "score": 0.05, "sensor_fault": False}
 
     # Comparing pressure across different nodes mistakes normal elevation and
     # hydraulic head differences for a leak. Only compare readings from the
@@ -53,18 +107,18 @@ def stub_detect(window: list[Any]) -> dict[str, Any]:
                     continue
                 node_id = str(reading.get("node_id", ""))
                 pressure = reading.get("pressure_m")
-                if node_id and isinstance(pressure, (int, float)) and math.isfinite(pressure):
-                    pressure_by_node.setdefault(node_id, []).append(float(pressure))
+                if node_id and _is_valid_scalar_float(pressure):
+                    pressure_by_node.setdefault(node_id, []).append(_to_python_float(pressure))
 
     node_ranges = [max(values) - min(values) for values in pressure_by_node.values() if len(values) > 1]
     if not node_ranges:
-        return {"anomaly": False, "score": 0.05}
+        return {"anomaly": False, "score": 0.05, "sensor_fault": False}
 
     largest_change = max(node_ranges)
     if largest_change >= 2.5:
         score = min(0.99, max(0.55, 0.50 + largest_change * 0.1))
-        return {"anomaly": True, "score": round(score, 3)}
-    return {"anomaly": False, "score": 0.08}
+        return {"anomaly": True, "score": round(score, 3), "sensor_fault": False}
+    return {"anomaly": False, "score": 0.08, "sensor_fault": False}
 
 
 def stub_localize(window: list[Any]) -> dict[str, Any]:
@@ -74,12 +128,12 @@ def stub_localize(window: list[Any]) -> dict[str, Any]:
         if isinstance(item, dict):
             readings = item.get("readings", [item]) if "readings" in item else [item]
             for r in readings:
-                nid = str(r.get("node_id", ""))
-                p = r.get("pressure_m")
-                if nid and isinstance(p, (int, float)) and not math.isnan(p):
-                    node_drops.setdefault(nid, []).append(float(p))
+                if isinstance(r, dict):
+                    nid = str(r.get("node_id", ""))
+                    p = r.get("pressure_m")
+                    if nid and _is_valid_scalar_float(p):
+                        node_drops.setdefault(nid, []).append(_to_python_float(p))
 
-    # Score nodes by lowest pressure or biggest delta
     scored: list[tuple[str, float]] = []
     for nid, plist in node_drops.items():
         if plist:
@@ -87,7 +141,6 @@ def stub_localize(window: list[Any]) -> dict[str, Any]:
             scored.append((nid, max(drop, 0.01)))
 
     if not scored:
-        # Fallback default net3 nodes
         return {"probs": {"105": 0.70, "115": 0.20, "123": 0.10}}
 
     scored.sort(key=lambda x: x[1], reverse=True)
@@ -99,15 +152,16 @@ def stub_localize(window: list[Any]) -> dict[str, Any]:
 def stub_estimate_size(window: list[Any]) -> float:
     """Deterministic stub for estimate_size(window) -> float lps."""
     if not window:
-        return 5.0
+        return 5.5
     pressures: list[float] = []
     for item in window:
         if isinstance(item, dict):
             readings = item.get("readings", [item]) if "readings" in item else [item]
             for r in readings:
-                p = r.get("pressure_m")
-                if isinstance(p, (int, float)) and not math.isnan(p):
-                    pressures.append(float(p))
+                if isinstance(r, dict):
+                    p = r.get("pressure_m")
+                    if _is_valid_scalar_float(p):
+                        pressures.append(_to_python_float(p))
     if pressures:
         drop = (sum(pressures) / len(pressures)) - min(pressures)
         return round(max(1.5, min(20.0, drop * 1.8)), 1)
@@ -119,83 +173,178 @@ class MLBridge:
         self._executor = concurrent.futures.ThreadPoolExecutor(
             max_workers=thread_pool_size, thread_name_prefix="MLBridge"
         )
+        self.ml_mode: str = _initial_mode
+        self.forced_stub: bool = (_initial_mode == "stub")
+        self.stub_calls: int = 0
+        self.last_stub_reason: Optional[str] = None
+        self.latencies: deque[float] = deque(maxlen=20)
+        self.last_result_was_stub: bool = False
+
+    def force_stub_mode(self, reason: str = "forced_stub_mode") -> None:
+        self.forced_stub = True
+        self.ml_mode = "stub"
+        self._record_stub(reason)
+
+    def set_real_mode(self) -> None:
+        if _real_detect is not None:
+            self.forced_stub = False
+            self.ml_mode = "real"
 
     def get_mode(self) -> str:
-        return ML_MODE
+        return self.ml_mode
+
+    def get_avg_latency_ms(self) -> float:
+        if not self.latencies:
+            return 0.0
+        return round(sum(self.latencies) / len(self.latencies), 1)
+
+    def _record_stub(self, reason: str) -> None:
+        self.stub_calls += 1
+        self.last_stub_reason = reason
+        self.last_result_was_stub = True
+        if self.ml_mode == "real":
+            self.ml_mode = "degraded"
+        logger.warning("Using ML stub: %s (total stub calls: %d)", reason, self.stub_calls)
+
+    async def warmup(self, warm_window: list[Any]) -> bool:
+        """Runs warm-up calls for detect, localize, and estimate_size."""
+        if self.forced_stub or _real_detect is None:
+            logger.info("ML is in stub mode, skipping real warm-up")
+            return True
+
+        logger.info("Starting ML warm-up with timeout %.1fs...", WARMUP_TIMEOUT_S)
+        loop = asyncio.get_running_loop()
+
+        try:
+            # 1. Warm detect
+            t0 = time.perf_counter()
+            await asyncio.wait_for(
+                loop.run_in_executor(self._executor, _real_detect, warm_window),
+                timeout=WARMUP_TIMEOUT_S
+            )
+            d_ms = (time.perf_counter() - t0) * 1000.0
+            logger.info("Warm-up detect completed in %.1f ms", d_ms)
+
+            # 2. Warm localize
+            t0 = time.perf_counter()
+            await asyncio.wait_for(
+                loop.run_in_executor(self._executor, _real_localize, warm_window),
+                timeout=WARMUP_TIMEOUT_S
+            )
+            l_ms = (time.perf_counter() - t0) * 1000.0
+            logger.info("Warm-up localize completed in %.1f ms", l_ms)
+
+            # 3. Warm estimate_size
+            t0 = time.perf_counter()
+            await asyncio.wait_for(
+                loop.run_in_executor(self._executor, _real_estimate_size, warm_window),
+                timeout=WARMUP_TIMEOUT_S
+            )
+            s_ms = (time.perf_counter() - t0) * 1000.0
+            logger.info("Warm-up estimate_size completed in %.1f ms", s_ms)
+
+            self.ml_mode = "real"
+            logger.info("ML warm-up successfully finished; ready for real inference")
+            return True
+
+        except asyncio.TimeoutError:
+            logger.error("ML warm-up timed out after %.1f s; continuing in stub mode", WARMUP_TIMEOUT_S)
+            self.force_stub_mode(reason="warm-up timed out")
+            return False
+        except Exception as e:
+            logger.error("ML warm-up failed with error: %s; continuing in stub mode", e, exc_info=True)
+            self.force_stub_mode(reason=f"warm-up exception: {e}")
+            return False
 
     async def detect(self, window: list[Any]) -> dict[str, Any]:
-        """Runs detection with timeout, fallback, and schema validation."""
+        """Runs detection with timeout, fallback, numpy conversion, and schema validation."""
+        self.last_result_was_stub = False
         raw_res = None
-        if ML_MODE == "real" and _real_detect:
+
+        if not self.forced_stub and _real_detect is not None:
+            t0 = time.perf_counter()
             try:
                 loop = asyncio.get_running_loop()
                 raw_res = await asyncio.wait_for(
                     loop.run_in_executor(self._executor, _real_detect, window),
                     timeout=ML_TIMEOUT_S
                 )
+                lat_ms = (time.perf_counter() - t0) * 1000.0
+                self.latencies.append(lat_ms)
             except asyncio.TimeoutError:
-                logger.warning("Real ML detect timed out after %.1f s; using stub", ML_TIMEOUT_S)
+                self._record_stub("detect call timed out")
             except Exception as e:
-                logger.warning("Real ML detect raised error: %s; using stub", e)
+                self._record_stub(f"detect raised exception: {e}")
 
         if raw_res is None or not self._validate_detect_schema(raw_res):
-            if raw_res is not None:
-                logger.warning("Real ML detect returned contract-violating payload; using stub")
+            if raw_res is not None and not self.last_result_was_stub:
+                self._record_stub("detect returned contract-violating payload")
             raw_res = stub_detect(window)
 
         return self._normalize_detect(raw_res)
 
     async def localize(self, window: list[Any], valid_nodes: Optional[set[str]] = None) -> dict[str, Any]:
         """Runs localization with timeout, fallback, node filtering, and top3 sorting."""
+        self.last_result_was_stub = False
         raw_res = None
-        if ML_MODE == "real" and _real_localize:
+
+        if not self.forced_stub and _real_localize is not None:
+            t0 = time.perf_counter()
             try:
                 loop = asyncio.get_running_loop()
                 raw_res = await asyncio.wait_for(
                     loop.run_in_executor(self._executor, _real_localize, window),
                     timeout=ML_TIMEOUT_S
                 )
+                lat_ms = (time.perf_counter() - t0) * 1000.0
+                self.latencies.append(lat_ms)
             except asyncio.TimeoutError:
-                logger.warning("Real ML localize timed out after %.1f s; using stub", ML_TIMEOUT_S)
+                self._record_stub("localize call timed out")
             except Exception as e:
-                logger.warning("Real ML localize raised error: %s; using stub", e)
+                self._record_stub(f"localize raised exception: {e}")
 
         if raw_res is None or not self._validate_localize_schema(raw_res):
-            if raw_res is not None:
-                logger.warning("Real ML localize returned contract-violating payload; using stub")
+            if raw_res is not None and not self.last_result_was_stub:
+                self._record_stub("localize returned contract-violating payload")
             raw_res = stub_localize(window)
 
         return self._normalize_localize(raw_res, valid_nodes)
 
     async def estimate_size(self, window: list[Any]) -> float:
         """Runs size estimation with timeout and fallback."""
+        self.last_result_was_stub = False
         raw_res = None
-        if ML_MODE == "real" and _real_estimate_size:
+
+        if not self.forced_stub and _real_estimate_size is not None:
+            t0 = time.perf_counter()
             try:
                 loop = asyncio.get_running_loop()
                 raw_res = await asyncio.wait_for(
                     loop.run_in_executor(self._executor, _real_estimate_size, window),
                     timeout=ML_TIMEOUT_S
                 )
+                lat_ms = (time.perf_counter() - t0) * 1000.0
+                self.latencies.append(lat_ms)
             except asyncio.TimeoutError:
-                logger.warning("Real ML estimate_size timed out after %.1f s; using stub", ML_TIMEOUT_S)
+                self._record_stub("estimate_size call timed out")
             except Exception as e:
-                logger.warning("Real ML estimate_size raised error: %s; using stub", e)
+                self._record_stub(f"estimate_size raised exception: {e}")
 
-        if raw_res is None or not isinstance(raw_res, (int, float)) or math.isnan(raw_res) or math.isinf(raw_res):
-            if raw_res is not None:
-                logger.warning("Real ML estimate_size returned invalid float; using stub")
+        if raw_res is None or not _is_valid_scalar_float(raw_res):
+            if raw_res is not None and not self.last_result_was_stub:
+                self._record_stub("estimate_size returned invalid float")
             raw_res = stub_estimate_size(window)
 
-        return max(0.1, round(float(raw_res), 2))
+        return max(0.1, round(_to_python_float(raw_res), 2))
 
     def _validate_detect_schema(self, res: Any) -> bool:
         if not isinstance(res, dict):
             return False
-        if "anomaly" not in res or not isinstance(res["anomaly"], bool):
+        if "anomaly" not in res or not _is_valid_scalar_bool(res["anomaly"]):
             return False
-        score = res.get("score")
-        if not isinstance(score, (int, float)) or math.isnan(score) or math.isinf(score):
+        if "score" not in res or not _is_valid_scalar_float(res["score"]):
+            return False
+        if "sensor_fault" in res and not _is_valid_scalar_bool(res["sensor_fault"]):
             return False
         return True
 
@@ -206,19 +355,23 @@ class MLBridge:
         if not isinstance(probs, dict):
             return False
         for k, v in probs.items():
-            if not isinstance(v, (int, float)) or math.isnan(v) or math.isinf(v):
+            if not _is_valid_scalar_float(v):
                 return False
         return True
 
     def _normalize_detect(self, res: dict[str, Any]) -> dict[str, Any]:
-        score = float(res.get("score", 0.0))
-        if math.isnan(score) or math.isinf(score):
-            score = 0.0
+        score = _to_python_float(res.get("score", 0.0))
         score = max(0.0, min(1.0, score))
-        return {
-            "anomaly": bool(res.get("anomaly", False)),
-            "score": round(score, 4)
+        anomaly = _to_python_bool(res.get("anomaly", False))
+        sensor_fault = _to_python_bool(res.get("sensor_fault", False))
+        normalized = {
+            "anomaly": anomaly,
+            "score": round(score, 4),
+            "sensor_fault": sensor_fault
         }
+        if "detail" in res and isinstance(res["detail"], (dict, list, str)):
+            normalized["detail"] = res["detail"]
+        return normalized
 
     def _normalize_localize(self, res: dict[str, Any], valid_nodes: Optional[set[str]] = None) -> dict[str, Any]:
         raw_probs = res.get("probs", {})
@@ -226,27 +379,23 @@ class MLBridge:
 
         for k, v in raw_probs.items():
             str_k = str(k)
-            if valid_nodes is not None and str_k not in valid_nodes:
+            if valid_nodes is not None and len(valid_nodes) > 0 and str_k not in valid_nodes:
                 continue
-            try:
-                val = float(v)
-                if not math.isnan(val) and not math.isinf(val) and val >= 0:
+            if _is_valid_scalar_float(v):
+                val = _to_python_float(v)
+                if val >= 0:
                     cleaned_probs[str_k] = val
-            except (ValueError, TypeError):
-                continue
 
         if not cleaned_probs:
             fallback_node = next(iter(valid_nodes)) if valid_nodes else "105"
             cleaned_probs = {fallback_node: 1.0}
 
-        # Normalize probabilities to sum to 1.0
         total = sum(cleaned_probs.values())
         if total > 0:
             norm_probs = {k: round(v / total, 4) for k, v in cleaned_probs.items()}
         else:
             norm_probs = {k: round(1.0 / len(cleaned_probs), 4) for k in cleaned_probs}
 
-        # Build top3 sorted descending
         sorted_items = sorted(norm_probs.items(), key=lambda x: x[1], reverse=True)[:3]
         top3 = [{"node_id": k, "prob": prob} for k, prob in sorted_items]
 

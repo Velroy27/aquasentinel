@@ -5,12 +5,12 @@ from typing import Any, Optional
 import asyncio
 import json
 import logging
+import math
 import time
 
 from backend.config import (
     ALLOWED_REPLAY_SPEEDS,
     DATA_REPLAY_DIR,
-    MOCK_DIR,
     MOCK_REPLAY_DIR,
 )
 from backend.db import Database
@@ -39,35 +39,72 @@ class ReplayEngine:
     def load_all_scenarios(self) -> dict[str, dict[str, Any]]:
         scenarios: dict[str, dict[str, Any]] = {}
 
-        # 1. Load audited replay traces using the adjacent catalog metadata.
-        if DATA_REPLAY_DIR.exists():
+        catalog_aliases: list[tuple[str, dict[str, Any]]] = []
+        catalog_files: set[Path] = set()
+        if DATA_REPLAY_DIR.is_dir():
             catalog_path = DATA_REPLAY_DIR / "scenarios_catalog.json"
-            catalog: list[dict[str, Any]] = []
-            if catalog_path.exists():
+            if catalog_path.is_file():
                 try:
                     raw_catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
-                    if isinstance(raw_catalog, list):
-                        catalog = [item for item in raw_catalog if isinstance(item, dict)]
+                    if not isinstance(raw_catalog, list):
+                        logger.warning("Skipping replay catalog %s: expected a list", catalog_path.name)
+                        raw_catalog = []
                 except Exception as e:
                     logger.warning("Failed to read replay catalog %s: %s", catalog_path.name, e)
-            for item in catalog:
-                filename = item.get("filename")
-                if not isinstance(filename, str):
-                    continue
-                f = DATA_REPLAY_DIR / filename
-                if not f.is_file():
-                    logger.warning("Replay file missing from catalog: %s", filename)
-                    continue
-                sc = self._validate_and_load_file(f, item)
-                if sc:
-                    scenarios[sc["scenario_id"]] = sc
+                    raw_catalog = []
 
-        # 2. Keep mock-only scenarios, including the no-leak baseline.
-        if MOCK_REPLAY_DIR.exists():
-            for f in sorted(MOCK_REPLAY_DIR.glob("*.json")):
-                sc = self._validate_and_load_file(f)
-                if sc:
-                    scenarios.setdefault(sc["scenario_id"], sc)
+                # First pass preserves canonical catalog order and protects IDs
+                # from collisions with filename aliases.
+                for item in raw_catalog:
+                    if not isinstance(item, dict):
+                        logger.warning("Skipping non-object entry in replay catalog %s", catalog_path.name)
+                        continue
+                    filename = item.get("filename")
+                    if not isinstance(filename, str) or not filename.strip() or Path(filename).name != filename:
+                        logger.warning("Skipping replay catalog entry with invalid filename: %r", filename)
+                        continue
+                    file_path = DATA_REPLAY_DIR / filename
+                    catalog_files.add(file_path)
+                    if not file_path.is_file():
+                        logger.warning("Replay file missing from catalog: %s", filename)
+                        continue
+                    try:
+                        file_path.resolve().relative_to(DATA_REPLAY_DIR.resolve())
+                    except ValueError:
+                        logger.warning("Skipping replay file outside data directory: %s", filename)
+                        continue
+
+                    scenario = self._validate_and_load_file(file_path, item)
+                    if not scenario:
+                        continue
+                    scenario_id = scenario["scenario_id"]
+                    if scenario_id in scenarios:
+                        logger.warning("Duplicate replay scenario ID in catalog; keeping first: %s", scenario_id)
+                        continue
+                    scenarios[scenario_id] = scenario
+                    alias = file_path.stem
+                    if alias != scenario_id:
+                        catalog_aliases.append((alias, scenario))
+
+                canonical_ids = set(scenarios)
+                for alias, scenario in catalog_aliases:
+                    if alias not in canonical_ids:
+                        scenarios.setdefault(alias, scenario)
+
+            # Preserve additional audited JSON traces not listed in the catalog.
+            for file_path in sorted(DATA_REPLAY_DIR.glob("*.json")):
+                if file_path.name == "scenarios_catalog.json" or file_path in catalog_files:
+                    continue
+                scenario = self._validate_and_load_file(file_path)
+                if scenario:
+                    scenarios.setdefault(scenario["scenario_id"], scenario)
+
+        # Mock replay files are fallback scenarios and never replace audited entries.
+        if MOCK_REPLAY_DIR.is_dir():
+            for file_path in sorted(MOCK_REPLAY_DIR.glob("*.json")):
+                scenario = self._validate_and_load_file(file_path)
+                if scenario:
+                    scenarios.setdefault(scenario["scenario_id"], scenario)
 
         self.scenarios_cache = scenarios
         logger.info("Loaded %d replay scenarios", len(scenarios))
@@ -79,33 +116,66 @@ class ReplayEngine:
         catalog_entry: Optional[dict[str, Any]] = None,
     ) -> Optional[dict[str, Any]]:
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-
-            metadata = catalog_entry or (data if isinstance(data, dict) else {})
-            steps = data if isinstance(data, list) else metadata.get("steps")
-            # Support catalog, scenario_id and id metadata forms.
-            sc_id = metadata.get("scenario_id") or metadata.get("id")
-            if not sc_id or not isinstance(sc_id, str):
-                logger.warning("Skipping scenario file %s: missing scenario_id", file_path.name)
+            data = json.loads(file_path.read_text(encoding="utf-8"))
+            if isinstance(data, list):
+                steps = data
+                data_metadata: dict[str, Any] = {}
+            elif isinstance(data, dict):
+                steps = data.get("steps")
+                data_metadata = data
+            else:
+                logger.warning("Skipping scenario file %s: expected an object or steps list", file_path.name)
                 return None
 
-            if not isinstance(steps, list):
+            metadata = catalog_entry if catalog_entry is not None else data_metadata
+            if catalog_entry is not None:
+                scenario_id = metadata.get("scenario_id") or metadata.get("id")
+            else:
+                scenario_id = metadata.get("scenario_id") or metadata.get("id") or file_path.stem
+            if not isinstance(scenario_id, str) or not scenario_id.strip():
+                logger.warning("Skipping scenario file %s: missing or invalid scenario ID", file_path.name)
+                return None
+            if not isinstance(steps, list) or not steps:
                 logger.warning("Skipping scenario file %s: missing or invalid steps list", file_path.name)
                 return None
 
-            # Validate at least one step structure
-            for s in steps:
-                if not isinstance(s, dict) or "t" not in s or "readings" not in s:
+            previous_t: Optional[int] = None
+            for step in steps:
+                if not isinstance(step, dict) or "t" not in step or not isinstance(step.get("readings"), list):
                     logger.warning("Skipping scenario file %s: malformed step element", file_path.name)
                     return None
+                step_t = step["t"]
+                if isinstance(step_t, bool) or not isinstance(step_t, (int, float)) or not math.isfinite(step_t) or int(step_t) != step_t or step_t < 0:
+                    logger.warning("Skipping scenario file %s: invalid step time", file_path.name)
+                    return None
+                if previous_t is not None and step_t < previous_t:
+                    logger.warning("Skipping scenario file %s: step times are out of order", file_path.name)
+                    return None
+                if any(not isinstance(reading, dict) for reading in step["readings"]):
+                    logger.warning("Skipping scenario file %s: invalid reading in step", file_path.name)
+                    return None
+                previous_t = int(step_t)
+
+            leak_size = metadata.get("leak_size_lps", 0.0)
+            start_t = metadata.get("start_t", 0)
+            if isinstance(leak_size, bool) or not isinstance(leak_size, (int, float)) or not math.isfinite(leak_size) or leak_size < 0:
+                logger.warning("Skipping scenario file %s: invalid leak_size_lps", file_path.name)
+                return None
+            if isinstance(start_t, bool) or not isinstance(start_t, (int, float)) or not math.isfinite(start_t) or int(start_t) != start_t or start_t < 0:
+                logger.warning("Skipping scenario file %s: invalid start_t", file_path.name)
+                return None
+            description = metadata.get("description", f"Replay scenario {scenario_id}")
+            if not isinstance(description, str):
+                logger.warning("Skipping scenario file %s: invalid description", file_path.name)
+                return None
+            leak_node = metadata.get("leak_node")
 
             return {
-                "scenario_id": sc_id,
-                "leak_node": metadata.get("leak_node"),
-                "leak_size_lps": float(metadata.get("leak_size_lps", 0.0)),
-                "start_t": int(metadata.get("start_t", 0)),
-                "description": metadata.get("description", f"Replay scenario {sc_id}"),
+                "scenario_id": scenario_id,
+                "leak_node": str(leak_node) if leak_node else None,
+                "leak_size_lps": float(leak_size),
+                "start_t": int(start_t),
+                "description": description,
                 "steps": steps,
             }
         except Exception as e:
@@ -118,9 +188,14 @@ class ReplayEngine:
             self.load_all_scenarios()
 
         summary = []
-        for sc in self.scenarios_cache.values():
+        seen_ids = set()
+        for sc_id, sc in self.scenarios_cache.items():
+            actual_id = sc["scenario_id"]
+            if actual_id in seen_ids:
+                continue
+            seen_ids.add(actual_id)
             summary.append({
-                "id": sc["scenario_id"],
+                "id": actual_id,
                 "leak_node": sc["leak_node"],
                 "leak_size_lps": sc["leak_size_lps"],
                 "start_t": sc["start_t"],
@@ -130,7 +205,6 @@ class ReplayEngine:
 
     async def start(self, scenario_id: str, speed: float) -> dict[str, Any]:
         async with self._lock:
-            # Refresh if scenario missing
             if scenario_id not in self.scenarios_cache:
                 self.load_all_scenarios()
 
@@ -141,11 +215,9 @@ class ReplayEngine:
             if int_speed is None:
                 raise ValueError(f"Invalid speed {speed}. Allowed speeds: {ALLOWED_REPLAY_SPEEDS}")
 
-            # Stop existing playback first
             if self.is_running:
                 await self._stop_internal()
 
-            # Reset pipeline state and prepare run
             self.pipeline.reset_state(clear_buffers=True)
             run_id = f"RUN-{scenario_id}-{int(time.time())}"
             self.current_run_id = run_id
@@ -153,7 +225,7 @@ class ReplayEngine:
             self.current_speed = float(int_speed)
             self.is_running = True
 
-            self.pipeline.set_current_run(run_id)
+            self.pipeline.set_current_run(run_id, speed=self.current_speed)
             self.db.enqueue("INSERT_RUN", {
                 "id": run_id,
                 "scenario_id": scenario_id,
@@ -211,30 +283,18 @@ class ReplayEngine:
             self.is_running = False
             return
 
-        prev_t = 0
         try:
-            for step in steps:
+            sleep_per_second = 1.0 / speed
+            for index, step in enumerate(steps):
                 step_t = int(step.get("t", 0))
-
-                # If there is a gap between previous step and current step, tick loss every simulated second
-                if step_t > prev_t:
-                    delta_sim_seconds = step_t - prev_t
-                    sleep_per_second = 1.0 / speed
-                    for sec in range(1, delta_sim_seconds):
-                        curr_sim_t = prev_t + sec
-                        await self.pipeline.tick_simulated_loss(curr_sim_t)
-                        await asyncio.sleep(sleep_per_second)
-
-                # Process the actual step
                 await self.pipeline.process_step(step, run_id=run_id)
-                prev_t = step_t
 
-                # Step pause (default 10s step / speed)
-                step_duration_s = 10.0 / speed
-                # Tick loss every simulated second within the step duration
-                for sec in range(1, 10):
-                    await asyncio.sleep(1.0 / speed)
-                    await self.pipeline.tick_simulated_loss(step_t + sec)
+                next_t = int(steps[index + 1].get("t", step_t + 10)) if index + 1 < len(steps) else step_t + 10
+                # Advance simulated time between samples without duplicating ticks
+                # when a scenario has gaps larger than its usual 10 second cadence.
+                for tick_t in range(step_t + 1, max(step_t + 1, next_t)):
+                    await asyncio.sleep(sleep_per_second)
+                    await self.pipeline.tick_simulated_loss(tick_t)
 
             logger.info("Replay finished playback for scenario %s", scenario.get("scenario_id"))
         except asyncio.CancelledError:
@@ -249,3 +309,5 @@ class ReplayEngine:
                     "id": run_id,
                     "ended_at": _utcnow_iso()
                 })
+            # Ensure pipeline alert state is reset / loss ticks stop when replay ends or stops
+            self.pipeline.reset_state(clear_buffers=False)

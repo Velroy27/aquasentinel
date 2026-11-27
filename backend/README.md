@@ -77,20 +77,32 @@ Run the automated pre-flight checklist:
   Real-time streaming channel for live dashboard updates.
   - Message Types:
     1. `"readings"`: `{"type": "readings", "t": int, "readings": [{"t": int, "node_id": str, "pressure_m": float, "flow_lps": float | null}]}`
-    2. `"alert"`: `{"type": "alert", "id": str, "t": int, "severity": "critical"|"high"|"medium"|"low", "score": float, "detector": str}`
-    3. `"localization"`: `{"type": "localization", "alert_id": str, "top3": [{"node_id": str, "prob": float}], "probs": {node_id: prob}}`
-    4. `"loss"`: `{"type": "loss", "alert_id": str, "est_leak_lps": float, "litres_lost_cum": float}`
+    2. `"alert"`: `{"type": "alert", "id": str, "t": int, "severity": "critical"|"high"|"medium"|"low", "score": float, "detector": str, "stub": Optional[bool]}`
+    3. `"localization"`: `{"type": "localization", "alert_id": str, "top3": [{"node_id": str, "prob": float}], "probs": {node_id: prob}, "stub": Optional[bool]}`
+    4. `"loss"`: `{"type": "loss", "alert_id": str, "est_leak_lps": float, "litres_lost_cum": float, "stub": Optional[bool]}`
+    5. `"fault"`: `{"type": "fault", "t": int, "detail": dict | str}` *(Contract Addition: emitted when sensor health check detects stuck/dropout fault; does not trigger leak alert, localization, or loss)*
+    *(Note: "stub": true is included only when an ML stub answered during the run; omitted when real ML answers)*
 
-### Additional Endpoints (Extensions)
+### Additional Endpoints & Contract Additions
 
 - **`POST /api/ingest`**
-  Receives a single sensor reading from external edge devices or emulator.
+  Receives a single sensor reading from external edge devices or emulator. Grouped automatically by `t` into full multi-sensor steps.
   - Body: `{"t": int, "node_id": str, "pressure_m": float, "flow_lps": float | null}`
   - Response (201): `{"status": "ingested", "node_id": str, "t": int}`
 
 - **`GET /health`**
-  Health probe returning uptime, DB status, ML bridge mode (`real` vs `stub`), and active WS clients.
-  - Response: `{"status": "ok", "uptime_s": float, "ml_mode": "real"|"stub", "db_ok": bool, "replay_state": {...}, "active_ws_clients": int, "last_error": str | null}`
+  Health probe returning uptime, DB status, ML bridge mode (`real` vs `stub`), active WS clients, and ML diagnostics.
+  - Extended fields: `ml_avg_latency_ms` (float), `stub_calls` (int), `last_stub_reason` (str | null), `is_warming_up` (bool).
+
+- **Scenario Catalog Ordering**:
+  `/api/scenarios` serves the audited catalog scenarios from `data/replay/scenarios_catalog.json` FIRST (in catalog order), followed by mock scenarios.
+
+- **Pipeline Window & Resolve Facts**:
+  - `WINDOW_SIZE`: 45 steps (450s window @ 10s intervals), matching the trained ML model window.
+  - `MIN_STEPS_FOR_DETECT`: 2 steps minimum before calling detector; stuck sensor health check requires 10 steps.
+  - `RESOLVE_CLEAR_WINDOWS`: 12 consecutive non-anomaly windows required to resolve an active leak alert and stop loss ticks.
+  - `start_time_of_day`: Derived automatically by `ml/api.py` from `t` in the first message of the window to index diurnal pressure baselines.
+  - ML Dependencies: Real ML inference requires `numpy`, `joblib`, and `scikit-learn` from the Python environment that has them installed (with sys.path fallback to base Python site-packages).
 
 - **`GET /api/history/runs`**
   Lists previous simulation and ingestion runs.

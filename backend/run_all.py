@@ -69,7 +69,7 @@ def main():
     # 3. Launch and Supervise Node Emulator
     emulator_cmd = [
         py_exe, "-m", "backend.emulator",
-        "--scenario", "scenario_105_leak",
+        "--scenario", "scenario_03_nonsensor_node101",
         "--speed", "5",
         "--api", f"http://{API_HOST}:{API_PORT}",
         "--repeat"
@@ -79,7 +79,7 @@ def main():
     emulator_proc = None
 
     try:
-        print("Starting Sensor Node Emulator (scenario_105_leak @ 5x)...")
+        print("Starting Sensor Node Emulator (scenario_03_nonsensor_node101 @ 5x)...")
         emulator_proc = subprocess.Popen(emulator_cmd, cwd=str(REPO_ROOT))
 
         while True:
