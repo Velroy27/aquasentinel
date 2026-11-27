@@ -46,7 +46,7 @@ export function PressureChart() {
       <div className="chart-wrap">
         {data.length ? (
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={data} syncId="pressure" margin={{ top: 16, right: 18, left: 0, bottom: 0 }}>
+            <LineChart data={data} syncId="pressure" margin={{ top: 16, right: 30, left: 0, bottom: 0 }}>
               <CartesianGrid stroke="#2b373b" strokeDasharray="2 5" vertical={false} />
               <XAxis
                 dataKey="epoch"

@@ -80,16 +80,28 @@ const JunctionNode = memo(function JunctionNode({
         }
       }}
     >
-      <circle cx={junction.x} cy={junction.y} r={6 * screenUnit} className="node-hit" />
+      <circle cx={junction.x} cy={junction.y} r={7 * screenUnit} className="node-hit" />
       {selected && <circle cx={junction.x} cy={junction.y} r={8 * screenUnit} className="node-selection-ring" />}
       {rank && <circle cx={junction.x} cy={junction.y} r={7 * screenUnit} className="rank-halo" />}
       {isSensor ? (
         <path d={`M ${junction.x} ${junction.y - 4.5 * screenUnit} L ${junction.x + 4.5 * screenUnit} ${junction.y} L ${junction.x} ${junction.y + 4.5 * screenUnit} L ${junction.x - 4.5 * screenUnit} ${junction.y} Z`} fill={color} stroke="#dce9e5" strokeWidth="1.2" vectorEffect="non-scaling-stroke" className="node-dot sensor-diamond" />
       ) : (
-        <circle cx={junction.x} cy={junction.y} r={3.3 * screenUnit} fill={color} stroke="#a9b6b4" strokeWidth="0.7" vectorEffect="non-scaling-stroke" className="node-dot" />
+        <circle cx={junction.x} cy={junction.y} r={3.5 * screenUnit} fill={color} stroke="#a9b6b4" strokeWidth="0.7" vectorEffect="non-scaling-stroke" className="node-dot" />
       )}
       {label && (
-        <text x={label.x} y={label.y} textAnchor={label.anchor} style={{ fontSize: `${12 * screenUnit}px` }} className={`node-label ${isSensor ? 'sensor-label' : ''}`}>{junction.id}</text>
+        <text
+          x={label.x}
+          y={label.y}
+          textAnchor={label.anchor}
+          stroke="#101718"
+          strokeWidth={3 * screenUnit}
+          paintOrder="stroke"
+          strokeLinejoin="round"
+          style={{ fontSize: `${12 * screenUnit}px` }}
+          className={`node-label ${isSensor ? 'sensor-label' : ''}`}
+        >
+          {junction.id}
+        </text>
       )}
       {rank && (
         <g className={`rank-badge rank-${rank}`}>
@@ -126,15 +138,22 @@ function placeLabels(
   const occupied: { left: number; right: number; top: number; bottom: number }[] = [];
   const placed = new Map<string, LabelPlacement>();
   const offsets = [
-    { dx: 0, dy: -7, anchor: 'middle' as const },
-    { dx: 7, dy: 4, anchor: 'start' as const },
-    { dx: -7, dy: 4, anchor: 'end' as const },
-    { dx: 0, dy: 15, anchor: 'middle' as const },
+    { dx: 0, dy: -14, anchor: 'middle' as const },
+    { dx: 12, dy: 4, anchor: 'start' as const },
+    { dx: -12, dy: 4, anchor: 'end' as const },
+    { dx: 0, dy: 16, anchor: 'middle' as const },
   ];
   const screenPoint = (node: Junction) => ({
     x: (viewBoxWidth / 2 + pan.x + (node.x - viewBoxWidth / 2) * zoom) * pixelsPerUnit,
     y: (viewBoxHeight / 2 + pan.y + (node.y - viewBoxHeight / 2) * zoom) * pixelsPerUnit,
   });
+
+  for (const node of candidates) {
+    if (sensors.has(node.id)) {
+      const sp = screenPoint(node);
+      occupied.push({ left: sp.x - 7, right: sp.x + 7, top: sp.y - 7, bottom: sp.y + 7 });
+    }
+  }
 
   for (const node of candidates) {
     const screen = screenPoint(node);
@@ -144,6 +163,7 @@ function placeLabels(
       const y = node.y + offset.dy * unitsPerPixel;
       const labelScreenX = screen.x + offset.dx;
       const labelScreenY = screen.y + offset.dy;
+      if (labelScreenY - 14 < 4) continue; // Don't clip off the top of the viewport
       const left = offset.anchor === 'middle' ? labelScreenX - width / 2 : offset.anchor === 'start' ? labelScreenX : labelScreenX - width;
       const box = { left: left - 2, right: left + width + 2, top: labelScreenY - 12, bottom: labelScreenY + 3 };
       if (occupied.some((other) => box.left < other.right + 2 && box.right + 2 > other.left && box.top < other.bottom + 2 && box.bottom + 2 > other.top)) continue;
@@ -214,7 +234,10 @@ export function LiveMap({
     () => [...(localization?.scores ?? [])].sort((a, b) => b.score - a.score).slice(0, 3),
     [localization],
   );
-  const rankMap = useMemo(() => new Map(top3.map((item, index) => [item.junctionId, index + 1])), [top3]);
+  const rankMap = useMemo(
+    () => (alertActive && showLocalization ? new Map(top3.map((item, index) => [item.junctionId, index + 1])) : new Map<string, number>()),
+    [top3, alertActive, showLocalization],
+  );
   const junctionMap = useMemo(() => new Map((network?.junctions ?? []).map((node) => [node.id, node])), [network]);
   const sensorSet = useMemo(() => new Set(highlightSensors ?? network?.sensors ?? []), [highlightSensors, network]);
   const sensorJunctions = useMemo(() => (network?.junctions ?? []).filter((junction) => sensorSet.has(junction.id)), [network, sensorSet]);
@@ -261,9 +284,16 @@ export function LiveMap({
     setPan({ x: 0, y: 0 });
   }, [mapFitRevision]);
 
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
+  const panRef = useRef(pan);
+  panRef.current = pan;
+
   function zoomAt(nextZoom: number, clientX?: number, clientY?: number) {
+    const currentZoom = zoomRef.current;
+    const currentPan = panRef.current;
     const bounded = Math.max(0.75, Math.min(4, nextZoom));
-    if (clientX === undefined || clientY === undefined || !svgRef.current || bounded === zoom) {
+    if (clientX === undefined || clientY === undefined || !svgRef.current || bounded === currentZoom) {
       setZoom(bounded);
       return;
     }
@@ -275,11 +305,22 @@ export function LiveMap({
     const point = svgPoint.matrixTransform(matrix.inverse());
     const centerX = viewBoxWidth / 2;
     const centerY = viewBoxHeight / 2;
-    const worldX = (point.x - pan.x - centerX * (1 - zoom)) / zoom;
-    const worldY = (point.y - pan.y - centerY * (1 - zoom)) / zoom;
+    const worldX = (point.x - currentPan.x - centerX * (1 - currentZoom)) / currentZoom;
+    const worldY = (point.y - currentPan.y - centerY * (1 - currentZoom)) / currentZoom;
     setPan({ x: point.x - centerX * (1 - bounded) - worldX * bounded, y: point.y - centerY * (1 - bounded) - worldY * bounded });
     setZoom(bounded);
   }
+
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      zoomAt(zoomRef.current + (event.deltaY < 0 ? 0.15 : -0.15), event.clientX, event.clientY);
+    };
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   function beginPan(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.button !== 0 || (event.target instanceof Element && event.target.closest('.map-node'))) return;
@@ -396,7 +437,6 @@ export function LiveMap({
         onPointerMove={movePan}
         onPointerUp={(event) => { if (dragRef.current?.pointerId === event.pointerId) dragRef.current = null; }}
         onPointerCancel={() => { dragRef.current = null; }}
-        onWheel={(event) => { event.preventDefault(); zoomAt(zoom + (event.deltaY < 0 ? 0.15 : -0.15), event.clientX, event.clientY); }}
         style={{ touchAction: 'none', cursor: dragRef.current ? 'grabbing' : zoom > 1 ? 'grab' : 'crosshair' }}
       >
         <svg ref={svgRef} viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`} role="img" aria-label="Water distribution network map" preserveAspectRatio="xMidYMid meet">

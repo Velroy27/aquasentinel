@@ -71,11 +71,11 @@
 .page-heading h1 { margin: 0; font-size: 20px; font-weight: 500; letter-spacing: -.01em; }
 .page-state { margin-left: auto; color: #8e9996; font: 12px var(--font-number); }
 .page-state.is-error { color: var(--amber); }
-.workspace { flex: 1; min-height: 0; }
+.workspace { flex: 1; min-height: 0; overflow-y: auto; }
 .main-content { min-width: 0; height: 100%; }
 
 .home-ops { min-height: 0; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 12px; }
-.ops-main { min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(400px, calc(100vh - 170px)) 220px; gap: 12px; }
+.ops-main { min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(460px, 1fr) 210px; gap: 12px; }
 .ops-side { min-height: 0; display: grid; grid-template-rows: auto minmax(260px, 1fr); gap: 12px; }
 .chart-strip { min-height: 0; display: grid; grid-template-columns: 150px minmax(0, 1fr); border: 1px solid var(--line); background: var(--surface); }
 .chart-strip-meta { display: flex; flex-direction: column; justify-content: center; padding: 14px 16px; border-right: 1px solid var(--line); }

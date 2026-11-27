@@ -8,41 +8,45 @@ export function normalizeNetwork(value: unknown): Network {
     throw new Error('Invalid network response');
   }
   const junctions = nodes.map((entry) => {
-      const node = entry as Record<string, unknown>;
-      return {
-        id: String(node.id),
-        x: Number(node.x),
-        y: Number(node.y),
-        elevationM: Number(node.elevationM ?? node.elevation),
-      };
-    });
+    const node = entry as Record<string, unknown>;
+    return {
+      id: String(node.id),
+      x: Number(node.x),
+      y: Number(node.y),
+      elevationM: Number(node.elevationM ?? node.elevation ?? 0),
+    };
+  });
 
-  let viewBoxWidth = 100;
-  let viewBoxHeight = 100;
-  // EPANET coordinates use a bottom-left origin. Convert them to a centred,
-  // uniformly scaled SVG plane with a 7% gutter on every side. Match the
-  // viewBox aspect ratio to the network so the map uses the panel efficiently.
-  if (junctions.length) {
+  const viewBoxWidth = 100;
+  const viewBoxHeight = 100;
+
+  // EPANET coordinates use a bottom-left origin (Y increases up).
+  // Convert them to a centred, uniformly scaled SVG plane (Y increases down)
+  // with 7% padding on all sides so nothing is clipped at any border.
+  // Works whether input coordinates are raw EPANET or pre-normalized 0-100.
+  if (junctions.length > 0) {
     const minX = Math.min(...junctions.map((node) => node.x));
     const maxX = Math.max(...junctions.map((node) => node.x));
     const minY = Math.min(...junctions.map((node) => node.y));
     const maxY = Math.max(...junctions.map((node) => node.y));
-    const rangeX = maxX - minX;
-    const rangeY = maxY - minY;
-    const aspect = rangeX > 0 && rangeY > 0 ? rangeX / rangeY : rangeX > 0 ? 100 : rangeY > 0 ? 0.01 : 1;
-    viewBoxWidth = aspect >= 1 ? 100 : 100 * aspect;
-    viewBoxHeight = aspect >= 1 ? 100 / aspect : 100;
-    const scaleX = rangeX > 0 ? viewBoxWidth * 0.86 / rangeX : Number.POSITIVE_INFINITY;
-    const scaleY = rangeY > 0 ? viewBoxHeight * 0.86 / rangeY : Number.POSITIVE_INFINITY;
-    const candidateScale = Math.min(scaleX, scaleY);
-    const scale = Number.isFinite(candidateScale) ? candidateScale : 1;
-    const width = rangeX * scale;
-    const height = rangeY * scale;
-    const offsetX = (viewBoxWidth - width) / 2;
-    const offsetY = (viewBoxHeight - height) / 2;
+    const rangeX = maxX - minX || 1;
+    const rangeY = maxY - minY || 1;
+
+    const padding = 0.07; // 7% padding (6-8% required)
+    const usableW = viewBoxWidth * (1 - 2 * padding);
+    const usableH = viewBoxHeight * (1 - 2 * padding);
+
+    // Uniform scale preserving aspect ratio
+    const scale = Math.min(usableW / rangeX, usableH / rangeY);
+    const contentW = rangeX * scale;
+    const contentH = rangeY * scale;
+
+    const offsetX = (viewBoxWidth - contentW) / 2;
+    const offsetY = (viewBoxHeight - contentH) / 2;
+
     for (const node of junctions) {
-      node.x = offsetX + (node.x - minX) * scale;
-      node.y = offsetY + (maxY - node.y) * scale;
+      node.x = Math.round((offsetX + (node.x - minX) * scale) * 100) / 100;
+      node.y = Math.round((offsetY + (maxY - node.y) * scale) * 100) / 100; // Flip Y
     }
   }
 
