@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useRef, useState, lazy, Suspense, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
+import { memo, useEffect, useLayoutEffect, useMemo, useRef, useState, lazy, Suspense, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { Copy, LocateFixed, Minus, Plus, X, Compass } from 'lucide-react';
 import { demoMode, mapEffectMotion, pressureDelta, pressureScale } from '../config/settings';
 import { MapEffects, pressureStateForDelta } from './MapEffects';
@@ -287,25 +287,60 @@ export function LiveMap({
   const hasPressure = Object.values(latest).some(Boolean);
   const viewBoxWidth = network?.viewBoxWidth ?? 100;
   const viewBoxHeight = network?.viewBoxHeight ?? 100;
-  const pixelsPerUnit = Math.max(0.001, Math.min((viewSize.width || viewBoxWidth) / viewBoxWidth, (viewSize.height || viewBoxHeight) / viewBoxHeight));
-  const screenUnit = 1 / (pixelsPerUnit * zoom);
+
+  // Derive scale from real measured container size, ignoring zero measurements
+  const measuredRect = typeof window !== 'undefined' && canvasRef.current ? canvasRef.current.getBoundingClientRect() : null;
+  const containerW = viewSize.width > 0 ? viewSize.width : (measuredRect && measuredRect.width > 0 ? measuredRect.width : 0);
+  const containerH = viewSize.height > 0 ? viewSize.height : (measuredRect && measuredRect.height > 0 ? measuredRect.height : 0);
+
+  let pixelsPerUnit = 3.8; // sane default scale for Net3 viewport
+  if (containerW > 0 && containerH > 0) {
+    pixelsPerUnit = Math.min(containerW / viewBoxWidth, containerH / viewBoxHeight);
+  }
+
+  // Regression guard: clamp screenUnit so node/label screen sizes can never exceed sane maximums
+  let screenUnit = 1 / (Math.max(0.1, pixelsPerUnit) * zoom);
+  const maxScreenUnit = 0.45 / Math.max(0.2, zoom);
+  if (screenUnit > maxScreenUnit) {
+    console.warn(`[AquaSentinel] 2D map screenUnit (${screenUnit.toFixed(4)}) exceeded safe maximum; clamped to ${maxScreenUnit.toFixed(4)}`);
+    screenUnit = maxScreenUnit;
+  }
+
   const labelPlacements = useMemo(
     () => placeLabels(network?.junctions ?? [], sensorSet, rankMap, selectedJunctionId, hovered?.id ?? null, screenUnit, pixelsPerUnit, viewBoxWidth, viewBoxHeight, zoom, pan),
     [network, sensorSet, rankMap, selectedJunctionId, hovered?.id, screenUnit, pixelsPerUnit, viewBoxWidth, viewBoxHeight, zoom, pan],
   );
 
-  useEffect(() => {
+  // Auto-fit and measure container on mount, viewMode returning to '2d', and container resize
+  useLayoutEffect(() => {
+    if (viewMode !== '2d') return;
     const element = canvasRef.current;
     if (!element) return;
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
+
+    const measureAndFit = (w?: number, h?: number) => {
+      const rect = element.getBoundingClientRect();
+      const width = w ?? rect.width;
+      const height = h ?? rect.height;
+      if (width <= 0 || height <= 0) return; // Never measure a hidden or unlaid element
       setViewSize({ width, height });
       setZoom(1);
       setPan({ x: 0, y: 0 });
+    };
+
+    // First measurement immediately in useLayoutEffect before paint
+    measureAndFit();
+
+    // Recompute on every ResizeObserver callback
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      if (width <= 0 || height <= 0) return; // Ignore zero measurements
+      measureAndFit(width, height);
     });
+
     observer.observe(element);
     return () => observer.disconnect();
-  }, [networkStatus.loading, network]);
+  }, [viewMode, networkStatus.loading, network]);
 
   useEffect(() => {
     setZoom(1);
@@ -340,6 +375,7 @@ export function LiveMap({
   }
 
   useEffect(() => {
+    if (viewMode !== '2d') return;
     const el = canvasRef.current;
     if (!el) return;
     const handleWheel = (event: WheelEvent) => {
@@ -348,7 +384,7 @@ export function LiveMap({
     };
     el.addEventListener('wheel', handleWheel, { passive: false });
     return () => el.removeEventListener('wheel', handleWheel);
-  }, []);
+  }, [viewMode]);
 
   function beginPan(event: ReactPointerEvent<HTMLDivElement>) {
     if (event.button !== 0 || (event.target instanceof Element && event.target.closest('.map-node'))) return;
@@ -376,6 +412,7 @@ export function LiveMap({
   }, []);
 
   useEffect(() => {
+    if (viewMode !== '2d') return;
     const output = fpsRef.current;
     if (!output) return;
     if (!running || !effectsEnabled) {
@@ -403,7 +440,7 @@ export function LiveMap({
     };
     frame = requestAnimationFrame(measure);
     return () => cancelAnimationFrame(frame);
-  }, [running, effectsEnabled]);
+  }, [running, effectsEnabled, viewMode]);
 
   async function copyId(id: string) {
     try {
