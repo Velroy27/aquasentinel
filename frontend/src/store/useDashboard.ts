@@ -29,6 +29,7 @@ type State = {
   alertActive: boolean;
   activeAlertId: string | null;
   leakRateEstimate: number | null;
+  stubBackend: boolean;
   anomalyAt: string | null;
   litresLost: number;
   loading: boolean;
@@ -69,6 +70,7 @@ export const useDashboard = create<State>((set, get) => ({
   alertActive: false,
   activeAlertId: null,
   leakRateEstimate: null,
+  stubBackend: false,
   anomalyAt: null,
   litresLost: 0,
   loading: true,
@@ -82,6 +84,7 @@ export const useDashboard = create<State>((set, get) => ({
         dataSource.getResults(),
         dataSource.getPlacement(),
       ]);
+      const health = await dataSource.getHealth().catch(() => null);
       unsubscribe?.();
       unsubscribeStatus?.();
       unsubscribe = dataSource.subscribe(get().receive);
@@ -92,6 +95,7 @@ export const useDashboard = create<State>((set, get) => ({
         scenarios,
         results,
         placements,
+        stubBackend: health?.ml_mode === 'stub',
         scenarioId,
         selectedSensor: network.sensors[0] ?? null,
         pressuresBySensor: emptyReadings(network.sensors),

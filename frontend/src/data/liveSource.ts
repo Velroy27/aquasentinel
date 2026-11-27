@@ -2,7 +2,7 @@ import { apiBaseUrl, wsUrl } from '../config/settings';
 import { normalizeStreamMessage, type DataSource } from './DataSource';
 import { normalizeResults } from './normalizeResults';
 import { normalizeNetwork, normalizeScenarios } from './normalizeNetwork';
-import type { DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamStatus } from './types';
+import type { BackendHealth, DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamStatus } from './types';
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${apiBaseUrl}${path}`);
@@ -60,6 +60,12 @@ export class LiveSource implements DataSource {
   async getResults(): Promise<Results> { return normalizeResults(await getJson<unknown>('/results')); }
   async getPlacement(): Promise<Placement[]> { return getJson<Placement[]>('/placement'); }
   async getScenarios(): Promise<Scenario[]> { return normalizeScenarios(await getJson<unknown>('/scenarios')); }
+  async getHealth(): Promise<BackendHealth | null> {
+    const base = apiBaseUrl.replace(/\/api\/?$/, '');
+    const response = await fetch(`${base}/health`);
+    if (!response.ok) return null;
+    return response.json() as Promise<BackendHealth>;
+  }
 
   startScenario(id: string, speed: 1 | 5 | 20): void {
     this.shouldReconnect = true;

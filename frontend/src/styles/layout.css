@@ -45,6 +45,8 @@
 .status-led { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #626d6b; }
 .status-led.teal { background: var(--teal); }
 .status-led.red { background: var(--red); }
+.status-led.amber { background: var(--amber); }
+.stub-backend { color: var(--amber); }
 .status-led.pulse { animation: status-pulse 1.8s ease-out infinite; }
 .numeric { font-variant-numeric: tabular-nums; }
 .utc-label { margin-left: auto; color: #77817f; }

@@ -92,6 +92,7 @@ export class MockSource implements DataSource {
   async getResults(): Promise<Results> { return results; }
   async getPlacement(): Promise<Placement[]> { return placements; }
   async getScenarios(): Promise<Scenario[]> { return scenarios; }
+  async getHealth(): Promise<null> { return null; }
 
   startScenario(id: string, speed: 1 | 5 | 20): void {
     this.stop();

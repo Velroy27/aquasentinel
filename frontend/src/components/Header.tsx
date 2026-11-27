@@ -33,6 +33,7 @@ function useMessageRate(): number {
 }
 
 export function Header() {
+  const stubBackend = useDashboard((state) => state.stubBackend);
   const anomalyAt = useDashboard((state) => state.anomalyAt);
   const scenario = useDashboard(selectCurrentScenario);
   const pressuresBySensor = useDashboard((state) => state.pressuresBySensor);
@@ -74,6 +75,7 @@ export function Header() {
       <div className="system-status-bar" role="status" aria-live="polite">
         <span><i className={`status-led ${demoMode ? 'teal' : ''}`} />{demoMode ? 'MOCK DATA' : 'LIVE DATA'}</span>
         <span><i className={`status-led ${running ? 'teal pulse' : anomalyAt ? 'red' : ''}`} />{running ? 'SIM RUNNING' : anomalyAt ? 'ANOMALY' : 'SIM STOPPED'}</span>
+        {stubBackend && <span className="stub-backend"><i className="status-led amber" />STUB BACKEND</span>}
         <span>SIM <b className="numeric">{simulationTime}</b></span>
         <span>SCENARIO <b>{scenario?.name ?? '—'}</b></span>
         <span>RATE <b className="numeric">{rate.toFixed(0)} msg/s</b></span>

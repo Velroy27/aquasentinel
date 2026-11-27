@@ -71,6 +71,8 @@ export type PressureMessage = {
 
 export type StreamStatus = 'idle' | 'connecting' | 'live' | 'disconnected' | 'error';
 
+export type BackendHealth = { ml_mode?: 'real' | 'stub' | string };
+
 export type StreamMessage = AlertMessage | LocalizationMessage | PressureMessage | LossMessage;
 
 export type Results = {

@@ -1,10 +1,11 @@
-import type { DataHandler, Network, Placement, Results, Scenario, StatusHandler } from './types';
+import type { BackendHealth, DataHandler, Network, Placement, Results, Scenario, StatusHandler } from './types';
 
 export interface DataSource {
   getNetwork(): Promise<Network>;
   getResults(): Promise<Results>;
   getPlacement(): Promise<Placement[]>;
   getScenarios(): Promise<Scenario[]>;
+  getHealth(): Promise<BackendHealth | null>;
   startScenario(id: string, speed: 1 | 5 | 20): void;
   stop(): void;
   reset(): void;
