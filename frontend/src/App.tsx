@@ -13,7 +13,7 @@ export default function App() {
   useEffect(() => { void init(); }, [init]);
 
   return (
-    <HashRouter>
+    <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Routes>
         <Route element={<OperatorShell />}>
           <Route index element={<RuntimeErrorBoundary><HomePage /></RuntimeErrorBoundary>} />
