@@ -114,6 +114,34 @@ const JunctionNode = memo(function JunctionNode({
   );
 });
 
+type PipeLinkProps = {
+  id: string;
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+  pipeState: string;
+  trunk: boolean;
+  diameter: number;
+};
+
+const PipeLink = memo(function PipeLink({
+  fromX,
+  fromY,
+  toX,
+  toY,
+  pipeState,
+  trunk,
+  diameter,
+}: PipeLinkProps) {
+  return (
+    <g className={`pipe-group ${trunk ? 'pipe-main' : diameter >= 11 ? 'pipe-secondary' : 'pipe-branch'} ${pipeState}`}>
+      <line x1={fromX} y1={fromY} x2={toX} y2={toY} className="pipe-casing" />
+      <line x1={fromX} y1={fromY} x2={toX} y2={toY} className="pipe" />
+    </g>
+  );
+});
+
 type LabelPlacement = { x: number; y: number; anchor: 'middle' | 'start' | 'end' };
 
 function placeLabels(
@@ -460,10 +488,17 @@ export function LiveMap({
                 ? 'pipe-pressure-low'
                 : fromState === 'high' || toState === 'high' ? 'pipe-pressure-high' : '';
               return (
-                <g key={id} className={`pipe-group ${trunk ? 'pipe-main' : diameter >= 11 ? 'pipe-secondary' : 'pipe-branch'} ${pipeState}`}>
-                  <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe-casing" />
-                  <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe" />
-                </g>
+                <PipeLink
+                  key={id}
+                  id={id}
+                  fromX={from.x}
+                  fromY={from.y}
+                  toX={to.x}
+                  toY={to.y}
+                  pipeState={pipeState}
+                  trunk={trunk}
+                  diameter={diameter}
+                />
               );
             })}
             <MapEffects
