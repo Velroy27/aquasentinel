@@ -1,3 +1,4 @@
+﻿import os
 """
 AquaSentinel: real WNTR validation run (v2, larger leaks + progress prints).
 Needs Net3.inp in the same folder.
@@ -13,7 +14,7 @@ import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 
 warnings.filterwarnings("ignore")
-NET_FILE = "Net3.inp"
+NET_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Net3.inp")
 N_SENSORS = 8
 NOISE_SD = 0.3                    # metres of pressure noise per reading
 TRAIN_AREAS = [0.005, 0.01]       # leak sizes (m^2) for training
