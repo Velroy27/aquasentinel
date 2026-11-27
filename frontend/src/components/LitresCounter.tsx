@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { formatRs, currencyPerLitre } from '../config/settings';
+import { formatRs, currencyPerLitre, demoMode } from '../config/settings';
 import { useDashboard } from '../store/useDashboard';
 
 function useCountUp(value: number): number {
@@ -46,7 +46,7 @@ export function LitresCounter() {
       <div className="counter-value" aria-live="polite" aria-atomic="true">
         {Math.round(displayedLitres).toLocaleString('en-IN')}<span className="counter-unit">L</span>
       </div>
-      <div className="counter-caption">WATER LOST <span>·</span> MOCK ESTIMATE</div>
+      <div className="counter-caption">WATER LOST <span>·</span> {demoMode ? 'MOCK TOTAL' : 'BACKEND TOTAL'}</div>
       <div className="counter-grid">
         <div className="counter-stat"><span>Value at risk</span><strong>{formatRs(estimatedRs)}</strong></div>
         <div className="counter-stat"><span>Leak rate</span><strong>{alertActive && leakRateEstimate !== null ? `${leakRateEstimate.toFixed(1)} L/s` : '—'}</strong></div>
