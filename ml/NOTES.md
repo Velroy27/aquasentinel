@@ -703,3 +703,64 @@ To prove this conclusively using training data only, we evaluated Leave-One-Size
 
 - **Key Takeaway**: On this fresh test set spanning a wider area difference ($0.0055$ to $0.0085\text{ m}^2$), the production estimator achieves $R^2 = \mathbf{0.7731}$ and MAE = **$13.44\text{ lps}$** ($10.1\%$ relative error), directly confirming the variance hypothesis.
 - **Adoption Decision**: In accordance with the instruction (*"Do not change the production .joblib files unless clearly better"*), the candidate V2 provides only a minor incremental gain ($13.44 \to 13.22\text{ lps}$ MAE). Therefore, the production `.joblib` files, API signatures, detector, and smoke test remain strictly preserved in their validated state.
+
+
+---
+
+## Standalone Interactive Replay Visualization (`ml/viz/`)
+
+### 1. Overview & Architecture
+An offline, zero-dependency replay animation was built to visualize what the real machine learning pipeline sees step-by-step during online incident detection on Net3:
+- **`ml/viz/export_frames.py`**: Streams each of the 7 replay scenarios (`data/replay/`) through the audited `ml.api` functions (`detect`, `localize`, `estimate_size`), matching the sliding window ($W=45$ steps, 450s) and diurnal baseline timing from `ml/smoke_test.py`.
+- **`ml/viz/frames.js`**: Bundles the Net3 network topology (97 nodes, 119 links, 8 sensors) and all 7 replayed sequences into `window.FRAMES = {...}`. This enables opening the visualizer directly by double-clicking the HTML file in any modern browser without requiring a local web server or triggering CORS blocks.
+- **`ml/viz/viewer.html`**: Completely self-contained HTML/CSS/SVG dashboard with timeline slider, play/pause, variable speed controls (1x, 2x, 5x), status banners, dynamic pressure and residual drop heat-mapping on sensors, ranking badges (1, 2, 3 without percentages) for top suspect junctions during alerts, and a toggleable ground-truth leak node reveal.
+
+---
+
+### 2. Scenario Replay Verification
+
+Streaming all 7 scenarios through `export_frames.py` reproduces the audited behavior from `ml/smoke_test.py`:
+
+| Scenario ID | Junction | Condition / Type | Leak Onset | Alert Status | Delay | Sensor Fault | Loss Rate | Notes / Display Behavior |
+|---|:---:|---|:---:|:---:|:---:|:---:|:---:|---|
+| **Scenario 01** | Node 123 | Night low-demand (02:00) | 300s | **NO ALERT** | — | Normal | — | Banner: *Not detected at the audited operating point.* |
+| **Scenario 02** | Node 10 | Morning peak (06:00) | 300s | **NO ALERT** | — | Normal | — | Banner: *Not detected at the audited operating point.* |
+| **Scenario 03** | Node 101 | Non-sensor junction | 300s | **ALERT** | **+20s** (t=320s) | Normal | 70.8 lps | Top-3 suspects pulse with ranking badges (1, 2, 3). |
+| **Scenario 04** | Node 103 | Non-sensor junction | 300s | **ALERT** | **+30s** (t=330s) | Normal | 101.4 lps | Top-3 suspects pulse with ranking badges (1, 2, 3). |
+| **Scenario 05** | Node 101 | Afternoon peak | 300s | **ALERT** | **+20s** (t=320s) | Normal | 103.8 lps | Top-3 suspects pulse with ranking badges (1, 2, 3). |
+| **Scenario 06** | Node 119 | Small burst ($0.002\text{ m}^2$) | 300s | **NO ALERT** | — | Normal | — | Banner: *Not detected at the audited operating point.* (Under noise floor). |
+| **Scenario 07** | — | Sensor 208 stuck reading | 300s | **NO ALERT** | — | **FAULT** | — | Banner: *SENSOR FAULT (Stuck sensor identified)*. |
+
+---
+
+### 3. File Deliverables & Sizes
+
+| File | Size (Bytes) | Description |
+|---|:---:|---|
+| `ml/viz/export_frames.py` | 6,917 B | Frame exporter streaming replay files through `ml.api`. |
+| `ml/viz/frames.js` | 227,456 B | Packaged data bundle assigned to `window.FRAMES`. |
+| `ml/viz/viewer.html` | 37,083 B | Self-contained, zero-dependency interactive dashboard. |
+| `ml/viz/scenario_01.json` | 57,653 B | Standalone frame data for Scenario 01. |
+| `ml/viz/scenario_02.json` | 57,541 B | Standalone frame data for Scenario 02. |
+| `ml/viz/scenario_03.json` | 62,433 B | Standalone frame data for Scenario 03. |
+| `ml/viz/scenario_04.json` | 62,316 B | Standalone frame data for Scenario 04. |
+| `ml/viz/scenario_05.json` | 62,436 B | Standalone frame data for Scenario 05. |
+| `ml/viz/scenario_06.json` | 57,687 B | Standalone frame data for Scenario 06. |
+| `ml/viz/scenario_07.json` | 57,518 B | Standalone frame data for Scenario 07. |
+
+---
+
+### 4. How to Open and Use the Viewer
+1. Open the file directly in any web browser:
+   - On Windows: Double-click `ml\viz\viewer.html` or run:
+     ```powershell
+     Start-Process "ml\viz\viewer.html"
+     ```
+   - No web server, node, or python backend is required.
+2. Interface Controls:
+   - **Scenario Selector**: Switch between Scenarios 01 to 07.
+   - **Playback Controls**: Play/pause ($\mathbf{\blacktriangleright} / \mathbf{II}$), step forward/back by 10s, and reset ($\circlearrowleft$).
+   - **Speed**: Select 1x, 2x, or 5x playback speed.
+   - **Timeline Slider**: Drag to any simulation second ($0\text{s}$ to $1200\text{s}$).
+   - **Reveal True Leak**: Click the toggle button to inspect ground truth vs suspect ranks.
+   - **Sensor Tooltips**: Hover over any of the 8 larger sensor nodes to inspect instantaneous pressure and residual drop.
