@@ -16,6 +16,10 @@ export function ShortcutOverlay({ onClose }: { onClose: () => void }) {
           <div><dt><kbd>R</kbd></dt><dd>Reset run</dd></div>
           <div><dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Speed 1× / 5× / 20×</dd></div>
           <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Previous / next sensor</dd></div>
+          <div><dt><kbd>T</kbd></dt><dd>Toggle 2D / 3D network view</dd></div>
+          <div><dt><kbd>O</kbd></dt><dd>Toggle 3D auto-orbit</dd></div>
+          <div><dt><kbd>F</kbd></dt><dd>Toggle FPS overlay in 3D</dd></div>
+          <div><dt><kbd>E</kbd></dt><dd>Toggle animation effects</dd></div>
           <div><dt><kbd>G</kbd></dt><dd>Toggle relative suspicion while an alert is active</dd></div>
           <div><dt><kbd>L</kbd></dt><dd>{demoMode ? 'Reveal actual leak' : 'Unavailable in live data mode'}</dd></div>
         </dl>

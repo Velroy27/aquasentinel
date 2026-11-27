@@ -43,6 +43,21 @@ export const mapEffectMotion = {
   leakRateScale: 8,
 } as const;
 
+export const elevationExaggeration = 0.18;
+
+export const view3DConfig = {
+  elevationExaggeration,
+  maxDpr: 1.5,
+  defaultCameraPosition: [0, 65, 80] as [number, number, number],
+  topCameraPosition: [0, 115, 0.001] as [number, number, number],
+  autoOrbitSpeed: 0.8,
+  particlesPerPipe: 2,
+  flowSpeedNormal: 0.35,
+  flowSpeedLow: 0.18,
+  flowSpeedHigh: 0.70,
+  maxFlowOpacity: 0.5,
+} as const;
+
 export const formatRs = (value: number) =>
   `Rs ${Math.round(value).toLocaleString('en-IN')}`;
 

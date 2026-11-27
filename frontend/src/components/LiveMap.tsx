@@ -1,9 +1,11 @@
-import { memo, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
-import { Copy, LocateFixed, Minus, Plus, X } from 'lucide-react';
+import { memo, useEffect, useMemo, useRef, useState, lazy, Suspense, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
+import { Copy, LocateFixed, Minus, Plus, X, Compass } from 'lucide-react';
 import { demoMode, mapEffectMotion, pressureDelta, pressureScale } from '../config/settings';
 import { MapEffects, pressureStateForDelta } from './MapEffects';
 import { selectCurrentScenario, useDashboard } from '../store/useDashboard';
 import type { Junction } from '../data/types';
+
+const Network3DView = lazy(() => import('./Network3D/Network3DView'));
 
 type Props = {
   selectedSensor: string | null;
@@ -176,6 +178,7 @@ export function LiveMap({
   const mapFitRevision = useDashboard((state) => state.mapFitRevision);
   const running = useDashboard((state) => state.running);
   const leakRateEstimate = useDashboard((state) => state.leakRateEstimate);
+  const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
   const [selectedJunctionId, setSelectedJunctionId] = useState<string | null>(null);
   const [hovered, setHovered] = useState<Junction | null>(null);
   const [copied, setCopied] = useState(false);
@@ -295,7 +298,9 @@ export function LiveMap({
       if (event.key === 'Escape') setSelectedJunctionId(null);
       const target = event.target;
       const editable = target instanceof HTMLElement && (/^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName) || target.isContentEditable);
-      if (event.key.toLowerCase() === 'e' && !editable && !event.ctrlKey && !event.metaKey && !event.altKey) setEffectsEnabled((enabled) => !enabled);
+      if (editable || event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.key.toLowerCase() === 'e') setEffectsEnabled((enabled) => !enabled);
+      if (event.key.toLowerCase() === 't') setViewMode((mode) => (mode === '2d' ? '3d' : '2d'));
     }
     window.addEventListener('keydown', onEscape);
     return () => window.removeEventListener('keydown', onEscape);
@@ -344,6 +349,27 @@ export function LiveMap({
   if (networkStatus.loading) return <div className="panel map-shell skeleton">Loading network…</div>;
   if (networkStatus.error || !network) return <div className="panel map-shell error-state" role="alert"><span>{networkStatus.error ?? 'Network unavailable'}</span><button type="button" onClick={() => void retryResource('network')}>Retry</button></div>;
 
+  if (viewMode === '3d') {
+    return (
+      <Suspense fallback={<div className="panel map-shell skeleton">Loading 3D network…</div>}>
+        <Network3DView
+          selectedSensor={selectedSensor}
+          onSelectSensor={onSelectSensor}
+          highlightSensors={highlightSensors}
+          showLocalization={showLocalization}
+          heatmapEnabled={heatmapEnabled}
+          onHeatmapChange={onHeatmapChange}
+          revealLeak={revealLeak}
+          onRevealLeakChange={onRevealLeakChange}
+          title={title}
+          subtitle={subtitle}
+          emptyNotice={emptyNotice}
+          onToggleViewMode={() => setViewMode('2d')}
+        />
+      </Suspense>
+    );
+  }
+
   return (
     <section className="panel map-shell map-stage">
       <div className="map-stage-head">
@@ -353,6 +379,7 @@ export function LiveMap({
           <span className="map-count">{network.sensors.length} sensors <i>·</i> {network.junctions.length} nodes <i>·</i> {network.pipes.length} links</span>
         </div>
         <div className="map-actions">
+          <button type="button" className="map-toggle" onClick={() => setViewMode('3d')} title="Toggle 2D / 3D View (T)"><Compass size={14} /> <b>2D</b> / 3D <kbd>T</kbd></button>
           <button type="button" className={`map-toggle effects-toggle ${effectsEnabled ? 'is-on' : ''}`} onClick={() => setEffectsEnabled((enabled) => !enabled)} aria-pressed={effectsEnabled}>Effects <kbd>E</kbd></button>
           {showLocalization && alertActive && <button type="button" className={`map-toggle ${heatmapEnabled ? 'is-on' : ''}`} onClick={() => onHeatmapChange?.(!heatmapEnabled)} aria-pressed={heatmapEnabled}>Suspicion field <kbd>G</kbd></button>}
           {showLocalization && alertActive && demoMode && <button type="button" className={`map-toggle reveal-toggle ${revealLeak ? 'is-on' : ''}`} onClick={() => onRevealLeakChange?.(!revealLeak)} aria-pressed={revealLeak}>Reveal true leak <kbd>L</kbd></button>}

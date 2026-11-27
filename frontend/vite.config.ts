@@ -14,6 +14,9 @@ export default defineConfig({
           if (id.includes('/node_modules/recharts/') || id.includes('/node_modules/d3-')) {
             return 'charts';
           }
+          if (id.includes('/node_modules/three/') || id.includes('/node_modules/@react-three/')) {
+            return 'three-vendor';
+          }
           if (id.includes('/node_modules/react-dom/') || id.includes('/node_modules/react/')) {
             return 'react-vendor';
           }

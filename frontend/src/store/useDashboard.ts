@@ -267,3 +267,13 @@ export const selectSelectedPressures = (state: State) =>
 
 export const selectCurrentScenario = (state: State) =>
   state.scenarios.find((scenario) => scenario.id === state.scenarioId) ?? null;
+
+export const selectTop3Suspects = (state: State) => {
+  if (!state.alertActive || !state.localization) return [];
+  return [...(state.localization.scores ?? [])].sort((a, b) => b.score - a.score).slice(0, 3);
+};
+
+export const selectSuspectRankMap = (state: State) => {
+  const top3 = selectTop3Suspects(state);
+  return new Map(top3.map((item, index) => [item.junctionId, index + 1]));
+};
