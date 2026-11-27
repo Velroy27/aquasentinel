@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AquaSentinel - Real-Time Network Replay</title>
+  <style>
+    :root {
+      --bg-base: #0f172a;
+      --bg-panel: #1e293b;
+      --bg-subtle: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #475569;
+      --cyan: #06b6d4;
+      --blue: #3b82f6;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --red: #ef4444;
+      --purple: #a855f7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top Navigation */
+    header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #0284c7, #06b6d4);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: white;
+      font-size: 15px;
+    }
+
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .select-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .select-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    select {
+      background: var(--bg-base);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: var(--cyan);
+    }
+
+    .btn {
+      background: var(--bg-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #475569;
+    }
+
+    .btn-toggle-active {
+      background: rgba(168, 85, 247, 0.25);
+      border-color: var(--purple);
+      color: #d8b4fe;
+    }
+
+    /* Status Banner */
+    .banner-container {
+      padding: 10px 20px;
+      background: #111827;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .banner-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.02em;
+      transition: all 0.3s ease;
+    }
+
+    .banner-normal {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .banner-alert {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.7);
+      color: #f87171;
+      animation: alertPulse 1.5s infinite;
+    }
+
+    .banner-fault {
+      background: rgba(245, 158, 11, 0.2);
+      border: 1px solid rgba(245, 158, 11, 0.7);
+      color: #fbbf24;
+    }
+
+    @keyframes alertPulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 16px 2px rgba(239, 68, 68, 0.6);
+      }
+    }
+
+    .banner-note {
+      font-size: 13px;
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 4px 12px;
+      border-radius: 6px;
+    }
+
+    .banner-meta {
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .canvas-pane {
+      flex: 1;
+      position: relative;
+      background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    svg.network-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .pipe-line {
+      stroke: #475569;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      opacity: 0.85;
+    }
+
+    .pump-line {
+      stroke: #38bdf8;
+      stroke-width: 2.4;
+      stroke-dasharray: 4, 3;
+    }
+
+    .regular-node {
+      fill: #64748b;
+      r: 3;
+      transition: all 0.2s;
+    }
+
+    .storage-node {
+      fill: #38bdf8;
+      stroke: #0284c7;
+      stroke-width: 1.5;
+    }
+
+    .sensor-node-circle {
+      cursor: pointer;
+      stroke-width: 2.5;
+      transition: fill 0.3s, r 0.2s, stroke 0.3s;
+    }
+
+    .sensor-node-circle:hover {
+      r: 14;
+      stroke-width: 3.5;
+    }
+
+    .sensor-label {
+      font-size: 10px;
+      font-weight: 700;
+      fill: #f8fafc;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    /* Suspect Nodes Pulsing */
+    .suspect-pulse-ring {
+      fill: none;
+      stroke: var(--red);
+      stroke-width: 2;
+      opacity: 0.8;
+      animation: ringExpand 1.4s ease-out infinite;
+    }
+
+    @keyframes ringExpand {
+      0% {
+        r: 6;
+        opacity: 0.9;
+      }
+      100% {
+        r: 28;
+        opacity: 0;
+      }
+    }
+
+    .badge-suspect {
+      font-size: 11px;
+      font-weight: 800;
+      text-anchor: middle;
+      dominant-baseline: central;
+      fill: #ffffff;
+      pointer-events: none;
+    }
+
+    .badge-bg {
+      fill: #dc2626;
+      stroke: #ffffff;
+      stroke-width: 1.2;
+    }
+
+    /* True Leak Target */
+    .true-leak-target {
+      stroke: #c084fc;
+      stroke-width: 2.5;
+      stroke-dasharray: 3, 2;
+      fill: rgba(192, 132, 252, 0.25);
+      animation: leakSpin 4s linear infinite;
+    }
+
+    @keyframes leakSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Sidebar / HUD */
+    .sidebar {
+      width: 340px;
+      background: var(--bg-panel);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .sidebar-section {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Metric Cards */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .metric-card {
+      background: var(--bg-base);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .metric-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .metric-highlight {
+      color: var(--red);
+    }
+
+    /* Suspects Cards */
+    .suspects-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .suspect-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-base);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .suspect-rank {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #dc2626;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .suspect-rank-2 {
+      background: #ea580c;
+    }
+
+    .suspect-rank-3 {
+      background: #d97706;
+    }
+
+    .suspect-node-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: #f8fafc;
+    }
+
+    /* Telemetry Table */
+    .telemetry-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .telemetry-table th {
+      text-align: left;
+      color: var(--text-muted);
+      padding: 6px 8px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .telemetry-table td {
+      padding: 6px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .telemetry-table tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .drop-positive {
+      color: #f87171;
+      font-weight: 600;
+    }
+
+    .drop-zero {
+      color: var(--text-muted);
+    }
+
+    /* Timeline & Playback Bar */
+    .playback-bar {
+      background: var(--bg-panel);
+      border-top: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .playback-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.15s;
+    }
+
+    .btn-icon:hover {
+      background: #475569;
+    }
+
+    .btn-play {
+      background: var(--cyan);
+      border-color: #0891b2;
+      color: #042f2e;
+      font-weight: 800;
+    }
+
+    .btn-play:hover {
+      background: #22d3ee;
+    }
+
+    .timeline-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .timeline-slider {
+      width: 100%;
+      height: 6px;
+      background: #334155;
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    .timeline-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--cyan);
+      border: 2px solid white;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .timeline-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .speed-group {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-base);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px;
+    }
+
+    .speed-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .speed-btn.active {
+      background: var(--bg-subtle);
+      color: var(--cyan);
+    }
+
+    /* Footer */
+    footer {
+      background: #090d16;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 8px 20px;
+      font-size: 12px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    /* Tooltip */
+    #map-tooltip {
+      position: absolute;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      display: none;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">AS</div>
+      <div>
+        <div class="brand-title">AquaSentinel Network Replay</div>
+        <div class="brand-subtitle">Step-by-step physical simulation with real ML inference</div>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="select-wrapper">
+        <span class="select-label">Scenario:</span>
+        <select id="scenario-select"></select>
+      </div>
+      <button id="btn-reveal-leak" class="btn">
+        <span id="reveal-icon">&#128065;</span> Reveal true leak
+      </button>
+    </div>
+  </header>
+
+  <!-- Status Banner -->
+  <div class="banner-container">
+    <div style="display: flex; align-items: center; gap: 14px;">
+      <div id="status-badge" class="banner-badge banner-normal">
+        <span id="status-dot">&#9679;</span>
+        <span id="status-text">Status: NORMAL</span>
+      </div>
+      <div id="status-subnote" class="banner-note" style="display: none;">
+        Not detected at the audited operating point.
+      </div>
+    </div>
+    <div class="banner-meta">
+      <span id="banner-scenario-name">Loading...</span>
+      <span>|</span>
+      <span id="banner-leak-spec">Onset: t=300s</span>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <div class="workspace">
+    <!-- SVG Network Map -->
+    <div class="canvas-pane" id="canvas-pane">
+      <svg class="network-svg" id="network-svg" viewBox="0 0 900 620">
+        <defs>
+          <radialGradient id="sensorGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8"/>
+            <stop offset="100%" stop-color="#0284c7" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <g id="links-layer"></g>
+        <g id="regular-nodes-layer"></g>
+        <g id="suspects-layer"></g>
+        <g id="true-leak-layer"></g>
+        <g id="sensors-layer"></g>
+      </svg>
+      <div id="map-tooltip"></div>
+    </div>
+
+    <!-- HUD Sidebar -->
+    <aside class="sidebar">
+      <!-- Detection & Sizing Section -->
+      <div class="sidebar-section">
+        <div class="section-title">Detection & Loss Output</div>
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-label">Alert State</div>
+            <div class="metric-val" id="metric-alert">OFF</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Detection Time</div>
+            <div class="metric-val" id="metric-alert-t">&mdash;</div>
+          </div>
+          <div class="metric-card" style="grid-column: span 2;">
+            <div class="metric-label">Estimated Loss Rate</div>
+            <div class="metric-val metric-highlight" id="metric-loss-est">&mdash;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Suspects Section -->
+      <div class="sidebar-section">
+        <div class="section-title">
+          <span>Top Suspect Junctions</span>
+          <span style="font-size: 10px; color: var(--text-muted); font-weight: normal;">Ranked 1-3</span>
+        </div>
+        <div id="suspects-container" class="suspects-list">
+          <div style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+            Active only during alert state.
+          </div>
+        </div>
+      </div>
+
+      <!-- Sensor Telemetry Section -->
+      <div class="sidebar-section" style="flex: 1;">
+        <div class="section-title">8-Sensor Pressure Grid</div>
+        <table class="telemetry-table">
+          <thead>
+            <tr>
+              <th>Node</th>
+              <th>Pressure</th>
+              <th>Residual Drop</th>
+            </tr>
+          </thead>
+          <tbody id="telemetry-tbody"></tbody>
+        </table>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Playback Control Bar -->
+  <div class="playback-bar">
+    <div class="playback-btns">
+      <button class="btn-icon" id="btn-step-back" title="Back 10s">&#9664;&#9664;</button>
+      <button class="btn-icon btn-play" id="btn-play-pause" title="Play / Pause">&#9654;</button>
+      <button class="btn-icon" id="btn-step-fwd" title="Forward 10s">&#9654;&#9654;</button>
+      <button class="btn-icon" id="btn-reset" title="Reset to t=0">&#8634;</button>
+    </div>
+
+    <div class="timeline-wrapper">
+      <div class="timeline-meta">
+        <span>Timeline: <strong id="time-current-display">0s</strong> / 1200s</span>
+        <span id="time-info-step">Step 0 / 120</span>
+      </div>
+      <input type="range" class="timeline-slider" id="timeline-slider" min="0" max="120" value="0">
+    </div>
+
+    <div class="speed-group">
+      <button class="speed-btn active" data-speed="1">1x</button>
+      <button class="speed-btn" data-speed="2">2x</button>
+      <button class="speed-btn" data-speed="5">5x</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div>Simulation on Net3, 8 sensors. Estimates are approximate.</div>
+    <div>AquaSentinel Verification Replay Engine</div>
+  </footer>
+
+  <!-- Include bundle script with window.FRAMES -->
+  <script src="frames.js"></script>
+
+  <!-- Main Viewer Controller -->
+  <script>
+    (function() {
+      // Check data availability
+      if (!window.FRAMES || !window.FRAMES.network || !window.FRAMES.scenarios) {
+        document.body.innerHTML = `
+          <div style="padding: 40px; color: #ef4444; font-family: sans-serif;">
+            <h2>Error: Scenario frames not found!</h2>
+            <p>Please ensure <code>frames.js</code> is located in the same directory as <code>viewer.html</code>.</p>
+            <p>Run <code>python ml/viz/export_frames.py</code> to regenerate the data bundle.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const network = window.FRAMES.network;
+      const scenarios = window.FRAMES.scenarios;
+      const sensorList = network.sensors;
+
+      // Coordinate scaling
+      const svg = document.getElementById("network-svg");
+      const bounds = network.bounds;
+      const svgWidth = 900;
+      const svgHeight = 620;
+      const padX = 50;
+      const padY = 50;
+
+      const spanX = bounds.max_x - bounds.min_x;
+      const spanY = bounds.max_y - bounds.min_y;
+      const scaleX = (svgWidth - 2 * padX) / spanX;
+      const scaleY = (svgHeight - 2 * padY) / spanY;
+      const scale = Math.min(scaleX, scaleY);
+
+      const offsetX = (svgWidth - spanX * scale) / 2;
+      const offsetY = (svgHeight - spanY * scale) / 2;
+
+      function toSvgX(netX) {
+        return offsetX + (netX - bounds.min_x) * scale;
+      }
+
+      function toSvgY(netY) {
+        // Invert Y axis for map orientation
+        return svgHeight - (offsetY + (netY - bounds.min_y) * scale);
+      }
+
+      // Render static topology
+      const linksLayer = document.getElementById("links-layer");
+      const regularNodesLayer = document.getElementById("regular-nodes-layer");
+      const sensorsLayer = document.getElementById("sensors-layer");
+      const suspectsLayer = document.getElementById("suspects-layer");
+      const trueLeakLayer = document.getElementById("true-leak-layer");
+
+      // Draw links
+      network.links.forEach(link => {
+        const nStart = network.nodes[link.start];
+        const nEnd = network.nodes[link.end];
+        if (!nStart || !nEnd) return;
+
+        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        line.setAttribute("x1", toSvgX(nStart.x));
+        line.setAttribute("y1", toSvgY(nStart.y));
+        line.setAttribute("x2", toSvgX(nEnd.x));
+        line.setAttribute("y2", toSvgY(nEnd.y));
+        line.setAttribute("class", link.type === "pump" ? "pump-line" : "pipe-line");
+        linksLayer.appendChild(line);
+      });
+
+      // Draw regular nodes & tanks
+      Object.keys(network.nodes).forEach(nodeId => {
+        const n = network.nodes[nodeId];
+        if (n.is_sensor) return; // Sensors drawn in separate layer
+
+        const cx = toSvgX(n.x);
+        const cy = toSvgY(n.y);
+
+        if (n.type === "junction") {
+          const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          circle.setAttribute("cx", cx);
+          circle.setAttribute("cy", cy);
+          circle.setAttribute("class", "regular-node");
+          circle.setAttribute("data-node-id", nodeId);
+          circle.setAttribute("id", "node-" + nodeId);
+          regularNodesLayer.appendChild(circle);
+        } else {
+          // Tank or Reservoir
+          const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+          rect.setAttribute("x", cx - 6);
+          rect.setAttribute("y", cy - 6);
+          rect.setAttribute("width", 12);
+          rect.setAttribute("height", 12);
+          rect.setAttribute("class", "storage-node");
+          regularNodesLayer.appendChild(rect);
+        }
+      });
+
+      // Sensor elements map
+      const sensorElements = {};
+      sensorList.forEach((sensorId, idx) => {
+        const n = network.nodes[sensorId];
+        if (!n) return;
+
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "sensor-group");
+
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        circle.setAttribute("cx", toSvgX(n.x));
+        circle.setAttribute("cy", toSvgY(n.y));
+        circle.setAttribute("r", 10);
+        circle.setAttribute("fill", "#10b981");
+        circle.setAttribute("stroke", "#ffffff");
+        circle.setAttribute("class", "sensor-node-circle");
+        circle.setAttribute("id", "sensor-circle-" + sensorId);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", toSvgX(n.x));
+        text.setAttribute("y", toSvgY(n.y) - 16);
+        text.setAttribute("class", "sensor-label");
+        text.textContent = sensorId;
+
+        g.appendChild(circle);
+        g.appendChild(text);
+        sensorsLayer.appendChild(g);
+
+        sensorElements[sensorId] = {
+          circle: circle,
+          text: text,
+          x: toSvgX(n.x),
+          y: toSvgY(n.y)
+        };
+
+        // Tooltip interaction
+        circle.addEventListener("mouseenter", (e) => {
+          showTooltip(sensorId, e.pageX, e.pageY);
+        });
+        circle.addEventListener("mouseleave", hideTooltip);
+      });
+
+      // Tooltip handling
+      const tooltip = document.getElementById("map-tooltip");
+      let activeHoverSensor = null;
+
+      function showTooltip(sensorId, pageX, pageY) {
+        activeHoverSensor = sensorId;
+        updateTooltipContent();
+        tooltip.style.left = (pageX + 15) + "px";
+        tooltip.style.top = (pageY - 10) + "px";
+        tooltip.style.display = "block";
+      }
+
+      function hideTooltip() {
+        activeHoverSensor = null;
+        tooltip.style.display = "none";
+      }
+
+      function updateTooltipContent() {
+        if (!activeHoverSensor || !currentScenario) return;
+        const frame = currentScenario.frames[currentStep];
+        if (!frame) return;
+        const sIdx = sensorList.indexOf(activeHoverSensor);
+        const pVal = frame.pressures[sIdx] !== undefined ? frame.pressures[sIdx] : "—";
+        const rVal = frame.residuals[sIdx] !== undefined ? frame.residuals[sIdx] : "—";
+
+        tooltip.innerHTML = `
+          <strong>Sensor Junction ${activeHoverSensor}</strong><br/>
+          Pressure: <strong>${pVal} m</strong><br/>
+          Residual Drop: <strong>${rVal > 0 ? "+" + rVal : rVal} m</strong>
+        `;
+      }
+
+      // App state
+      let currentScenarioId = "scenario_03";
+      let currentScenario = scenarios[currentScenarioId];
+      let currentStep = 0;
+      let isPlaying = false;
+      let playSpeed = 1;
+      let playInterval = null;
+      let revealLeak = false;
+
+      // Populate scenario selector
+      const scenarioSelect = document.getElementById("scenario-select");
+      Object.keys(scenarios).forEach(id => {
+        const sc = scenarios[id];
+        const opt = document.createElement("option");
+        opt.value = id;
+        opt.textContent = `${id.toUpperCase()}: ${sc.name}`;
+        scenarioSelect.appendChild(opt);
+      });
+      scenarioSelect.value = currentScenarioId;
+
+      scenarioSelect.addEventListener("change", (e) => {
+        setScenario(e.target.value);
+      });
+
+      // Reveal true leak button
+      const btnReveal = document.getElementById("btn-reveal-leak");
+      btnReveal.addEventListener("click", () => {
+        revealLeak = !revealLeak;
+        btnReveal.classList.toggle("btn-toggle-active", revealLeak);
+        renderTrueLeak();
+      });
+
+      function setScenario(scenId) {
+        currentScenarioId = scenId;
+        currentScenario = scenarios[scenId];
+        currentStep = 0;
+        pausePlayback();
+        document.getElementById("timeline-slider").max = currentScenario.frames.length - 1;
+        document.getElementById("banner-scenario-name").textContent = currentScenario.name;
+        document.getElementById("banner-leak-spec").textContent = currentScenario.true_leak_node
+          ? `Leak Junction: ${revealLeak ? currentScenario.true_leak_node : 'Node ???'} (${currentScenario.true_flow_lps} lps)`
+          : `Disturbance: Sensor Stuck`;
+        renderFrame(currentStep);
+        renderTrueLeak();
+      }
+
+      // Color interpolation for residual drop
+      function getDropColor(drop) {
+        // drop is meters drop relative to baseline (positive means pressure dropped)
+        if (drop <= 0.15) return "#10b981"; // Green (normal)
+        if (drop <= 0.50) return "#f59e0b"; // Amber (warning)
+        if (drop <= 1.20) return "#f97316"; // Bright Orange
+        return "#ef4444"; // Red (severe drop)
+      }
+
+      // Render single frame
+      function renderFrame(step) {
+        if (!currentScenario || !currentScenario.frames[step]) return;
+        const frame = currentScenario.frames[step];
+
+        // Update timeline UI
+        document.getElementById("timeline-slider").value = step;
+        document.getElementById("time-current-display").textContent = `${frame.t}s`;
+        document.getElementById("time-info-step").textContent = `Step ${step} / ${currentScenario.frames.length - 1}`;
+
+        // Update sensor circles
+        frame.pressures.forEach((p, idx) => {
+          const sId = sensorList[idx];
+          const r = frame.residuals[idx];
+          const el = sensorElements[sId];
+          if (el) {
+            el.circle.setAttribute("fill", getDropColor(r));
+            // Slight radius enlargement with drop magnitude
+            const rSize = Math.min(18, Math.max(10, 10 + r * 2.5));
+            el.circle.setAttribute("r", rSize);
+          }
+        });
+
+        // Update status banner
+        const statusBadge = document.getElementById("status-badge");
+        const statusText = document.getElementById("status-text");
+        const statusSubnote = document.getElementById("status-subnote");
+        const metricAlert = document.getElementById("metric-alert");
+        const metricAlertT = document.getElementById("metric-alert-t");
+        const metricLossEst = document.getElementById("metric-loss-est");
+
+        // Scenarios 01, 02, 06 note
+        const isMissedScen = ["scenario_01", "scenario_02", "scenario_06"].includes(currentScenarioId);
+        if (isMissedScen) {
+          statusSubnote.style.display = "block";
+        } else {
+          statusSubnote.style.display = "none";
+        }
+
+        if (frame.alert) {
+          statusBadge.className = "banner-badge banner-alert";
+          statusText.textContent = `ALERT (Leak detected at t = ${currentScenario.first_alert_t}s, delay +${currentScenario.delay_s}s)`;
+          metricAlert.textContent = "ACTIVE";
+          metricAlert.className = "metric-val metric-highlight";
+          metricAlertT.textContent = `${currentScenario.first_alert_t}s`;
+          metricLossEst.textContent = frame.loss_estimate_lps !== null ? `${frame.loss_estimate_lps} lps` : "—";
+        } else if (frame.sensor_fault || currentScenario.sensor_fault_flagged && frame.t >= 300) {
+          statusBadge.className = "banner-badge banner-fault";
+          statusText.textContent = "SENSOR FAULT (Stuck sensor identified)";
+          metricAlert.textContent = "OFF";
+          metricAlert.className = "metric-val";
+          metricAlertT.textContent = "—";
+          metricLossEst.textContent = "—";
+        } else {
+          statusBadge.className = "banner-badge banner-normal";
+          statusText.textContent = "Status: NORMAL";
+          metricAlert.textContent = "OFF";
+          metricAlert.className = "metric-val";
+          metricAlertT.textContent = "—";
+          metricLossEst.textContent = "—";
+        }
+
+        // Suspects rendering (NO percentages displayed)
+        renderSuspects(frame.alert ? frame.suspects : []);
+
+        // Telemetry table
+        renderTelemetry(frame);
+
+        // Update tooltip if open
+        updateTooltipContent();
+      }
+
+      function renderSuspects(suspects) {
+        suspectsLayer.innerHTML = "";
+        const container = document.getElementById("suspects-container");
+
+        if (!suspects || suspects.length === 0) {
+          container.innerHTML = `
+            <div style="font-size: 12px; color: var(--text-muted); font-style: italic;">
+              Active only during alert state.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = "";
+        const rankColors = ["#dc2626", "#ea580c", "#d97706"];
+
+        suspects.forEach((nodeId, idx) => {
+          const rank = idx + 1;
+          const node = network.nodes[nodeId];
+
+          // UI item in sidebar
+          const item = document.createElement("div");
+          item.className = "suspect-item";
+          item.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div class="suspect-rank suspect-rank-${rank}">${rank}</div>
+              <span class="suspect-node-name">Junction ${nodeId}</span>
+            </div>
+            <span style="font-size: 11px; font-weight: 600; color: #cbd5e1;">Rank #${rank} Suspect</span>
+          `;
+          container.appendChild(item);
+
+          // SVG Pulse highlight on map
+          if (node) {
+            const cx = toSvgX(node.x);
+            const cy = toSvgY(node.y);
+
+            // Pulsing ring
+            const pulse = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            pulse.setAttribute("cx", cx);
+            pulse.setAttribute("cy", cy);
+            pulse.setAttribute("class", "suspect-pulse-ring");
+            pulse.setAttribute("stroke", rankColors[idx]);
+            suspectsLayer.appendChild(pulse);
+
+            // Ranking Badge on map
+            const badgeG = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+            const badgeBg = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            badgeBg.setAttribute("cx", cx);
+            badgeBg.setAttribute("cy", cy - 14);
+            badgeBg.setAttribute("r", 9);
+            badgeBg.setAttribute("class", "badge-bg");
+            badgeBg.setAttribute("fill", rankColors[idx]);
+
+            const badgeTxt = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            badgeTxt.setAttribute("x", cx);
+            badgeTxt.setAttribute("y", cy - 14);
+            badgeTxt.setAttribute("class", "badge-suspect");
+            badgeTxt.textContent = rank;
+
+            badgeG.appendChild(badgeBg);
+            badgeG.appendChild(badgeTxt);
+            suspectsLayer.appendChild(badgeG);
+          }
+        });
+      }
+
+      function renderTelemetry(frame) {
+        const tbody = document.getElementById("telemetry-tbody");
+        let html = "";
+        sensorList.forEach((sId, idx) => {
+          const p = frame.pressures[idx];
+          const r = frame.residuals[idx];
+          const rClass = r > 0.3 ? "drop-positive" : "drop-zero";
+          const rPrefix = r > 0 ? "+" : "";
+
+          html += `
+            <tr>
+              <td><strong style="color: #38bdf8;">${sId}</strong></td>
+              <td>${p.toFixed(2)} m</td>
+              <td class="${rClass}">${rPrefix}${r.toFixed(2)} m</td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      }
+
+      function renderTrueLeak() {
+        trueLeakLayer.innerHTML = "";
+        const leakNodeId = currentScenario.true_leak_node;
+        const bannerLeak = document.getElementById("banner-leak-spec");
+
+        if (!leakNodeId) {
+          bannerLeak.textContent = "Disturbance: Sensor Stuck";
+          return;
+        }
+
+        if (revealLeak) {
+          bannerLeak.textContent = `True Leak: Junction ${leakNodeId} (${currentScenario.true_flow_lps} lps)`;
+          const node = network.nodes[leakNodeId];
+          if (node) {
+            const cx = toSvgX(node.x);
+            const cy = toSvgY(node.y);
+
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+            // Rotating dashed crosshair circle
+            const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            c.setAttribute("cx", cx);
+            c.setAttribute("cy", cy);
+            c.setAttribute("r", 18);
+            c.setAttribute("class", "true-leak-target");
+
+            // Center pin
+            const pin = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            pin.setAttribute("cx", cx);
+            pin.setAttribute("cy", cy);
+            pin.setAttribute("r", 4);
+            pin.setAttribute("fill", "#c084fc");
+
+            // Text label
+            const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            label.setAttribute("x", cx);
+            label.setAttribute("y", cy + 24);
+            label.setAttribute("class", "sensor-label");
+            label.setAttribute("fill", "#c084fc");
+            label.style.fontWeight = "bold";
+            label.textContent = `LEAK (${leakNodeId})`;
+
+            g.appendChild(c);
+            g.appendChild(pin);
+            g.appendChild(label);
+            trueLeakLayer.appendChild(g);
+          }
+        } else {
+          bannerLeak.textContent = `Leak Junction: Node ??? (${currentScenario.true_flow_lps} lps)`;
+        }
+      }
+
+      // Playback loop
+      const btnPlayPause = document.getElementById("btn-play-pause");
+      const btnStepBack = document.getElementById("btn-step-back");
+      const btnStepFwd = document.getElementById("btn-step-fwd");
+      const btnReset = document.getElementById("btn-reset");
+      const timelineSlider = document.getElementById("timeline-slider");
+
+      function togglePlayback() {
+        if (isPlaying) {
+          pausePlayback();
+        } else {
+          startPlayback();
+        }
+      }
+
+      function startPlayback() {
+        isPlaying = true;
+        btnPlayPause.innerHTML = "&#10074;&#10074;";
+        btnPlayPause.style.background = "#f59e0b";
+
+        const baseMs = 300; // 300ms per 10s simulation step at 1x
+        clearInterval(playInterval);
+        playInterval = setInterval(() => {
+          if (currentStep < currentScenario.frames.length - 1) {
+            currentStep++;
+            renderFrame(currentStep);
+          } else {
+            pausePlayback();
+          }
+        }, baseMs / playSpeed);
+      }
+
+      function pausePlayback() {
+        isPlaying = false;
+        clearInterval(playInterval);
+        btnPlayPause.innerHTML = "&#9654;";
+        btnPlayPause.style.background = "var(--cyan)";
+      }
+
+      btnPlayPause.addEventListener("click", togglePlayback);
+
+      btnStepBack.addEventListener("click", () => {
+        pausePlayback();
+        if (currentStep > 0) {
+          currentStep--;
+          renderFrame(currentStep);
+        }
+      });
+
+      btnStepFwd.addEventListener("click", () => {
+        pausePlayback();
+        if (currentStep < currentScenario.frames.length - 1) {
+          currentStep++;
+          renderFrame(currentStep);
+        }
+      });
+
+      btnReset.addEventListener("click", () => {
+        pausePlayback();
+        currentStep = 0;
+        renderFrame(currentStep);
+      });
+
+      timelineSlider.addEventListener("input", (e) => {
+        pausePlayback();
+        currentStep = parseInt(e.target.value, 10);
+        renderFrame(currentStep);
+      });
+
+      // Speed selectors
+      document.querySelectorAll(".speed-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          document.querySelectorAll(".speed-btn").forEach(b => b.classList.remove("active"));
+          btn.classList.add("active");
+          playSpeed = parseFloat(btn.getAttribute("data-speed"));
+          if (isPlaying) {
+            startPlayback(); // restart interval with new speed
+          }
+        });
+      });
+
+      // Initialize
+      setScenario("scenario_03");
+
+    })();
+  </script>
+</body>
+</html>

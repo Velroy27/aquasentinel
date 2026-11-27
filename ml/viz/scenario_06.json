@@ -1,0 +1,3406 @@
+{
+  "id": "scenario_06",
+  "name": "Small leak (0.002 m2) at Node 119: honestly undetected (max clean drop 0.19m under sensor noise floor)",
+  "filename": "scenario_06_small_missed_node119.json",
+  "category": "small_leak_missed",
+  "true_leak_node": "119",
+  "true_flow_lps": 45.5,
+  "leak_area_m2": 0.002,
+  "start_t": 300,
+  "duration": 1200,
+  "alert_fired": false,
+  "first_alert_t": null,
+  "delay_s": null,
+  "sensor_fault_flagged": false,
+  "frame_count": 121,
+  "frames": [
+    {
+      "step": 0,
+      "t": 0,
+      "pressures": [
+        37.84,
+        -0.72,
+        28.28,
+        39.01,
+        91.96,
+        44.03,
+        64.1,
+        47.15
+      ],
+      "residuals": [
+        -0.14,
+        0.32,
+        0.59,
+        0.19,
+        0.12,
+        -0.12,
+        -0.52,
+        -0.12
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 1,
+      "t": 10,
+      "pressures": [
+        37.5,
+        -0.83,
+        27.8,
+        39.04,
+        92.05,
+        43.86,
+        63.95,
+        47.12
+      ],
+      "residuals": [
+        0.1,
+        0.32,
+        0.97,
+        0.05,
+        -0.07,
+        -0.05,
+        -0.48,
+        -0.2
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 2,
+      "t": 20,
+      "pressures": [
+        37.76,
+        -0.69,
+        28.53,
+        39.0,
+        92.37,
+        43.93,
+        63.66,
+        47.34
+      ],
+      "residuals": [
+        -0.02,
+        0.32,
+        0.38,
+        0.24,
+        -0.25,
+        0.02,
+        -0.05,
+        -0.28
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 3,
+      "t": 30,
+      "pressures": [
+        37.32,
+        -0.85,
+        28.18,
+        38.37,
+        92.16,
+        43.63,
+        63.2,
+        46.76
+      ],
+      "residuals": [
+        0.0,
+        0.07,
+        0.32,
+        0.45,
+        -0.46,
+        -0.1,
+        -0.0,
+        -0.11
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 4,
+      "t": 40,
+      "pressures": [
+        37.93,
+        -1.35,
+        28.13,
+        38.73,
+        91.52,
+        44.44,
+        63.93,
+        46.94
+      ],
+      "residuals": [
+        -0.51,
+        0.67,
+        0.47,
+        0.19,
+        0.28,
+        -0.81,
+        -0.63,
+        -0.19
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 5,
+      "t": 50,
+      "pressures": [
+        37.73,
+        -1.29,
+        28.26,
+        38.5,
+        92.63,
+        43.81,
+        64.32,
+        47.21
+      ],
+      "residuals": [
+        -0.06,
+        0.85,
+        0.58,
+        0.66,
+        -0.59,
+        0.06,
+        -0.78,
+        -0.22
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 6,
+      "t": 60,
+      "pressures": [
+        37.18,
+        -0.74,
+        28.59,
+        39.04,
+        92.27,
+        43.7,
+        63.95,
+        47.02
+      ],
+      "residuals": [
+        0.34,
+        0.15,
+        0.1,
+        -0.03,
+        -0.38,
+        0.03,
+        -0.56,
+        -0.18
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 7,
+      "t": 70,
+      "pressures": [
+        37.3,
+        -1.48,
+        28.1,
+        39.28,
+        92.0,
+        43.82,
+        63.35,
+        46.89
+      ],
+      "residuals": [
+        0.22,
+        0.9,
+        0.6,
+        -0.26,
+        -0.1,
+        -0.09,
+        0.04,
+        -0.04
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 8,
+      "t": 80,
+      "pressures": [
+        37.38,
+        -1.19,
+        28.78,
+        39.53,
+        92.18,
+        44.02,
+        63.5,
+        47.32
+      ],
+      "residuals": [
+        0.33,
+        0.8,
+        0.11,
+        -0.32,
+        -0.09,
+        -0.1,
+        0.09,
+        -0.28
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 9,
+      "t": 90,
+      "pressures": [
+        38.07,
+        -1.08,
+        28.34,
+        38.4,
+        91.65,
+        44.07,
+        63.8,
+        46.95
+      ],
+      "residuals": [
+        -0.62,
+        0.42,
+        0.28,
+        0.55,
+        0.18,
+        -0.41,
+        -0.48,
+        -0.18
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 10,
+      "t": 100,
+      "pressures": [
+        37.96,
+        -0.81,
+        28.12,
+        38.55,
+        92.25,
+        43.86,
+        64.11,
+        46.84
+      ],
+      "residuals": [
+        -0.38,
+        0.29,
+        0.64,
+        0.53,
+        -0.29,
+        -0.07,
+        -0.66,
+        0.07
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 11,
+      "t": 110,
+      "pressures": [
+        37.41,
+        -0.62,
+        27.94,
+        38.66,
+        91.86,
+        43.56,
+        63.7,
+        47.15
+      ],
+      "residuals": [
+        0.04,
+        -0.04,
+        0.68,
+        0.29,
+        -0.04,
+        0.1,
+        -0.38,
+        -0.38
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 12,
+      "t": 120,
+      "pressures": [
+        37.33,
+        -1.01,
+        28.12,
+        38.87,
+        91.97,
+        43.64,
+        63.48,
+        47.03
+      ],
+      "residuals": [
+        0.07,
+        0.31,
+        0.46,
+        0.03,
+        -0.19,
+        -0.03,
+        -0.21,
+        -0.3
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 13,
+      "t": 130,
+      "pressures": [
+        37.37,
+        -0.82,
+        28.35,
+        38.6,
+        91.78,
+        43.18,
+        63.56,
+        46.99
+      ],
+      "residuals": [
+        -0.04,
+        0.04,
+        0.15,
+        0.23,
+        -0.07,
+        0.36,
+        -0.36,
+        -0.33
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 14,
+      "t": 140,
+      "pressures": [
+        37.81,
+        -0.7,
+        28.33,
+        39.32,
+        91.73,
+        43.65,
+        63.58,
+        47.03
+      ],
+      "residuals": [
+        -0.24,
+        0.17,
+        0.42,
+        -0.25,
+        0.22,
+        0.13,
+        -0.14,
+        -0.13
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 15,
+      "t": 150,
+      "pressures": [
+        37.52,
+        -1.4,
+        28.5,
+        39.57,
+        92.4,
+        43.52,
+        63.96,
+        46.64
+      ],
+      "residuals": [
+        -0.1,
+        0.72,
+        0.1,
+        -0.65,
+        -0.6,
+        0.11,
+        -0.67,
+        0.11
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 16,
+      "t": 160,
+      "pressures": [
+        36.79,
+        -0.86,
+        28.24,
+        38.37,
+        92.01,
+        43.55,
+        63.93,
+        47.12
+      ],
+      "residuals": [
+        0.5,
+        0.05,
+        0.23,
+        0.42,
+        -0.34,
+        -0.05,
+        -0.77,
+        -0.5
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 17,
+      "t": 170,
+      "pressures": [
+        37.13,
+        -1.05,
+        28.65,
+        39.34,
+        92.06,
+        43.81,
+        63.68,
+        47.29
+      ],
+      "residuals": [
+        0.51,
+        0.59,
+        0.17,
+        -0.2,
+        -0.04,
+        0.04,
+        -0.17,
+        -0.32
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 18,
+      "t": 180,
+      "pressures": [
+        37.5,
+        -0.53,
+        28.5,
+        38.42,
+        92.81,
+        43.43,
+        63.96,
+        46.74
+      ],
+      "residuals": [
+        -0.05,
+        -0.12,
+        0.14,
+        0.54,
+        -0.98,
+        0.24,
+        -0.63,
+        0.05
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 19,
+      "t": 190,
+      "pressures": [
+        37.71,
+        -0.38,
+        28.31,
+        39.1,
+        92.52,
+        43.47,
+        64.04,
+        47.23
+      ],
+      "residuals": [
+        0.0,
+        -0.0,
+        0.59,
+        0.12,
+        -0.42,
+        0.46,
+        -0.45,
+        -0.18
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 20,
+      "t": 200,
+      "pressures": [
+        37.41,
+        -1.0,
+        28.24,
+        39.31,
+        92.69,
+        43.85,
+        63.74,
+        47.14
+      ],
+      "residuals": [
+        0.31,
+        0.62,
+        0.66,
+        -0.09,
+        -0.59,
+        0.09,
+        -0.15,
+        -0.09
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 21,
+      "t": 210,
+      "pressures": [
+        37.59,
+        -0.16,
+        28.49,
+        38.39,
+        92.21,
+        43.5,
+        63.49,
+        46.83
+      ],
+      "residuals": [
+        -0.05,
+        -0.39,
+        0.24,
+        0.66,
+        -0.29,
+        0.26,
+        -0.07,
+        0.05
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 22,
+      "t": 220,
+      "pressures": [
+        37.57,
+        -1.53,
+        28.63,
+        38.85,
+        92.14,
+        43.55,
+        63.55,
+        46.94
+      ],
+      "residuals": [
+        -0.06,
+        0.94,
+        0.06,
+        0.16,
+        -0.25,
+        0.17,
+        -0.17,
+        -0.1
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 23,
+      "t": 230,
+      "pressures": [
+        37.02,
+        -0.47,
+        27.83,
+        38.73,
+        92.35,
+        44.31,
+        63.59,
+        47.65
+      ],
+      "residuals": [
+        0.65,
+        0.05,
+        1.03,
+        0.45,
+        -0.3,
+        -0.42,
+        -0.05,
+        -0.64
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 24,
+      "t": 240,
+      "pressures": [
+        37.0,
+        -0.87,
+        28.39,
+        38.69,
+        91.61,
+        44.33,
+        63.66,
+        46.69
+      ],
+      "residuals": [
+        0.23,
+        0.0,
+        0.02,
+        0.04,
+        -0.0,
+        -0.89,
+        -0.56,
+        -0.13
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 25,
+      "t": 250,
+      "pressures": [
+        37.32,
+        -0.65,
+        27.83,
+        38.89,
+        91.35,
+        43.74,
+        63.75,
+        46.91
+      ],
+      "residuals": [
+        0.09,
+        -0.03,
+        0.77,
+        0.03,
+        0.45,
+        -0.11,
+        -0.46,
+        -0.16
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 26,
+      "t": 260,
+      "pressures": [
+        37.67,
+        -1.14,
+        29.01,
+        38.7,
+        92.24,
+        43.69,
+        63.58,
+        47.29
+      ],
+      "residuals": [
+        0.02,
+        0.73,
+        -0.13,
+        0.49,
+        -0.17,
+        0.22,
+        -0.02,
+        -0.26
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 27,
+      "t": 270,
+      "pressures": [
+        37.31,
+        -0.49,
+        28.1,
+        39.57,
+        92.81,
+        43.86,
+        63.79,
+        47.22
+      ],
+      "residuals": [
+        0.45,
+        0.16,
+        0.85,
+        -0.3,
+        -0.67,
+        0.12,
+        -0.16,
+        -0.12
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 28,
+      "t": 280,
+      "pressures": [
+        37.3,
+        -0.87,
+        27.91,
+        38.27,
+        92.15,
+        44.21,
+        63.63,
+        47.11
+      ],
+      "residuals": [
+        0.23,
+        0.3,
+        0.81,
+        0.77,
+        -0.24,
+        -0.46,
+        -0.23,
+        -0.24
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 29,
+      "t": 290,
+      "pressures": [
+        37.33,
+        -0.97,
+        28.76,
+        39.0,
+        91.86,
+        43.93,
+        63.52,
+        47.31
+      ],
+      "residuals": [
+        0.2,
+        0.41,
+        -0.04,
+        0.04,
+        0.05,
+        -0.18,
+        -0.12,
+        -0.44
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 30,
+      "t": 300,
+      "pressures": [
+        37.09,
+        -0.65,
+        27.73,
+        38.55,
+        92.11,
+        43.16,
+        63.8,
+        46.79
+      ],
+      "residuals": [
+        0.18,
+        -0.18,
+        0.73,
+        0.22,
+        -0.46,
+        0.33,
+        -0.66,
+        -0.18
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 31,
+      "t": 310,
+      "pressures": [
+        37.16,
+        -1.14,
+        27.82,
+        39.35,
+        92.15,
+        43.69,
+        63.99,
+        46.65
+      ],
+      "residuals": [
+        0.23,
+        0.44,
+        0.76,
+        -0.45,
+        -0.38,
+        -0.08,
+        -0.73,
+        0.08
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 32,
+      "t": 320,
+      "pressures": [
+        37.28,
+        -0.8,
+        28.31,
+        39.07,
+        92.02,
+        43.68,
+        64.0,
+        46.32
+      ],
+      "residuals": [
+        0.1,
+        0.08,
+        0.26,
+        -0.19,
+        -0.26,
+        -0.08,
+        -0.75,
+        0.4
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 33,
+      "t": 330,
+      "pressures": [
+        37.88,
+        -0.34,
+        27.88,
+        38.49,
+        91.8,
+        43.82,
+        63.61,
+        46.96
+      ],
+      "residuals": [
+        -0.27,
+        -0.14,
+        0.92,
+        0.63,
+        0.19,
+        0.01,
+        -0.13,
+        -0.01
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 34,
+      "t": 340,
+      "pressures": [
+        37.48,
+        -0.58,
+        28.01,
+        38.59,
+        92.19,
+        43.55,
+        64.04,
+        46.6
+      ],
+      "residuals": [
+        -0.08,
+        -0.11,
+        0.59,
+        0.32,
+        -0.4,
+        0.08,
+        -0.76,
+        0.15
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 35,
+      "t": 350,
+      "pressures": [
+        37.63,
+        -1.0,
+        27.54,
+        38.65,
+        92.55,
+        43.25,
+        63.21,
+        46.34
+      ],
+      "residuals": [
+        -0.51,
+        0.02,
+        0.77,
+        -0.02,
+        -1.05,
+        0.09,
+        -0.22,
+        0.12
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 36,
+      "t": 360,
+      "pressures": [
+        37.51,
+        -0.35,
+        28.69,
+        39.02,
+        92.02,
+        43.61,
+        63.87,
+        46.91
+      ],
+      "residuals": [
+        0.03,
+        -0.2,
+        0.04,
+        0.03,
+        -0.1,
+        0.15,
+        -0.46,
+        -0.03
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 37,
+      "t": 370,
+      "pressures": [
+        37.38,
+        -1.01,
+        28.46,
+        38.47,
+        91.97,
+        44.02,
+        63.92,
+        46.95
+      ],
+      "residuals": [
+        0.1,
+        0.4,
+        0.22,
+        0.52,
+        -0.1,
+        -0.31,
+        -0.56,
+        -0.12
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 38,
+      "t": 380,
+      "pressures": [
+        37.35,
+        -0.44,
+        28.36,
+        38.52,
+        92.41,
+        43.1,
+        64.1,
+        46.64
+      ],
+      "residuals": [
+        -0.03,
+        -0.33,
+        0.16,
+        0.31,
+        -0.7,
+        0.45,
+        -0.9,
+        0.03
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 39,
+      "t": 390,
+      "pressures": [
+        36.93,
+        -0.95,
+        28.39,
+        38.83,
+        91.61,
+        43.22,
+        63.65,
+        46.41
+      ],
+      "residuals": [
+        0.24,
+        0.03,
+        -0.03,
+        -0.15,
+        -0.06,
+        0.17,
+        -0.61,
+        0.1
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 40,
+      "t": 400,
+      "pressures": [
+        37.54,
+        -1.23,
+        28.26,
+        38.72,
+        92.16,
+        43.46,
+        63.34,
+        46.56
+      ],
+      "residuals": [
+        -0.32,
+        0.37,
+        0.16,
+        0.02,
+        -0.55,
+        -0.01,
+        -0.24,
+        0.01
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 41,
+      "t": 410,
+      "pressures": [
+        37.43,
+        -1.44,
+        28.04,
+        39.52,
+        91.96,
+        43.62,
+        63.28,
+        46.68
+      ],
+      "residuals": [
+        -0.03,
+        0.75,
+        0.56,
+        -0.61,
+        -0.17,
+        0.01,
+        -0.01,
+        0.07
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 42,
+      "t": 420,
+      "pressures": [
+        37.08,
+        -0.89,
+        27.88,
+        38.77,
+        92.27,
+        43.54,
+        63.54,
+        46.86
+      ],
+      "residuals": [
+        0.21,
+        0.09,
+        0.6,
+        0.03,
+        -0.6,
+        -0.03,
+        -0.38,
+        -0.23
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 43,
+      "t": 430,
+      "pressures": [
+        37.17,
+        -1.01,
+        27.89,
+        38.94,
+        92.13,
+        43.67,
+        63.67,
+        46.68
+      ],
+      "residuals": [
+        0.21,
+        0.3,
+        0.69,
+        -0.05,
+        -0.36,
+        -0.06,
+        -0.42,
+        0.05
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 44,
+      "t": 440,
+      "pressures": [
+        37.02,
+        -1.54,
+        27.88,
+        38.37,
+        92.13,
+        43.72,
+        63.69,
+        46.86
+      ],
+      "residuals": [
+        0.24,
+        0.71,
+        0.58,
+        0.4,
+        -0.49,
+        -0.24,
+        -0.56,
+        -0.26
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 45,
+      "t": 450,
+      "pressures": [
+        38.09,
+        -1.55,
+        28.31,
+        39.01,
+        92.23,
+        43.86,
+        63.97,
+        46.66
+      ],
+      "residuals": [
+        -0.53,
+        1.03,
+        0.45,
+        0.07,
+        -0.28,
+        -0.07,
+        -0.53,
+        0.25
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 46,
+      "t": 460,
+      "pressures": [
+        37.14,
+        -1.01,
+        28.11,
+        39.08,
+        92.35,
+        43.63,
+        63.68,
+        47.34
+      ],
+      "residuals": [
+        0.34,
+        0.41,
+        0.57,
+        -0.08,
+        -0.48,
+        0.08,
+        -0.32,
+        -0.51
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 47,
+      "t": 470,
+      "pressures": [
+        37.74,
+        -0.71,
+        28.53,
+        39.09,
+        91.82,
+        43.65,
+        63.97,
+        46.94
+      ],
+      "residuals": [
+        -0.24,
+        0.13,
+        0.17,
+        -0.07,
+        0.07,
+        0.08,
+        -0.59,
+        -0.09
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 48,
+      "t": 480,
+      "pressures": [
+        37.67,
+        -1.03,
+        28.31,
+        39.05,
+        92.1,
+        43.37,
+        63.62,
+        46.47
+      ],
+      "residuals": [
+        -0.33,
+        0.28,
+        0.23,
+        -0.2,
+        -0.38,
+        0.2,
+        -0.41,
+        0.22
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 49,
+      "t": 490,
+      "pressures": [
+        37.33,
+        -0.84,
+        28.24,
+        39.07,
+        91.7,
+        43.53,
+        63.23,
+        46.82
+      ],
+      "residuals": [
+        -0.01,
+        0.08,
+        0.28,
+        -0.23,
+        0.01,
+        0.02,
+        -0.03,
+        -0.15
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 50,
+      "t": 500,
+      "pressures": [
+        37.13,
+        -0.78,
+        27.76,
+        38.96,
+        91.58,
+        43.36,
+        63.59,
+        46.42
+      ],
+      "residuals": [
+        0.03,
+        -0.14,
+        0.6,
+        -0.28,
+        -0.03,
+        0.03,
+        -0.55,
+        0.09
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 51,
+      "t": 510,
+      "pressures": [
+        37.14,
+        -0.93,
+        28.52,
+        39.48,
+        92.0,
+        43.8,
+        63.83,
+        47.24
+      ],
+      "residuals": [
+        0.45,
+        0.44,
+        0.27,
+        -0.37,
+        -0.02,
+        0.02,
+        -0.37,
+        -0.3
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 52,
+      "t": 520,
+      "pressures": [
+        37.61,
+        -0.81,
+        27.65,
+        39.25,
+        92.32,
+        44.09,
+        63.55,
+        46.48
+      ],
+      "residuals": [
+        0.03,
+        0.37,
+        1.2,
+        -0.09,
+        -0.29,
+        -0.22,
+        -0.03,
+        0.52
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 53,
+      "t": 530,
+      "pressures": [
+        36.97,
+        -1.29,
+        27.97,
+        38.08,
+        92.26,
+        43.05,
+        64.46,
+        46.15
+      ],
+      "residuals": [
+        -0.16,
+        0.01,
+        0.04,
+        0.24,
+        -1.06,
+        -0.01,
+        -1.78,
+        0.01
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 54,
+      "t": 540,
+      "pressures": [
+        37.56,
+        -1.31,
+        28.66,
+        39.44,
+        92.35,
+        43.62,
+        63.65,
+        46.22
+      ],
+      "residuals": [
+        -0.05,
+        0.74,
+        0.05,
+        -0.41,
+        -0.45,
+        0.12,
+        -0.27,
+        0.64
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 55,
+      "t": 550,
+      "pressures": [
+        37.44,
+        -1.07,
+        28.46,
+        38.73,
+        92.4,
+        44.25,
+        64.04,
+        46.72
+      ],
+      "residuals": [
+        -0.04,
+        0.39,
+        0.15,
+        0.19,
+        -0.61,
+        -0.61,
+        -0.76,
+        0.04
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 56,
+      "t": 560,
+      "pressures": [
+        37.32,
+        -1.19,
+        28.16,
+        39.46,
+        92.29,
+        43.28,
+        63.78,
+        46.25
+      ],
+      "residuals": [
+        -0.14,
+        0.29,
+        0.23,
+        -0.76,
+        -0.72,
+        0.14,
+        -0.72,
+        0.29
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 57,
+      "t": 570,
+      "pressures": [
+        37.11,
+        -1.12,
+        27.67,
+        39.05,
+        92.03,
+        43.86,
+        63.57,
+        46.99
+      ],
+      "residuals": [
+        0.47,
+        0.62,
+        1.12,
+        0.05,
+        -0.06,
+        -0.05,
+        -0.12,
+        -0.06
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 58,
+      "t": 580,
+      "pressures": [
+        37.42,
+        -1.35,
+        27.99,
+        38.56,
+        91.76,
+        44.03,
+        64.26,
+        46.86
+      ],
+      "residuals": [
+        -0.02,
+        0.67,
+        0.61,
+        0.35,
+        0.02,
+        -0.4,
+        -0.99,
+        -0.11
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 59,
+      "t": 590,
+      "pressures": [
+        37.43,
+        -0.18,
+        28.29,
+        38.69,
+        92.15,
+        43.63,
+        63.4,
+        47.45
+      ],
+      "residuals": [
+        0.05,
+        -0.42,
+        0.4,
+        0.31,
+        -0.28,
+        0.08,
+        -0.05,
+        -0.61
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 60,
+      "t": 600,
+      "pressures": [
+        37.09,
+        -0.77,
+        28.14,
+        38.87,
+        92.04,
+        43.76,
+        63.4,
+        46.45
+      ],
+      "residuals": [
+        0.24,
+        0.02,
+        0.4,
+        -0.02,
+        -0.32,
+        -0.2,
+        -0.2,
+        0.24
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 61,
+      "t": 610,
+      "pressures": [
+        37.31,
+        -0.23,
+        28.04,
+        38.5,
+        92.37,
+        43.57,
+        63.77,
+        46.7
+      ],
+      "residuals": [
+        0.03,
+        -0.51,
+        0.51,
+        0.36,
+        -0.64,
+        0.0,
+        -0.56,
+        -0.0
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 62,
+      "t": 620,
+      "pressures": [
+        37.39,
+        -0.92,
+        28.2,
+        38.58,
+        92.72,
+        43.32,
+        62.92,
+        46.63
+      ],
+      "residuals": [
+        -0.27,
+        -0.04,
+        0.13,
+        0.06,
+        -1.21,
+        0.04,
+        0.08,
+        -0.15
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 63,
+      "t": 630,
+      "pressures": [
+        37.14,
+        -1.05,
+        28.3,
+        39.21,
+        92.14,
+        42.89,
+        63.94,
+        46.45
+      ],
+      "residuals": [
+        -0.02,
+        0.09,
+        0.03,
+        -0.57,
+        -0.63,
+        0.46,
+        -0.95,
+        0.02
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 64,
+      "t": 640,
+      "pressures": [
+        37.55,
+        -1.06,
+        28.26,
+        38.73,
+        92.26,
+        43.37,
+        63.34,
+        46.21
+      ],
+      "residuals": [
+        -0.38,
+        0.15,
+        0.12,
+        -0.04,
+        -0.7,
+        0.04,
+        -0.3,
+        0.32
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 65,
+      "t": 650,
+      "pressures": [
+        37.46,
+        -0.96,
+        28.07,
+        38.91,
+        92.19,
+        43.67,
+        63.88,
+        46.93
+      ],
+      "residuals": [
+        -0.01,
+        0.33,
+        0.59,
+        0.06,
+        -0.35,
+        0.01,
+        -0.56,
+        -0.12
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 66,
+      "t": 660,
+      "pressures": [
+        37.33,
+        -1.02,
+        29.14,
+        38.73,
+        91.84,
+        43.48,
+        63.58,
+        46.84
+      ],
+      "residuals": [
+        0.06,
+        0.33,
+        -0.54,
+        0.18,
+        -0.06,
+        0.15,
+        -0.32,
+        -0.09
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 67,
+      "t": 670,
+      "pressures": [
+        37.08,
+        -0.78,
+        28.34,
+        39.13,
+        91.77,
+        43.31,
+        63.08,
+        46.53
+      ],
+      "residuals": [
+        0.11,
+        -0.11,
+        0.06,
+        -0.42,
+        -0.19,
+        0.12,
+        -0.02,
+        0.02
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 68,
+      "t": 680,
+      "pressures": [
+        37.57,
+        -1.09,
+        27.65,
+        38.49,
+        91.49,
+        44.11,
+        63.45,
+        46.91
+      ],
+      "residuals": [
+        -0.25,
+        0.34,
+        0.89,
+        0.36,
+        0.22,
+        -0.55,
+        -0.25,
+        -0.22
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 69,
+      "t": 690,
+      "pressures": [
+        37.34,
+        -1.16,
+        27.91,
+        39.17,
+        91.95,
+        44.3,
+        63.77,
+        47.05
+      ],
+      "residuals": [
+        0.26,
+        0.69,
+        0.91,
+        -0.04,
+        0.04,
+        -0.46,
+        -0.29,
+        -0.08
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 70,
+      "t": 700,
+      "pressures": [
+        36.9,
+        -0.68,
+        27.6,
+        39.0,
+        92.2,
+        43.74,
+        63.98,
+        47.14
+      ],
+      "residuals": [
+        0.59,
+        0.09,
+        1.1,
+        0.01,
+        -0.32,
+        -0.01,
+        -0.62,
+        -0.29
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 71,
+      "t": 710,
+      "pressures": [
+        36.86,
+        -0.96,
+        27.62,
+        39.37,
+        92.39,
+        44.11,
+        63.75,
+        46.95
+      ],
+      "residuals": [
+        0.86,
+        0.6,
+        1.31,
+        -0.13,
+        -0.28,
+        -0.15,
+        -0.16,
+        0.13
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 72,
+      "t": 720,
+      "pressures": [
+        37.23,
+        -0.58,
+        28.65,
+        39.08,
+        91.99,
+        43.49,
+        63.8,
+        47.29
+      ],
+      "residuals": [
+        0.29,
+        0.03,
+        0.09,
+        -0.03,
+        -0.07,
+        0.27,
+        -0.4,
+        -0.4
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 73,
+      "t": 730,
+      "pressures": [
+        37.53,
+        -0.91,
+        28.37,
+        38.98,
+        92.22,
+        43.25,
+        63.24,
+        46.32
+      ],
+      "residuals": [
+        -0.27,
+        0.1,
+        0.11,
+        -0.19,
+        -0.56,
+        0.26,
+        -0.1,
+        0.31
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 74,
+      "t": 740,
+      "pressures": [
+        37.3,
+        -1.1,
+        28.68,
+        39.89,
+        92.18,
+        43.75,
+        63.74,
+        46.75
+      ],
+      "residuals": [
+        0.18,
+        0.51,
+        0.02,
+        -0.88,
+        -0.3,
+        -0.02,
+        -0.38,
+        0.1
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 75,
+      "t": 750,
+      "pressures": [
+        37.61,
+        -1.05,
+        28.32,
+        38.72,
+        91.77,
+        44.04,
+        63.32,
+        47.01
+      ],
+      "residuals": [
+        -0.2,
+        0.39,
+        0.31,
+        0.22,
+        0.03,
+        -0.39,
+        -0.03,
+        -0.23
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 76,
+      "t": 760,
+      "pressures": [
+        37.5,
+        -0.6,
+        27.86,
+        38.95,
+        91.98,
+        43.58,
+        63.66,
+        46.47
+      ],
+      "residuals": [
+        -0.05,
+        -0.02,
+        0.81,
+        0.02,
+        -0.14,
+        0.11,
+        -0.34,
+        0.34
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 77,
+      "t": 770,
+      "pressures": [
+        37.41,
+        -0.51,
+        28.17,
+        38.63,
+        92.32,
+        43.16,
+        63.65,
+        46.99
+      ],
+      "residuals": [
+        0.08,
+        -0.08,
+        0.54,
+        0.38,
+        -0.44,
+        0.57,
+        -0.29,
+        -0.14
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 78,
+      "t": 780,
+      "pressures": [
+        37.22,
+        -0.91,
+        28.06,
+        38.87,
+        91.56,
+        43.77,
+        63.63,
+        46.74
+      ],
+      "residuals": [
+        0.06,
+        0.12,
+        0.44,
+        -0.06,
+        0.11,
+        -0.24,
+        -0.47,
+        -0.09
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 79,
+      "t": 790,
+      "pressures": [
+        37.05,
+        -0.73,
+        28.35,
+        38.39,
+        92.05,
+        43.43,
+        63.84,
+        46.91
+      ],
+      "residuals": [
+        0.21,
+        -0.08,
+        0.13,
+        0.4,
+        -0.39,
+        0.08,
+        -0.7,
+        -0.28
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 80,
+      "t": 800,
+      "pressures": [
+        37.3,
+        -1.57,
+        28.17,
+        38.96,
+        91.5,
+        43.7,
+        64.01,
+        46.98
+      ],
+      "residuals": [
+        0.07,
+        0.87,
+        0.42,
+        -0.07,
+        0.26,
+        -0.09,
+        -0.77,
+        -0.24
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 81,
+      "t": 810,
+      "pressures": [
+        37.53,
+        -0.5,
+        27.98,
+        38.51,
+        91.92,
+        43.22,
+        63.32,
+        46.68
+      ],
+      "residuals": [
+        -0.15,
+        -0.19,
+        0.62,
+        0.4,
+        -0.15,
+        0.4,
+        -0.07,
+        0.07
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 82,
+      "t": 820,
+      "pressures": [
+        37.32,
+        -0.49,
+        27.92,
+        39.17,
+        91.9,
+        43.82,
+        63.94,
+        46.98
+      ],
+      "residuals": [
+        0.26,
+        -0.0,
+        0.88,
+        -0.06,
+        0.07,
+        0.0,
+        -0.49,
+        -0.03
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 83,
+      "t": 830,
+      "pressures": [
+        37.12,
+        -0.17,
+        27.87,
+        38.48,
+        91.94,
+        43.51,
+        63.82,
+        46.85
+      ],
+      "residuals": [
+        0.25,
+        -0.53,
+        0.72,
+        0.42,
+        -0.17,
+        0.11,
+        -0.57,
+        -0.11
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 84,
+      "t": 840,
+      "pressures": [
+        37.71,
+        -1.32,
+        28.25,
+        38.84,
+        91.93,
+        43.59,
+        63.45,
+        47.06
+      ],
+      "residuals": [
+        -0.27,
+        0.69,
+        0.41,
+        0.13,
+        -0.1,
+        0.1,
+        -0.14,
+        -0.25
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 85,
+      "t": 850,
+      "pressures": [
+        37.07,
+        -0.59,
+        28.34,
+        38.41,
+        91.99,
+        43.15,
+        63.77,
+        46.4
+      ],
+      "residuals": [
+        0.02,
+        -0.38,
+        -0.02,
+        0.21,
+        -0.5,
+        0.19,
+        -0.8,
+        0.07
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 86,
+      "t": 860,
+      "pressures": [
+        37.36,
+        -1.41,
+        28.15,
+        38.85,
+        91.66,
+        43.05,
+        63.76,
+        47.35
+      ],
+      "residuals": [
+        -0.07,
+        0.64,
+        0.37,
+        -0.03,
+        0.03,
+        0.49,
+        -0.59,
+        -0.68
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 87,
+      "t": 870,
+      "pressures": [
+        37.49,
+        -1.39,
+        28.4,
+        38.82,
+        91.95,
+        43.75,
+        63.48,
+        46.89
+      ],
+      "residuals": [
+        0.01,
+        0.82,
+        0.32,
+        0.21,
+        -0.06,
+        -0.01,
+        -0.11,
+        -0.02
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 88,
+      "t": 880,
+      "pressures": [
+        38.44,
+        -0.76,
+        27.86,
+        38.67,
+        91.93,
+        43.38,
+        63.5,
+        46.92
+      ],
+      "residuals": [
+        -1.02,
+        0.11,
+        0.79,
+        0.28,
+        -0.11,
+        0.29,
+        -0.2,
+        -0.13
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 89,
+      "t": 890,
+      "pressures": [
+        37.39,
+        -1.11,
+        28.47,
+        39.43,
+        92.69,
+        43.15,
+        64.11,
+        47.01
+      ],
+      "residuals": [
+        0.12,
+        0.56,
+        0.27,
+        -0.39,
+        -0.78,
+        0.61,
+        -0.72,
+        -0.12
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 90,
+      "t": 900,
+      "pressures": [
+        37.44,
+        -1.28,
+        28.26,
+        38.09,
+        92.11,
+        43.42,
+        63.4,
+        46.8
+      ],
+      "residuals": [
+        -0.14,
+        0.51,
+        0.27,
+        0.74,
+        -0.42,
+        0.13,
+        -0.23,
+        -0.13
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 91,
+      "t": 910,
+      "pressures": [
+        36.89,
+        -0.8,
+        27.97,
+        39.23,
+        92.19,
+        43.69,
+        63.7,
+        47.11
+      ],
+      "residuals": [
+        0.68,
+        0.3,
+        0.83,
+        -0.13,
+        -0.23,
+        0.13,
+        -0.26,
+        -0.17
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 92,
+      "t": 920,
+      "pressures": [
+        36.82,
+        -0.66,
+        28.34,
+        38.83,
+        92.65,
+        43.86,
+        63.18,
+        46.74
+      ],
+      "residuals": [
+        0.51,
+        -0.07,
+        0.22,
+        0.04,
+        -0.92,
+        -0.28,
+        0.03,
+        -0.03
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 93,
+      "t": 930,
+      "pressures": [
+        37.63,
+        -0.78,
+        28.32,
+        39.16,
+        92.33,
+        43.08,
+        63.94,
+        46.71
+      ],
+      "residuals": [
+        -0.15,
+        0.2,
+        0.39,
+        -0.15,
+        -0.45,
+        0.65,
+        -0.59,
+        0.15
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 94,
+      "t": 940,
+      "pressures": [
+        37.18,
+        -0.5,
+        27.72,
+        38.59,
+        91.69,
+        43.58,
+        63.82,
+        46.88
+      ],
+      "residuals": [
+        0.13,
+        -0.25,
+        0.82,
+        0.26,
+        0.02,
+        -0.02,
+        -0.63,
+        -0.19
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 95,
+      "t": 950,
+      "pressures": [
+        37.14,
+        -0.82,
+        28.12,
+        39.02,
+        91.84,
+        43.69,
+        63.77,
+        46.99
+      ],
+      "residuals": [
+        0.3,
+        0.2,
+        0.55,
+        -0.04,
+        -0.0,
+        0.0,
+        -0.45,
+        -0.17
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 96,
+      "t": 960,
+      "pressures": [
+        37.46,
+        -0.8,
+        27.99,
+        39.12,
+        91.93,
+        43.12,
+        64.49,
+        47.21
+      ],
+      "residuals": [
+        0.04,
+        0.23,
+        0.74,
+        -0.09,
+        -0.04,
+        0.63,
+        -1.12,
+        -0.33
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 97,
+      "t": 970,
+      "pressures": [
+        37.13,
+        -0.93,
+        28.16,
+        38.39,
+        92.5,
+        43.59,
+        64.02,
+        47.37
+      ],
+      "residuals": [
+        0.1,
+        0.1,
+        0.31,
+        0.38,
+        -0.87,
+        -0.1,
+        -0.91,
+        -0.76
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 98,
+      "t": 980,
+      "pressures": [
+        37.55,
+        -0.85,
+        28.35,
+        39.28,
+        92.2,
+        43.63,
+        63.39,
+        47.18
+      ],
+      "residuals": [
+        -0.02,
+        0.32,
+        0.42,
+        -0.21,
+        -0.27,
+        0.16,
+        0.02,
+        -0.27
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 99,
+      "t": 990,
+      "pressures": [
+        37.55,
+        -1.01,
+        28.33,
+        38.92,
+        91.68,
+        43.3,
+        63.81,
+        46.57
+      ],
+      "residuals": [
+        -0.31,
+        0.19,
+        0.14,
+        -0.15,
+        -0.05,
+        0.19,
+        -0.7,
+        0.05
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 100,
+      "t": 1000,
+      "pressures": [
+        37.3,
+        -0.71,
+        28.57,
+        38.49,
+        92.25,
+        43.72,
+        63.91,
+        45.89
+      ],
+      "residuals": [
+        0.04,
+        -0.01,
+        0.01,
+        0.39,
+        -0.51,
+        -0.12,
+        -0.69,
+        0.83
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 101,
+      "t": 1010,
+      "pressures": [
+        37.67,
+        -0.58,
+        27.82,
+        38.1,
+        91.86,
+        43.56,
+        63.73,
+        46.21
+      ],
+      "residuals": [
+        -0.29,
+        -0.1,
+        0.8,
+        0.82,
+        -0.08,
+        0.08,
+        -0.47,
+        0.56
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 102,
+      "t": 1020,
+      "pressures": [
+        37.19,
+        -0.79,
+        27.95,
+        39.26,
+        91.69,
+        43.49,
+        63.58,
+        47.6
+      ],
+      "residuals": [
+        0.09,
+        0.01,
+        0.57,
+        -0.44,
+        -0.01,
+        0.05,
+        -0.42,
+        -0.94
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 103,
+      "t": 1030,
+      "pressures": [
+        37.29,
+        -0.89,
+        27.9,
+        38.84,
+        91.78,
+        43.58,
+        64.05,
+        46.73
+      ],
+      "residuals": [
+        0.02,
+        0.14,
+        0.65,
+        0.01,
+        -0.07,
+        -0.01,
+        -0.86,
+        -0.03
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 104,
+      "t": 1040,
+      "pressures": [
+        37.54,
+        -1.22,
+        28.03,
+        38.48,
+        92.06,
+        43.79,
+        63.78,
+        46.61
+      ],
+      "residuals": [
+        -0.16,
+        0.54,
+        0.59,
+        0.44,
+        -0.28,
+        -0.15,
+        -0.52,
+        0.15
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 105,
+      "t": 1050,
+      "pressures": [
+        37.42,
+        -0.24,
+        27.83,
+        39.13,
+        92.05,
+        43.5,
+        63.9,
+        46.64
+      ],
+      "residuals": [
+        0.09,
+        -0.31,
+        0.91,
+        -0.09,
+        -0.15,
+        0.26,
+        -0.52,
+        0.25
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 106,
+      "t": 1060,
+      "pressures": [
+        37.4,
+        -0.99,
+        28.53,
+        39.12,
+        92.5,
+        43.97,
+        63.87,
+        46.5
+      ],
+      "residuals": [
+        0.09,
+        0.42,
+        0.2,
+        -0.09,
+        -0.61,
+        -0.22,
+        -0.5,
+        0.38
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 107,
+      "t": 1070,
+      "pressures": [
+        37.48,
+        -0.62,
+        28.74,
+        39.18,
+        92.15,
+        43.51,
+        64.01,
+        46.76
+      ],
+      "residuals": [
+        0.01,
+        0.05,
+        -0.01,
+        -0.15,
+        -0.26,
+        0.24,
+        -0.64,
+        0.12
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 108,
+      "t": 1080,
+      "pressures": [
+        37.67,
+        -1.08,
+        28.0,
+        39.19,
+        92.45,
+        43.48,
+        63.35,
+        46.71
+      ],
+      "residuals": [
+        -0.27,
+        0.42,
+        0.64,
+        -0.25,
+        -0.65,
+        0.18,
+        -0.08,
+        0.08
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 109,
+      "t": 1090,
+      "pressures": [
+        37.17,
+        -0.95,
+        28.2,
+        38.82,
+        92.47,
+        43.75,
+        63.85,
+        46.52
+      ],
+      "residuals": [
+        0.05,
+        0.12,
+        0.26,
+        -0.05,
+        -0.85,
+        -0.27,
+        -0.75,
+        0.09
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 110,
+      "t": 1100,
+      "pressures": [
+        37.42,
+        -0.77,
+        28.43,
+        39.03,
+        92.47,
+        43.39,
+        63.88,
+        46.8
+      ],
+      "residuals": [
+        -0.0,
+        0.13,
+        0.23,
+        -0.07,
+        -0.65,
+        0.29,
+        -0.59,
+        0.0
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 111,
+      "t": 1110,
+      "pressures": [
+        37.0,
+        -0.76,
+        28.01,
+        38.55,
+        92.43,
+        43.71,
+        63.57,
+        47.01
+      ],
+      "residuals": [
+        0.37,
+        0.08,
+        0.6,
+        0.36,
+        -0.66,
+        -0.08,
+        -0.32,
+        -0.25
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 112,
+      "t": 1120,
+      "pressures": [
+        37.31,
+        -1.23,
+        27.51,
+        38.82,
+        91.94,
+        43.6,
+        63.41,
+        46.88
+      ],
+      "residuals": [
+        0.01,
+        0.5,
+        1.06,
+        0.05,
+        -0.21,
+        -0.01,
+        -0.21,
+        -0.17
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 113,
+      "t": 1130,
+      "pressures": [
+        37.76,
+        -1.27,
+        27.93,
+        38.54,
+        91.94,
+        43.42,
+        63.53,
+        46.72
+      ],
+      "residuals": [
+        -0.51,
+        0.46,
+        0.56,
+        0.25,
+        -0.29,
+        0.09,
+        -0.41,
+        -0.09
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 114,
+      "t": 1140,
+      "pressures": [
+        37.74,
+        -0.68,
+        28.06,
+        39.15,
+        92.04,
+        43.23,
+        63.26,
+        46.87
+      ],
+      "residuals": [
+        -0.31,
+        0.06,
+        0.62,
+        -0.18,
+        -0.21,
+        0.46,
+        0.05,
+        -0.05
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 115,
+      "t": 1150,
+      "pressures": [
+        37.08,
+        -0.85,
+        28.06,
+        39.11,
+        92.65,
+        43.62,
+        63.95,
+        47.04
+      ],
+      "residuals": [
+        0.38,
+        0.26,
+        0.65,
+        -0.1,
+        -0.79,
+        0.1,
+        -0.61,
+        -0.19
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 116,
+      "t": 1160,
+      "pressures": [
+        37.53,
+        -0.78,
+        28.6,
+        38.32,
+        92.27,
+        43.57,
+        64.12,
+        46.83
+      ],
+      "residuals": [
+        -0.13,
+        0.13,
+        0.04,
+        0.62,
+        -0.47,
+        0.09,
+        -0.85,
+        -0.04
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 117,
+      "t": 1170,
+      "pressures": [
+        37.42,
+        -0.77,
+        27.94,
+        39.16,
+        92.36,
+        43.56,
+        63.95,
+        46.43
+      ],
+      "residuals": [
+        -0.06,
+        0.08,
+        0.66,
+        -0.26,
+        -0.6,
+        0.06,
+        -0.72,
+        0.32
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 118,
+      "t": 1180,
+      "pressures": [
+        37.04,
+        -0.28,
+        28.76,
+        38.77,
+        92.45,
+        43.7,
+        64.0,
+        46.54
+      ],
+      "residuals": [
+        0.44,
+        -0.3,
+        -0.04,
+        0.25,
+        -0.57,
+        0.04,
+        -0.65,
+        0.33
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 119,
+      "t": 1190,
+      "pressures": [
+        37.23,
+        -0.86,
+        27.46,
+        38.61,
+        91.34,
+        43.58,
+        63.56,
+        46.81
+      ],
+      "residuals": [
+        -0.02,
+        0.02,
+        1.0,
+        0.14,
+        0.27,
+        -0.11,
+        -0.47,
+        -0.21
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    },
+    {
+      "step": 120,
+      "t": 1200,
+      "pressures": [
+        37.36,
+        -0.99,
+        27.98,
+        39.02,
+        91.54,
+        43.69,
+        64.08,
+        46.83
+      ],
+      "residuals": [
+        0.03,
+        0.33,
+        0.66,
+        -0.08,
+        0.26,
+        -0.03,
+        -0.81,
+        -0.04
+      ],
+      "sensor_fault": false,
+      "alert": false,
+      "suspects": [],
+      "loss_estimate_lps": null
+    }
+  ]
+}
