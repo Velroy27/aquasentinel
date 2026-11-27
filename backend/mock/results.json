@@ -1,0 +1,53 @@
+{
+  "detection_rate": 0.942,
+  "false_alarm_per_day": 0.08,
+  "top1": 0.725,
+  "top3": 0.913,
+  "neighbour_acc": 0.957,
+  "chance_baseline": 0.0109,
+  "placement": [
+    {
+      "n_sensors": 2,
+      "optimized": 0.42,
+      "random_mean": 0.28,
+      "random_std": 0.07
+    },
+    {
+      "n_sensors": 4,
+      "optimized": 0.65,
+      "random_mean": 0.45,
+      "random_std": 0.06
+    },
+    {
+      "n_sensors": 6,
+      "optimized": 0.79,
+      "random_mean": 0.55,
+      "random_std": 0.05
+    },
+    {
+      "n_sensors": 8,
+      "optimized": 0.88,
+      "random_mean": 0.62,
+      "random_std": 0.05
+    },
+    {
+      "n_sensors": 10,
+      "optimized": 0.92,
+      "random_mean": 0.68,
+      "random_std": 0.04
+    },
+    {
+      "n_sensors": 12,
+      "optimized": 0.95,
+      "random_mean": 0.74,
+      "random_std": 0.04
+    },
+    {
+      "n_sensors": 16,
+      "optimized": 0.98,
+      "random_mean": 0.81,
+      "random_std": 0.03
+    }
+  ],
+  "measured_at": "2026-11-20T10:00:00Z"
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "scenario_105_leak",
+    "leak_node": "105",
+    "leak_size_lps": 5.5,
+    "start_t": 60,
+    "description": "Pipe rupture at junction 105 (commercial district), start at t=60s"
+  },
+  {
+    "id": "scenario_119_leak",
+    "leak_node": "119",
+    "leak_size_lps": 7.2,
+    "start_t": 40,
+    "description": "Main distribution break near junction 119, start at t=40s"
+  },
+  {
+    "id": "scenario_normal",
+    "leak_node": null,
+    "leak_size_lps": 0.0,
+    "start_t": 0,
+    "description": "Normal baseline operation with typical diurnal variations and no leaks"
+  }
+]
