@@ -52,7 +52,7 @@ export type LocalizationProbability = {
 export type LocalizationMessage = {
   type: 'localization';
   timestamp: string;
-  scenarioId: string;
+  alertId: string;
   probabilities: LocalizationProbability[];
 };
 

@@ -26,6 +26,9 @@ type State = {
   pressuresBySensor: Record<string, PressurePoint[]>;
   alerts: AlertMessage[];
   localization: LocalizationMessage | null;
+  alertActive: boolean;
+  activeAlertId: string | null;
+  leakRateEstimate: number | null;
   anomalyAt: string | null;
   litresLost: number;
   loading: boolean;
@@ -63,6 +66,9 @@ export const useDashboard = create<State>((set, get) => ({
   pressuresBySensor: {},
   alerts: [],
   localization: null,
+  alertActive: false,
+  activeAlertId: null,
+  leakRateEstimate: null,
   anomalyAt: null,
   litresLost: 0,
   loading: true,
@@ -119,6 +125,9 @@ export const useDashboard = create<State>((set, get) => ({
       pressuresBySensor: emptyReadings(sensors),
       alerts: [],
       localization: null,
+      alertActive: false,
+      activeAlertId: null,
+      leakRateEstimate: null,
       anomalyAt: null,
       litresLost: 0,
     });
@@ -140,6 +149,9 @@ export const useDashboard = create<State>((set, get) => ({
       pressuresBySensor: emptyReadings(sensors),
       alerts: [],
       localization: null,
+      alertActive: false,
+      activeAlertId: null,
+      leakRateEstimate: null,
       anomalyAt: null,
       litresLost: 0,
     });
@@ -151,24 +163,35 @@ export const useDashboard = create<State>((set, get) => ({
     if (message.type === 'pressure') {
       const existing = state.pressuresBySensor[message.point.sensorId] ?? [];
       const next = [...existing, message.point].slice(-MAX_POINTS);
-      const scenario = state.scenarios.find((s) => s.id === state.scenarioId);
-      const leakRate = scenario?.leakLitresPerSecond ?? 0;
-      const anomalyActive = state.anomalyAt !== null || message.point.anomaly;
-      const litresLost = anomalyActive ? state.litresLost + leakRate * 2 * state.speed : state.litresLost;
       return {
         pressuresBySensor: { ...state.pressuresBySensor, [message.point.sensorId]: next },
         anomalyAt: message.point.anomaly ? message.point.timestamp : state.anomalyAt,
-        litresLost,
       };
     }
 
     if (message.type === 'alert') {
       if (state.alerts.some((a) => a.id === message.id)) return {};
-      return { alerts: [message, ...state.alerts].slice(0, MAX_ALERTS) };
+      return {
+        alerts: [message, ...state.alerts].slice(0, MAX_ALERTS),
+        alertActive: true,
+        activeAlertId: message.id,
+      };
     }
 
     if (message.type === 'localization') {
+      if (!state.alertActive || state.activeAlertId !== message.alertId) {
+        if (import.meta.env.DEV) console.warn('Ignoring localization without a matching active alert', message.alertId);
+        return {};
+      }
       return { localization: message };
+    }
+
+    if (message.type === 'loss') {
+      if (!state.alertActive || state.activeAlertId !== message.alertId) {
+        if (import.meta.env.DEV) console.warn('Ignoring size/loss message without a matching active alert', message.alertId);
+        return {};
+      }
+      return { leakRateEstimate: message.estimateLps, litresLost: message.litresLost };
     }
 
     return {};

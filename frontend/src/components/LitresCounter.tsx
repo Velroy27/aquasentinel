@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { formatRs, currencyPerLitre } from '../config/settings';
-import { selectCurrentScenario, useDashboard } from '../store/useDashboard';
+import { useDashboard } from '../store/useDashboard';
 
 function useCountUp(value: number): number {
   const [display, setDisplay] = useState(value);
@@ -32,7 +32,8 @@ function useCountUp(value: number): number {
 export function LitresCounter() {
   const litresLost = useDashboard((state) => state.litresLost);
   const anomalyAt = useDashboard((state) => state.anomalyAt);
-  const scenario = useDashboard(selectCurrentScenario);
+  const alertActive = useDashboard((state) => state.alertActive);
+  const leakRateEstimate = useDashboard((state) => state.leakRateEstimate);
   const displayedLitres = useCountUp(litresLost);
   const estimatedRs = litresLost * currencyPerLitre;
   const anomalyTime = anomalyAt
@@ -48,7 +49,7 @@ export function LitresCounter() {
       <div className="counter-caption">WATER LOST <span>·</span> MOCK ESTIMATE</div>
       <div className="counter-grid">
         <div className="counter-stat"><span>Value at risk</span><strong>{formatRs(estimatedRs)}</strong></div>
-        <div className="counter-stat"><span>Leak rate</span><strong>{scenario ? `${scenario.leakLitresPerSecond.toFixed(1)} L/s` : '—'}</strong></div>
+        <div className="counter-stat"><span>Leak rate</span><strong>{alertActive && leakRateEstimate !== null ? `${leakRateEstimate.toFixed(1)} L/s` : '—'}</strong></div>
         <div className="counter-stat"><span>First anomaly</span><strong>{anomalyTime} IST</strong></div>
       </div>
       <div className="counter-footnote">Rs {currencyPerLitre.toFixed(3)} / L ASSUMED</div>

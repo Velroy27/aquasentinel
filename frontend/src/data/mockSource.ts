@@ -56,7 +56,7 @@ function buildTimeline(scenario: Scenario): StreamMessage[] {
       messages.push({
         type: 'localization',
         timestamp,
-        scenarioId: scenario.id,
+        alertId: '',
         probabilities: ranked.map((item) => ({ junctionId: item.junctionId, probability: +(item.raw / total).toFixed(4) })),
       });
     }
@@ -71,6 +71,7 @@ export class MockSource implements DataSource {
   private timer: number | undefined;
   private index = 0;
   private scenarioId = scenarios[0]?.id ?? '';
+  private activeAlertId = '';
   private cache: TimelineCache = new Map();
 
   private timeline(): StreamMessage[] {
@@ -95,6 +96,7 @@ export class MockSource implements DataSource {
   startScenario(id: string, speed: 1 | 5 | 20): void {
     this.stop();
     this.scenarioId = id;
+    this.activeAlertId = '';
     this.index = 0;
     this.emitStatus('live');
     const messages = this.timeline();
@@ -102,6 +104,8 @@ export class MockSource implements DataSource {
       if (!messages.length) return;
       const message = messages[this.index];
       this.index += 1;
+      if (message?.type === 'alert') this.activeAlertId = message.id;
+      if (message?.type === 'localization') message.alertId = this.activeAlertId;
       if (message) this.handlers.forEach((handler) => handler(message));
       if (this.index >= messages.length) this.stop();
     }, Math.max(80, 1000 / speed));

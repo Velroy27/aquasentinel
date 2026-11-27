@@ -1,5 +1,5 @@
 import { apiBaseUrl, wsUrl } from '../config/settings';
-import { isStreamMessage, type DataSource } from './DataSource';
+import { normalizeStreamMessage, type DataSource } from './DataSource';
 import { normalizeResults } from './normalizeResults';
 import { normalizeNetwork, normalizeScenarios } from './normalizeNetwork';
 import type { DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamStatus } from './types';
@@ -16,7 +16,6 @@ export class LiveSource implements DataSource {
   private ws: WebSocket | undefined;
   private reconnectTimer: number | undefined;
   private shouldReconnect = false;
-  private lastStart: { id: string; speed: 1 | 5 | 20 } | null = null;
 
   private emitStatus(status: StreamStatus) {
     this.statusHandlers.forEach((handler) => handler(status));
@@ -30,15 +29,12 @@ export class LiveSource implements DataSource {
 
     ws.addEventListener('open', () => {
       this.emitStatus('live');
-      if (this.lastStart) {
-        ws.send(JSON.stringify({ action: 'start', scenarioId: this.lastStart.id, speed: this.lastStart.speed }));
-      }
     });
 
     ws.addEventListener('message', (event) => {
       try {
         const value = JSON.parse(String(event.data));
-        if (isStreamMessage(value)) this.handlers.forEach((handler) => handler(value));
+        normalizeStreamMessage(value).forEach((message) => this.handlers.forEach((handler) => handler(message)));
       } catch {
         // Ignore malformed messages; contract violations should not crash the UI.
       }
@@ -60,33 +56,33 @@ export class LiveSource implements DataSource {
     });
   }
 
-  private send(payload: Record<string, unknown>) {
-    if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(payload));
-  }
-
   async getNetwork(): Promise<Network> { return normalizeNetwork(await getJson<unknown>('/network')); }
   async getResults(): Promise<Results> { return normalizeResults(await getJson<unknown>('/results')); }
   async getPlacement(): Promise<Placement[]> { return getJson<Placement[]>('/placement'); }
   async getScenarios(): Promise<Scenario[]> { return normalizeScenarios(await getJson<unknown>('/scenarios')); }
 
   startScenario(id: string, speed: 1 | 5 | 20): void {
-    this.lastStart = { id, speed };
     this.shouldReconnect = true;
-    if (!this.ws || this.ws.readyState === WebSocket.CLOSED) {
+    const start = () => fetch(`${apiBaseUrl}/replay/start`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenario_id: id, speed }),
+    }).then((response) => {
+      if (!response.ok) throw new Error(`Replay start failed: ${response.status}`);
+    }).catch((error) => console.error(error));
+    if (this.ws?.readyState === WebSocket.OPEN) void start();
+    else {
       this.openSocket();
-      return;
+      this.ws?.addEventListener('open', () => void start(), { once: true });
     }
-    this.send({ action: 'start', scenarioId: id, speed });
   }
 
   stop(): void {
-    this.lastStart = null;
-    this.send({ action: 'stop' });
+    void fetch(`${apiBaseUrl}/replay/stop`, { method: 'POST' }).catch((error) => console.error(error));
   }
 
   reset(): void {
-    this.lastStart = null;
-    this.send({ action: 'reset' });
+    this.stop();
   }
 
   subscribe(handler: DataHandler): () => void {
