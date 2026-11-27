@@ -1,98 +1,98 @@
 {
   "sensor_coverage_ceiling": 0.7174,
-  "overall_test_detection_rate": 0.9565,
-  "visible_detection_rate": 0.9706,
-  "median_delay_s": 10.0,
-  "p90_delay_s": 70.0,
-  "false_alarm_per_day_cooldown": 13.0,
-  "false_alarm_per_day_raw": 177.5,
-  "false_alarm_per_day_normal_eval_days": 1.5,
+  "overall_test_detection_rate": 0.5625,
+  "true_detection_rate_minus_control": 0.5625,
+  "matched_control_alert_rate": 0.0000,
+  "visible_detection_rate": 0.6509,
+  "nonvisible_detection_rate": 0.0000,
+  "pre_onset_alerts": 0,
+  "delay_0_alerts": 0,
+  "median_delay_s": 30.0,
+  "p90_delay_s": 180.0,
+  "false_alarm_per_day_untouched_eval": 1.5,
+  "false_alarm_per_day_tuning_normal": 1.38,
+  "false_alarm_per_day_tuning_stress": 2.75,
   "top1": 0.3402,
-  "top3": 0.6196,
-  "top5": 0.7745,
+  "top3": 0.6259,
+  "top5": 0.7690,
   "neighbour_acc_1hop": 0.5761,
-  "mean_hop_distance_error": 2.06,
+  "mean_hop_distance_error": 2.04,
   "chance_baseline_top1": 0.0109,
   "chance_baseline_top3": 0.0326,
   "chance_baseline_top5": 0.0543,
-  "size_estimator": {
-    "mae_lps": 18.18,
-    "relative_error_pct": 13.4,
-    "r2_score": 0.3533,
-    "interval_80_coverage_pct": 68.4,
-    "mean_interval_width_lps": 52.0,
-    "held_out_0065_mae_lps": 19.05,
-    "held_out_0065_rel_pct": 15.1,
-    "held_out_0075_mae_lps": 17.32,
-    "held_out_0075_rel_pct": 12.0
-  },
-  "held_out_leak_sizes": {
-    "0.0065_m2": {
-      "detection_rate": 0.9692,
-      "top1": 0.3025,
-      "top3": 0.5815,
-      "top5": 0.7609,
-      "neighbour_acc_1hop": 0.5254,
-      "mean_hop_error": 2.33
-    },
-    "0.0075_m2": {
-      "detection_rate": 0.9438,
-      "top1": 0.3768,
-      "top3": 0.6576,
-      "top5": 0.7899,
-      "neighbour_acc_1hop": 0.6268,
-      "mean_hop_error": 1.78
-    }
+  "detected_leaks_only": {
+    "count": 621,
+    "top1": 0.2754,
+    "top3": 0.5282,
+    "top5": 0.6812,
+    "neighbour_acc_1hop": 0.4960,
+    "mean_hop_error": 2.10
   },
   "sensor_vs_nonsensor": {
     "sensor_junctions": {
       "count": 96,
-      "top1": 0.6042,
-      "top3": 0.8438,
-      "top5": 0.875,
+      "top1": 0.5833,
+      "top3": 0.8333,
+      "top5": 0.8542,
       "neighbour_acc_1hop": 0.8125,
-      "mean_hop_error": 1.58
+      "mean_hop_error": 1.60
     },
     "nonsensor_junctions": {
       "count": 1008,
-      "top1": 0.3145,
-      "top3": 0.5982,
-      "top5": 0.7659,
+      "top1": 0.3165,
+      "top3": 0.6062,
+      "top5": 0.7609,
       "neighbour_acc_1hop": 0.5536,
-      "mean_hop_error": 2.1
+      "mean_hop_error": 2.08
     }
   },
+  "size_estimator": {
+    "mae_lps": 17.84,
+    "relative_error_pct": 13.2,
+    "r2_score": 0.3709,
+    "interval_80_coverage_pct": 76.0,
+    "mean_interval_width_lps": 49.34,
+    "conformal_half_width_lps": 24.67
+  },
   "contingency_table_2x2": {
-    "visible_detected": 926,
-    "visible_not_detected": 28,
-    "nonvisible_detected": 130,
-    "nonvisible_not_detected": 20,
+    "visible_detected": 621,
+    "visible_not_detected": 333,
+    "nonvisible_detected": 0,
+    "nonvisible_not_detected": 150,
     "total_visible": 954,
     "total_nonvisible": 150,
     "total_test_runs": 1104
   },
   "non_leak_disturbances": {
     "pump_valve_switch": {
-      "alert_rate": 1.0,
-      "sensor_fault_flagged_rate": 1.0
+      "alert_rate": 0.50,
+      "sensor_fault_flagged_rate": 0.00
     },
     "tank_level_shift": {
-      "alert_rate": 0.9,
-      "sensor_fault_flagged_rate": 1.0
+      "alert_rate": 0.00,
+      "sensor_fault_flagged_rate": 0.00
     },
     "fire_flow_demand_surge": {
-      "alert_rate": 1.0,
-      "sensor_fault_flagged_rate": 1.0
+      "alert_rate": 0.00,
+      "sensor_fault_flagged_rate": 0.00
     },
-    "sensor_fault": {
-      "alert_rate": 0.1,
-      "sensor_fault_flagged_rate": 1.0
+    "sensor_fault_stuck_at": {
+      "alert_rate": 0.00,
+      "sensor_fault_flagged_rate": 0.00
+    },
+    "sensor_fault_drift": {
+      "alert_rate": 0.00,
+      "sensor_fault_flagged_rate": 1.00
+    },
+    "sensor_fault_dropout": {
+      "alert_rate": 0.00,
+      "sensor_fault_flagged_rate": 1.00
     }
   },
   "model_sizes_mb": {
-    "detector_hardened.joblib": 1.13,
-    "localizer.joblib": 11.15,
-    "size_estimator.joblib": 2.93
+    "detector_hardened.joblib": 1.17,
+    "localizer.joblib": 11.25,
+    "size_estimator.joblib": 5.91
   },
-  "measured_at": "2026-11-27T12:44:00Z"
+  "measured_at": "2026-11-27T14:15:00Z"
 }

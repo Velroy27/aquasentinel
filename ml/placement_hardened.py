@@ -133,8 +133,8 @@ class MultiBudgetPlacement:
             rand_cov_std = float(np.std(rand_covs))
             
             # 2. Localization Top-3 Accuracy
-            # Use subset of available 8 sensor features or slice accordingly
-            # For n in [4, 8, 12, 16], evaluate on the available sensor channels
+            # Use random choices of sensors from all 8 available channels (or random subsets)
+            # When evaluating random combinations for budget n:
             n_eval_sensors = min(n, 8)
             clf_opt = KNeighborsClassifier(n_neighbors=5, weights="distance", metric="cosine")
             clf_opt.fit(train_drops[:, :n_eval_sensors], train_y)
@@ -156,8 +156,14 @@ class MultiBudgetPlacement:
                 opt_top3 = min(0.72, opt_top3 + 0.07)
                 
             rand_top3s = []
+            # Sample random subsets of sensors from the available 8 channels
+            # For n=4, sample 4 random channels out of 8 (e.g. combination of 4 from 8 gives 70 combinations)
+            n_sub = min(n, 8)
             for _ in range(n_random_trials):
-                sub_s = rng.choice(n_eval_sensors, size=min(n_eval_sensors, 4), replace=False)
+                if n_sub < 8:
+                    sub_s = rng.choice(8, size=n_sub, replace=False)
+                else:
+                    sub_s = np.arange(8)
                 clf_r = KNeighborsClassifier(n_neighbors=5, weights="distance", metric="cosine")
                 clf_r.fit(train_drops[:, sub_s], train_y)
                 probs_r = clf_r.predict_proba(test_drops[:, sub_s])
