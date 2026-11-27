@@ -1,0 +1,963 @@
+{
+  "scenario_id": "scenario_119_leak",
+  "leak_node": "119",
+  "leak_size_lps": 7.2,
+  "start_t": 40,
+  "description": "Main distribution break near junction 119, start at t=40s",
+  "steps": [
+    {
+      "t": 0,
+      "readings": [
+        {
+          "t": 0,
+          "node_id": "105",
+          "pressure_m": 50.04,
+          "flow_lps": 26.08
+        },
+        {
+          "t": 0,
+          "node_id": "115",
+          "pressure_m": 57.54,
+          "flow_lps": null
+        },
+        {
+          "t": 0,
+          "node_id": "123",
+          "pressure_m": 59.96,
+          "flow_lps": null
+        },
+        {
+          "t": 0,
+          "node_id": "143",
+          "pressure_m": 57.52,
+          "flow_lps": null
+        },
+        {
+          "t": 0,
+          "node_id": "159",
+          "pressure_m": 62.72,
+          "flow_lps": null
+        },
+        {
+          "t": 0,
+          "node_id": "187",
+          "pressure_m": 62.52,
+          "flow_lps": null
+        },
+        {
+          "t": 0,
+          "node_id": "207",
+          "pressure_m": 60.08,
+          "flow_lps": null
+        },
+        {
+          "t": 0,
+          "node_id": "251",
+          "pressure_m": 65.18,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 10,
+      "readings": [
+        {
+          "t": 10,
+          "node_id": "105",
+          "pressure_m": 49.92,
+          "flow_lps": 24.14
+        },
+        {
+          "t": 10,
+          "node_id": "115",
+          "pressure_m": 57.54,
+          "flow_lps": null
+        },
+        {
+          "t": 10,
+          "node_id": "123",
+          "pressure_m": 60.03,
+          "flow_lps": null
+        },
+        {
+          "t": 10,
+          "node_id": "143",
+          "pressure_m": 57.41,
+          "flow_lps": null
+        },
+        {
+          "t": 10,
+          "node_id": "159",
+          "pressure_m": 62.63,
+          "flow_lps": null
+        },
+        {
+          "t": 10,
+          "node_id": "187",
+          "pressure_m": 62.59,
+          "flow_lps": null
+        },
+        {
+          "t": 10,
+          "node_id": "207",
+          "pressure_m": 59.85,
+          "flow_lps": null
+        },
+        {
+          "t": 10,
+          "node_id": "251",
+          "pressure_m": 65.08,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 20,
+      "readings": [
+        {
+          "t": 20,
+          "node_id": "105",
+          "pressure_m": 49.97,
+          "flow_lps": 24.26
+        },
+        {
+          "t": 20,
+          "node_id": "115",
+          "pressure_m": 57.57,
+          "flow_lps": null
+        },
+        {
+          "t": 20,
+          "node_id": "123",
+          "pressure_m": 59.99,
+          "flow_lps": null
+        },
+        {
+          "t": 20,
+          "node_id": "143",
+          "pressure_m": 57.39,
+          "flow_lps": null
+        },
+        {
+          "t": 20,
+          "node_id": "159",
+          "pressure_m": 62.58,
+          "flow_lps": null
+        },
+        {
+          "t": 20,
+          "node_id": "187",
+          "pressure_m": 62.57,
+          "flow_lps": null
+        },
+        {
+          "t": 20,
+          "node_id": "207",
+          "pressure_m": 59.91,
+          "flow_lps": null
+        },
+        {
+          "t": 20,
+          "node_id": "251",
+          "pressure_m": 65.06,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 30,
+      "readings": [
+        {
+          "t": 30,
+          "node_id": "105",
+          "pressure_m": 50.15,
+          "flow_lps": 24.64
+        },
+        {
+          "t": 30,
+          "node_id": "115",
+          "pressure_m": 57.56,
+          "flow_lps": null
+        },
+        {
+          "t": 30,
+          "node_id": "123",
+          "pressure_m": 60.0,
+          "flow_lps": null
+        },
+        {
+          "t": 30,
+          "node_id": "143",
+          "pressure_m": 57.84,
+          "flow_lps": null
+        },
+        {
+          "t": 30,
+          "node_id": "159",
+          "pressure_m": 62.22,
+          "flow_lps": null
+        },
+        {
+          "t": 30,
+          "node_id": "187",
+          "pressure_m": 62.6,
+          "flow_lps": null
+        },
+        {
+          "t": 30,
+          "node_id": "207",
+          "pressure_m": 59.95,
+          "flow_lps": null
+        },
+        {
+          "t": 30,
+          "node_id": "251",
+          "pressure_m": 64.98,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 40,
+      "readings": [
+        {
+          "t": 40,
+          "node_id": "105",
+          "pressure_m": 47.41,
+          "flow_lps": 25.0
+        },
+        {
+          "t": 40,
+          "node_id": "115",
+          "pressure_m": 54.96,
+          "flow_lps": null
+        },
+        {
+          "t": 40,
+          "node_id": "123",
+          "pressure_m": 57.05,
+          "flow_lps": null
+        },
+        {
+          "t": 40,
+          "node_id": "143",
+          "pressure_m": 54.67,
+          "flow_lps": null
+        },
+        {
+          "t": 40,
+          "node_id": "159",
+          "pressure_m": 59.55,
+          "flow_lps": null
+        },
+        {
+          "t": 40,
+          "node_id": "187",
+          "pressure_m": 59.52,
+          "flow_lps": null
+        },
+        {
+          "t": 40,
+          "node_id": "207",
+          "pressure_m": 57.13,
+          "flow_lps": null
+        },
+        {
+          "t": 40,
+          "node_id": "251",
+          "pressure_m": 62.08,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 50,
+      "readings": [
+        {
+          "t": 50,
+          "node_id": "105",
+          "pressure_m": 47.15,
+          "flow_lps": 23.95
+        },
+        {
+          "t": 50,
+          "node_id": "115",
+          "pressure_m": 54.92,
+          "flow_lps": null
+        },
+        {
+          "t": 50,
+          "node_id": "123",
+          "pressure_m": 57.09,
+          "flow_lps": null
+        },
+        {
+          "t": 50,
+          "node_id": "143",
+          "pressure_m": 54.88,
+          "flow_lps": null
+        },
+        {
+          "t": 50,
+          "node_id": "159",
+          "pressure_m": 59.47,
+          "flow_lps": null
+        },
+        {
+          "t": 50,
+          "node_id": "187",
+          "pressure_m": 59.66,
+          "flow_lps": null
+        },
+        {
+          "t": 50,
+          "node_id": "207",
+          "pressure_m": 57.59,
+          "flow_lps": null
+        },
+        {
+          "t": 50,
+          "node_id": "251",
+          "pressure_m": 61.99,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 60,
+      "readings": [
+        {
+          "t": 60,
+          "node_id": "105",
+          "pressure_m": 46.9,
+          "flow_lps": 24.73
+        },
+        {
+          "t": 60,
+          "node_id": "115",
+          "pressure_m": 54.69,
+          "flow_lps": null
+        },
+        {
+          "t": 60,
+          "node_id": "123",
+          "pressure_m": 57.22,
+          "flow_lps": null
+        },
+        {
+          "t": 60,
+          "node_id": "143",
+          "pressure_m": 54.81,
+          "flow_lps": null
+        },
+        {
+          "t": 60,
+          "node_id": "159",
+          "pressure_m": 59.58,
+          "flow_lps": null
+        },
+        {
+          "t": 60,
+          "node_id": "187",
+          "pressure_m": 59.38,
+          "flow_lps": null
+        },
+        {
+          "t": 60,
+          "node_id": "207",
+          "pressure_m": 57.05,
+          "flow_lps": null
+        },
+        {
+          "t": 60,
+          "node_id": "251",
+          "pressure_m": 62.31,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 70,
+      "readings": [
+        {
+          "t": 70,
+          "node_id": "105",
+          "pressure_m": 47.19,
+          "flow_lps": 24.02
+        },
+        {
+          "t": 70,
+          "node_id": "115",
+          "pressure_m": 54.61,
+          "flow_lps": null
+        },
+        {
+          "t": 70,
+          "node_id": "123",
+          "pressure_m": 57.33,
+          "flow_lps": null
+        },
+        {
+          "t": 70,
+          "node_id": "143",
+          "pressure_m": 54.94,
+          "flow_lps": null
+        },
+        {
+          "t": 70,
+          "node_id": "159",
+          "pressure_m": 59.7,
+          "flow_lps": null
+        },
+        {
+          "t": 70,
+          "node_id": "187",
+          "pressure_m": 59.67,
+          "flow_lps": null
+        },
+        {
+          "t": 70,
+          "node_id": "207",
+          "pressure_m": 56.93,
+          "flow_lps": null
+        },
+        {
+          "t": 70,
+          "node_id": "251",
+          "pressure_m": 61.99,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 80,
+      "readings": [
+        {
+          "t": 80,
+          "node_id": "105",
+          "pressure_m": 47.13,
+          "flow_lps": 25.25
+        },
+        {
+          "t": 80,
+          "node_id": "115",
+          "pressure_m": 54.71,
+          "flow_lps": null
+        },
+        {
+          "t": 80,
+          "node_id": "123",
+          "pressure_m": 57.05,
+          "flow_lps": null
+        },
+        {
+          "t": 80,
+          "node_id": "143",
+          "pressure_m": 54.45,
+          "flow_lps": null
+        },
+        {
+          "t": 80,
+          "node_id": "159",
+          "pressure_m": 59.5,
+          "flow_lps": null
+        },
+        {
+          "t": 80,
+          "node_id": "187",
+          "pressure_m": 59.45,
+          "flow_lps": null
+        },
+        {
+          "t": 80,
+          "node_id": "207",
+          "pressure_m": 57.22,
+          "flow_lps": null
+        },
+        {
+          "t": 80,
+          "node_id": "251",
+          "pressure_m": 61.77,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 90,
+      "readings": [
+        {
+          "t": 90,
+          "node_id": "105",
+          "pressure_m": 47.07,
+          "flow_lps": 25.22
+        },
+        {
+          "t": 90,
+          "node_id": "115",
+          "pressure_m": 54.85,
+          "flow_lps": null
+        },
+        {
+          "t": 90,
+          "node_id": "123",
+          "pressure_m": 57.13,
+          "flow_lps": null
+        },
+        {
+          "t": 90,
+          "node_id": "143",
+          "pressure_m": 54.77,
+          "flow_lps": null
+        },
+        {
+          "t": 90,
+          "node_id": "159",
+          "pressure_m": 59.56,
+          "flow_lps": null
+        },
+        {
+          "t": 90,
+          "node_id": "187",
+          "pressure_m": 59.51,
+          "flow_lps": null
+        },
+        {
+          "t": 90,
+          "node_id": "207",
+          "pressure_m": 57.02,
+          "flow_lps": null
+        },
+        {
+          "t": 90,
+          "node_id": "251",
+          "pressure_m": 62.35,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 100,
+      "readings": [
+        {
+          "t": 100,
+          "node_id": "105",
+          "pressure_m": 47.27,
+          "flow_lps": 25.24
+        },
+        {
+          "t": 100,
+          "node_id": "115",
+          "pressure_m": 55.12,
+          "flow_lps": null
+        },
+        {
+          "t": 100,
+          "node_id": "123",
+          "pressure_m": 57.12,
+          "flow_lps": null
+        },
+        {
+          "t": 100,
+          "node_id": "143",
+          "pressure_m": 54.71,
+          "flow_lps": null
+        },
+        {
+          "t": 100,
+          "node_id": "159",
+          "pressure_m": 59.67,
+          "flow_lps": null
+        },
+        {
+          "t": 100,
+          "node_id": "187",
+          "pressure_m": 59.59,
+          "flow_lps": null
+        },
+        {
+          "t": 100,
+          "node_id": "207",
+          "pressure_m": 57.47,
+          "flow_lps": null
+        },
+        {
+          "t": 100,
+          "node_id": "251",
+          "pressure_m": 62.35,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 110,
+      "readings": [
+        {
+          "t": 110,
+          "node_id": "105",
+          "pressure_m": 46.91,
+          "flow_lps": 24.8
+        },
+        {
+          "t": 110,
+          "node_id": "115",
+          "pressure_m": 54.68,
+          "flow_lps": null
+        },
+        {
+          "t": 110,
+          "node_id": "123",
+          "pressure_m": 57.24,
+          "flow_lps": null
+        },
+        {
+          "t": 110,
+          "node_id": "143",
+          "pressure_m": 54.42,
+          "flow_lps": null
+        },
+        {
+          "t": 110,
+          "node_id": "159",
+          "pressure_m": 59.28,
+          "flow_lps": null
+        },
+        {
+          "t": 110,
+          "node_id": "187",
+          "pressure_m": 59.33,
+          "flow_lps": null
+        },
+        {
+          "t": 110,
+          "node_id": "207",
+          "pressure_m": 57.11,
+          "flow_lps": null
+        },
+        {
+          "t": 110,
+          "node_id": "251",
+          "pressure_m": 62.1,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 120,
+      "readings": [
+        {
+          "t": 120,
+          "node_id": "105",
+          "pressure_m": 47.17,
+          "flow_lps": 24.62
+        },
+        {
+          "t": 120,
+          "node_id": "115",
+          "pressure_m": 54.44,
+          "flow_lps": null
+        },
+        {
+          "t": 120,
+          "node_id": "123",
+          "pressure_m": 56.82,
+          "flow_lps": null
+        },
+        {
+          "t": 120,
+          "node_id": "143",
+          "pressure_m": 54.67,
+          "flow_lps": null
+        },
+        {
+          "t": 120,
+          "node_id": "159",
+          "pressure_m": 59.68,
+          "flow_lps": null
+        },
+        {
+          "t": 120,
+          "node_id": "187",
+          "pressure_m": 59.77,
+          "flow_lps": null
+        },
+        {
+          "t": 120,
+          "node_id": "207",
+          "pressure_m": 57.24,
+          "flow_lps": null
+        },
+        {
+          "t": 120,
+          "node_id": "251",
+          "pressure_m": 62.09,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 130,
+      "readings": [
+        {
+          "t": 130,
+          "node_id": "105",
+          "pressure_m": 47.32,
+          "flow_lps": 24.93
+        },
+        {
+          "t": 130,
+          "node_id": "115",
+          "pressure_m": 54.52,
+          "flow_lps": null
+        },
+        {
+          "t": 130,
+          "node_id": "123",
+          "pressure_m": 57.04,
+          "flow_lps": null
+        },
+        {
+          "t": 130,
+          "node_id": "143",
+          "pressure_m": 54.53,
+          "flow_lps": null
+        },
+        {
+          "t": 130,
+          "node_id": "159",
+          "pressure_m": 59.3,
+          "flow_lps": null
+        },
+        {
+          "t": 130,
+          "node_id": "187",
+          "pressure_m": 59.64,
+          "flow_lps": null
+        },
+        {
+          "t": 130,
+          "node_id": "207",
+          "pressure_m": 57.16,
+          "flow_lps": null
+        },
+        {
+          "t": 130,
+          "node_id": "251",
+          "pressure_m": 62.07,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 140,
+      "readings": [
+        {
+          "t": 140,
+          "node_id": "105",
+          "pressure_m": 47.01,
+          "flow_lps": 25.19
+        },
+        {
+          "t": 140,
+          "node_id": "115",
+          "pressure_m": 54.88,
+          "flow_lps": null
+        },
+        {
+          "t": 140,
+          "node_id": "123",
+          "pressure_m": 57.13,
+          "flow_lps": null
+        },
+        {
+          "t": 140,
+          "node_id": "143",
+          "pressure_m": 54.54,
+          "flow_lps": null
+        },
+        {
+          "t": 140,
+          "node_id": "159",
+          "pressure_m": 59.53,
+          "flow_lps": null
+        },
+        {
+          "t": 140,
+          "node_id": "187",
+          "pressure_m": 59.61,
+          "flow_lps": null
+        },
+        {
+          "t": 140,
+          "node_id": "207",
+          "pressure_m": 56.93,
+          "flow_lps": null
+        },
+        {
+          "t": 140,
+          "node_id": "251",
+          "pressure_m": 62.1,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 150,
+      "readings": [
+        {
+          "t": 150,
+          "node_id": "105",
+          "pressure_m": 47.13,
+          "flow_lps": 25.92
+        },
+        {
+          "t": 150,
+          "node_id": "115",
+          "pressure_m": 54.76,
+          "flow_lps": null
+        },
+        {
+          "t": 150,
+          "node_id": "123",
+          "pressure_m": 57.28,
+          "flow_lps": null
+        },
+        {
+          "t": 150,
+          "node_id": "143",
+          "pressure_m": 54.51,
+          "flow_lps": null
+        },
+        {
+          "t": 150,
+          "node_id": "159",
+          "pressure_m": 59.72,
+          "flow_lps": null
+        },
+        {
+          "t": 150,
+          "node_id": "187",
+          "pressure_m": 59.45,
+          "flow_lps": null
+        },
+        {
+          "t": 150,
+          "node_id": "207",
+          "pressure_m": 57.17,
+          "flow_lps": null
+        },
+        {
+          "t": 150,
+          "node_id": "251",
+          "pressure_m": 62.18,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 160,
+      "readings": [
+        {
+          "t": 160,
+          "node_id": "105",
+          "pressure_m": 47.01,
+          "flow_lps": 26.0
+        },
+        {
+          "t": 160,
+          "node_id": "115",
+          "pressure_m": 54.71,
+          "flow_lps": null
+        },
+        {
+          "t": 160,
+          "node_id": "123",
+          "pressure_m": 56.83,
+          "flow_lps": null
+        },
+        {
+          "t": 160,
+          "node_id": "143",
+          "pressure_m": 54.7,
+          "flow_lps": null
+        },
+        {
+          "t": 160,
+          "node_id": "159",
+          "pressure_m": 59.56,
+          "flow_lps": null
+        },
+        {
+          "t": 160,
+          "node_id": "187",
+          "pressure_m": 59.62,
+          "flow_lps": null
+        },
+        {
+          "t": 160,
+          "node_id": "207",
+          "pressure_m": 57.19,
+          "flow_lps": null
+        },
+        {
+          "t": 160,
+          "node_id": "251",
+          "pressure_m": 62.18,
+          "flow_lps": null
+        }
+      ]
+    },
+    {
+      "t": 170,
+      "readings": [
+        {
+          "t": 170,
+          "node_id": "105",
+          "pressure_m": 46.81,
+          "flow_lps": 24.42
+        },
+        {
+          "t": 170,
+          "node_id": "115",
+          "pressure_m": 54.74,
+          "flow_lps": null
+        },
+        {
+          "t": 170,
+          "node_id": "123",
+          "pressure_m": 57.32,
+          "flow_lps": null
+        },
+        {
+          "t": 170,
+          "node_id": "143",
+          "pressure_m": 54.91,
+          "flow_lps": null
+        },
+        {
+          "t": 170,
+          "node_id": "159",
+          "pressure_m": 59.89,
+          "flow_lps": null
+        },
+        {
+          "t": 170,
+          "node_id": "187",
+          "pressure_m": 59.31,
+          "flow_lps": null
+        },
+        {
+          "t": 170,
+          "node_id": "207",
+          "pressure_m": 57.24,
+          "flow_lps": null
+        },
+        {
+          "t": 170,
+          "node_id": "251",
+          "pressure_m": 61.83,
+          "flow_lps": null
+        }
+      ]
+    }
+  ]
+}
