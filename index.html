@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1114" />
+    <title>AquaSentinel | Network Operations</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      window.addEventListener('error', (event) => {
+        const root = document.getElementById('root');
+        if (!root || root.childElementCount > 0) return;
+        const panel = document.createElement('pre');
+        panel.textContent = `AquaSentinel failed to load: ${event.message || event.type}`;
+        panel.style.cssText = 'margin:32px;padding:16px;border-top:2px solid #d97462;color:#e7ece9;background:#0d1213;font:14px monospace;white-space:pre-wrap';
+        root.replaceChildren(panel);
+      });
+      window.addEventListener('unhandledrejection', (event) => {
+        const root = document.getElementById('root');
+        if (!root || root.childElementCount > 0) return;
+        const panel = document.createElement('pre');
+        panel.textContent = `AquaSentinel failed to initialize: ${String(event.reason)}`;
+        panel.style.cssText = 'margin:32px;padding:16px;border-top:2px solid #d97462;color:#e7ece9;background:#0d1213;font:14px monospace;white-space:pre-wrap';
+        root.replaceChildren(panel);
+      });
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
