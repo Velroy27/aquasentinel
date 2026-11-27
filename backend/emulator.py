@@ -7,7 +7,7 @@ import time
 from typing import Any, Optional
 import httpx
 
-from backend.config import MOCK_REPLAY_DIR
+from backend.config import DATA_REPLAY_DIR, MOCK_REPLAY_DIR
 
 logging.basicConfig(
     level=logging.INFO,
@@ -79,13 +79,22 @@ class NodeEmulator:
         with open(scenario_file, "r", encoding="utf-8") as f:
             data = json.load(f)
 
-        steps = data.get("steps", [])
+        if isinstance(data, list):
+            steps = data
+            scenario_name = scenario_file.stem
+        elif isinstance(data, dict):
+            steps = data.get("steps", [])
+            scenario_name = data.get("scenario_id", scenario_file.name)
+        else:
+            steps = []
+            scenario_name = scenario_file.name
+
         if not steps:
             logger.error("No steps found in scenario: %s", scenario_file)
             return
 
         logger.info("Starting emulator for scenario '%s' with %d steps at %.1fx speed",
-                    data.get("scenario_id", scenario_file.name), len(steps), self.speed)
+                    scenario_name, len(steps), self.speed)
 
         while True:
             for step in steps:
@@ -112,7 +121,7 @@ class NodeEmulator:
 
 def main():
     parser = argparse.ArgumentParser(description="AquaSentinel Sensor Node Emulator")
-    parser.add_argument("--scenario", type=str, default="scenario_105_leak", help="Scenario ID or filename")
+    parser.add_argument("--scenario", type=str, default="scenario_03_nonsensor_node101", help="Scenario ID or filename")
     parser.add_argument("--speed", type=float, default=1.0, help="Replay speed multiplier (1, 5, 20)")
     parser.add_argument("--api", type=str, default="http://127.0.0.1:8000", help="Backend API base URL")
     parser.add_argument("--mqtt", action="store_true", help="Publish over MQTT instead of HTTP")
@@ -122,9 +131,30 @@ def main():
 
     args = parser.parse_args()
 
-    sc_path = Path(args.scenario)
+    sc_input = args.scenario
+    sc_path = Path(sc_input)
     if not sc_path.exists():
-        sc_path = MOCK_REPLAY_DIR / f"{args.scenario}.json"
+        candidates = [
+            DATA_REPLAY_DIR / sc_input,
+            DATA_REPLAY_DIR / f"{sc_input}.json",
+            MOCK_REPLAY_DIR / sc_input,
+            MOCK_REPLAY_DIR / f"{sc_input}.json",
+        ]
+        cat_file = DATA_REPLAY_DIR / "scenarios_catalog.json"
+        if cat_file.exists():
+            try:
+                with open(cat_file, "r", encoding="utf-8") as f:
+                    cat = json.load(f)
+                for item in cat:
+                    if item.get("id") == sc_input or item.get("filename") == sc_input:
+                        candidates.insert(0, DATA_REPLAY_DIR / item["filename"])
+            except Exception:
+                pass
+
+        for cand in candidates:
+            if cand.exists():
+                sc_path = cand
+                break
 
     emulator = NodeEmulator(
         api_url=args.api,

@@ -1,5 +1,5 @@
-import asyncio
 # AquaSentinel FastAPI Service & Integration Layer
+import asyncio
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
 import json
@@ -25,6 +25,7 @@ from backend.config import (
     COVERAGE_PER_NODE_RATIO,
     COST_PER_NODE_RS,
     DATA_DIR,
+    DATA_REPLAY_DIR,
     DB_PATH,
     EST_LOSS_SAVED_PER_LEAK_RS,
     INGEST_MAX_BODY_BYTES,
@@ -63,9 +64,9 @@ logger.addHandler(file_handler)
 db = Database()
 ml_bridge = MLBridge()
 
-# Global error tracker for health endpoint
 _last_error: Optional[str] = None
 _start_time = time.time()
+is_warming_up: bool = True
 
 
 # WebSocket Connection Manager with Bounded Client Queues
@@ -119,7 +120,6 @@ class WebSocketManager:
                     await websocket.send_json(msg)
                     q.task_done()
                 except asyncio.TimeoutError:
-                    # Send lightweight ping to keep connection alive
                     await websocket.send_json({"type": "ping", "t": int(time.time())})
                     last_ping = time.time()
         except asyncio.CancelledError:
@@ -135,7 +135,6 @@ class WebSocketManager:
 
 ws_manager = WebSocketManager()
 
-# Load network to know valid sensor node IDs
 _network_file = MOCK_DIR / "network_net3.json"
 _valid_nodes: set[str] = set()
 if _network_file.exists():
@@ -156,13 +155,54 @@ pipeline = Pipeline(
 replay_engine = ReplayEngine(pipeline=pipeline, db=db)
 
 
+def _load_warmup_window() -> list[Any]:
+    """Finds a scenario in data/replay or mock/replay to build a real warm-up window."""
+    candidate_files = []
+    if DATA_REPLAY_DIR.exists():
+        candidate_files.extend(sorted(DATA_REPLAY_DIR.glob("*.json")))
+
+    for f in candidate_files:
+        if f.name == "scenarios_catalog.json":
+            continue
+        try:
+            with open(f, "r", encoding="utf-8") as fp:
+                data = json.load(fp)
+            if isinstance(data, list) and len(data) >= 10:
+                return data[:45]
+            elif isinstance(data, dict) and "steps" in data:
+                return data["steps"][:45]
+        except Exception:
+            continue
+
+    # Fallback synthetic Net3 window with all 8 sensors
+    sensors = ["208", "10", "15", "184", "601", "164", "60", "123"]
+    steps = []
+    for step_idx in range(45):
+        t = step_idx * 10
+        readings = [{"t": t, "node_id": s, "pressure_m": 50.0, "flow_lps": None} for s in sensors]
+        steps.append({"type": "readings", "t": t, "readings": readings})
+    return steps
+
+
 # ------------------------------------------------------------------------------
 # LIFECYCLE
 # ------------------------------------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    global is_warming_up
     logger.info("AquaSentinel Backend starting up")
+
+    # Start warm-up before accepting replays
+    warm_window = _load_warmup_window()
+    try:
+        await ml_bridge.warmup(warm_window)
+    except Exception as e:
+        logger.error("Warm-up call encountered error: %s", e)
+    finally:
+        is_warming_up = False
+
     yield
+
     logger.info("AquaSentinel Backend shutting down")
     await replay_engine.stop()
     db.close()
@@ -175,7 +215,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# CORS allow all origins
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -277,7 +316,6 @@ class ReplayStartModel(BaseModel):
 async def websocket_stream(websocket: WebSocket):
     q = await ws_manager.connect(websocket)
     try:
-        # Immediately push current cached state to avoid a blank dashboard
         if pipeline.cached_alert:
             await websocket.send_json(pipeline.cached_alert)
         if pipeline.cached_localization:
@@ -285,7 +323,6 @@ async def websocket_stream(websocket: WebSocket):
         if pipeline.cached_loss:
             await websocket.send_json(pipeline.cached_loss)
 
-        # Keep reading any client incoming frames to prevent disconnection
         while True:
             await websocket.receive_text()
     except WebSocketDisconnect:
@@ -301,7 +338,6 @@ async def websocket_stream(websocket: WebSocket):
 # ------------------------------------------------------------------------------
 @app.get("/api/network")
 async def get_network():
-    """GET /api/network -> {'nodes':[{'id','x','y','elevation','is_sensor'}],'pipes':[{'id','from','to','length','diameter'}],'sensors':['id',...]}"""
     net_path = MOCK_DIR / "network_net3.json"
     if not net_path.exists():
         raise HTTPException(status_code=500, detail="Network configuration file not found")
@@ -311,13 +347,16 @@ async def get_network():
 
 @app.get("/api/scenarios")
 async def get_scenarios():
-    """GET /api/scenarios -> [{'id','leak_node','leak_size_lps','start_t','description'}]"""
     return replay_engine.get_scenarios_summary()
 
 
 @app.post("/api/replay/start")
 async def start_replay(body: ReplayStartModel):
-    """POST /api/replay/start {'scenario_id','speed'}"""
+    if is_warming_up:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"error": "ML warming up"}
+        )
     try:
         res = await replay_engine.start(scenario_id=body.scenario_id, speed=body.speed)
         return res
@@ -329,14 +368,11 @@ async def start_replay(body: ReplayStartModel):
 
 @app.post("/api/replay/stop")
 async def stop_replay():
-    """POST /api/replay/stop"""
     return await replay_engine.stop()
 
 
 @app.get("/api/results")
 async def get_results():
-    """GET /api/results -> {'detection_rate','false_alarm_per_day','top1','top3','neighbour_acc','chance_baseline','placement':[{'n_sensors','optimized','random_mean','random_std'}],'measured_at'}"""
-    # Check data/results.json first
     data_results = DATA_DIR / "results.json"
     if data_results.exists():
         try:
@@ -345,7 +381,6 @@ async def get_results():
         except Exception as e:
             logger.warning("Failed to parse data/results.json: %s; falling back to mock", e)
 
-    # Fall back to mock/results.json
     mock_results = MOCK_DIR / "results.json"
     if mock_results.exists():
         with open(mock_results, "r", encoding="utf-8") as f:
@@ -356,8 +391,6 @@ async def get_results():
 
 @app.get("/api/placement")
 async def get_placement(n: int = Query(default=8, ge=1, le=92)):
-    """GET /api/placement?n=8 -> {'sensors':[ids],'coverage':float}"""
-    # Check data/placement.json first
     data_placement = DATA_DIR / "placement.json"
     if data_placement.exists():
         try:
@@ -374,7 +407,6 @@ async def get_placement(n: int = Query(default=8, ge=1, le=92)):
             data = json.load(f)
             if str(n) in data:
                 return data[str(n)]
-            # If requested n > 16, extrapolate from maximum available
             if data:
                 max_key = max(int(k) for k in data.keys())
                 max_item = data[str(max_key)]
@@ -383,7 +415,7 @@ async def get_placement(n: int = Query(default=8, ge=1, le=92)):
                     "coverage": round(min(0.99, max_item["coverage"] + 0.01 * (n - max_key)), 3)
                 }
 
-    return {"sensors": ["105", "115", "123", "143", "159", "187", "207", "251"][:n], "coverage": 0.88}
+    return {"sensors": ["208", "10", "15", "184", "601", "164", "60", "123"][:n], "coverage": 0.88}
 
 
 @app.get("/api/cost")
@@ -394,10 +426,6 @@ async def get_cost(nodes: int = Query(default=8, ge=1)):
     (ESP32 450 + transducer 650 + enclosure/power/connectors 400)
     """
     hardware_rs = nodes * COST_PER_NODE_RS
-
-    # ASSUMPTION - illustrative, not measured:
-    # Coverage scale = min(1.0, 0.40 + 0.075 * nodes)
-    # Savings per incident = Rs 32,000 (~71.8 hours saved at 5 L/s * Rs 25/kL)
     coverage_factor = min(COVERAGE_MAX_RATIO, COVERAGE_BASE_RATIO + COVERAGE_PER_NODE_RATIO * nodes)
     est_loss_avoided_rs = int(nodes * EST_LOSS_SAVED_PER_LEAK_RS * coverage_factor)
 
@@ -413,21 +441,28 @@ async def get_cost(nodes: int = Query(default=8, ge=1)):
 # ------------------------------------------------------------------------------
 @app.post("/api/ingest", status_code=status.HTTP_201_CREATED)
 async def ingest_reading(reading: SensorReadingModel):
-    """POST /api/ingest: Receives single sensor reading from Node Emulator."""
+    if is_warming_up:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"error": "ML warming up"}
+        )
     await pipeline.ingest_single_reading(reading.model_dump())
     return {"status": "ingested", "node_id": reading.node_id, "t": reading.t}
 
 
 @app.get("/health")
 async def health_check():
-    """GET /health: System health and operational readiness."""
     db_ok = db.is_healthy()
     uptime_s = round(time.time() - _start_time, 1)
 
     return {
-        "status": "ok" if db_ok else "degraded",
+        "status": "ok" if db_ok and not is_warming_up else "degraded",
         "uptime_s": uptime_s,
         "ml_mode": ml_bridge.get_mode(),
+        "ml_avg_latency_ms": ml_bridge.get_avg_latency_ms(),
+        "stub_calls": ml_bridge.stub_calls,
+        "last_stub_reason": ml_bridge.last_stub_reason,
+        "is_warming_up": is_warming_up,
         "db_ok": db_ok,
         "replay_state": {
             "is_running": replay_engine.is_running,

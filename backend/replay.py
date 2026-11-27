@@ -39,18 +39,55 @@ class ReplayEngine:
     def load_all_scenarios(self) -> dict[str, dict[str, Any]]:
         scenarios: dict[str, dict[str, Any]] = {}
 
-        # 1. Try loading from DATA_REPLAY_DIR first
+        # 1. Load audited scenarios from DATA_REPLAY_DIR/scenarios_catalog.json FIRST (catalog order)
+        catalog_path = DATA_REPLAY_DIR / "scenarios_catalog.json"
+        if catalog_path.exists():
+            try:
+                with open(catalog_path, "r", encoding="utf-8") as f:
+                    cat_data = json.load(f)
+                if isinstance(cat_data, list):
+                    for item in cat_data:
+                        sc_id = item.get("id")
+                        fn = item.get("filename")
+                        if not sc_id or not fn:
+                            continue
+                        f_path = DATA_REPLAY_DIR / fn
+                        if f_path.exists():
+                            with open(f_path, "r", encoding="utf-8") as sf:
+                                steps = json.load(sf)
+                            if isinstance(steps, list):
+                                sc_obj = {
+                                    "scenario_id": sc_id,
+                                    "leak_node": str(item.get("leak_node")) if item.get("leak_node") else None,
+                                    "leak_size_lps": float(item.get("leak_size_lps", 0.0)),
+                                    "start_t": int(item.get("start_t", 0)),
+                                    "description": item.get("description", f"Replay scenario {sc_id}"),
+                                    "steps": steps,
+                                }
+                                scenarios[sc_id] = sc_obj
+                                # Also index by filename stem as alias
+                                alt_id = fn.replace(".json", "")
+                                if alt_id != sc_id:
+                                    scenarios[alt_id] = sc_obj
+            except Exception as e:
+                logger.warning("Error loading scenarios_catalog.json: %s", e)
+
+        # 2. Check any remaining standalone json files in DATA_REPLAY_DIR
         if DATA_REPLAY_DIR.exists():
             for f in sorted(DATA_REPLAY_DIR.glob("*.json")):
-                sc = self._validate_and_load_file(f)
-                if sc:
-                    scenarios[sc["scenario_id"]] = sc
+                if f.name == "scenarios_catalog.json":
+                    continue
+                sc_name = f.stem
+                if sc_name not in scenarios:
+                    sc = self._validate_and_load_file(f)
+                    if sc:
+                        scenarios[sc["scenario_id"]] = sc
 
-        # 2. If no valid files in DATA_REPLAY_DIR, load from MOCK_REPLAY_DIR
-        if not scenarios and MOCK_REPLAY_DIR.exists():
+        # 3. Load mock scenarios as fallback/demo (appended after audited catalog scenarios)
+        if MOCK_REPLAY_DIR.exists():
             for f in sorted(MOCK_REPLAY_DIR.glob("*.json")):
                 sc = self._validate_and_load_file(f)
-                if sc:
+                if sc and sc["scenario_id"] not in scenarios:
                     scenarios[sc["scenario_id"]] = sc
 
         self.scenarios_cache = scenarios
@@ -62,18 +99,25 @@ class ReplayEngine:
             with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            # Support both 'scenario_id' and 'id'
-            sc_id = data.get("scenario_id") or data.get("id")
-            if not sc_id or not isinstance(sc_id, str):
-                logger.warning("Skipping scenario file %s: missing scenario_id", file_path.name)
-                return None
+            if isinstance(data, list):
+                # Raw list of steps
+                steps = data
+                sc_id = file_path.stem
+                return {
+                    "scenario_id": sc_id,
+                    "leak_node": None,
+                    "leak_size_lps": 0.0,
+                    "start_t": 0,
+                    "description": f"Scenario {sc_id}",
+                    "steps": steps
+                }
 
+            sc_id = data.get("scenario_id") or data.get("id") or file_path.stem
             steps = data.get("steps")
             if not isinstance(steps, list):
                 logger.warning("Skipping scenario file %s: missing or invalid steps list", file_path.name)
                 return None
 
-            # Validate at least one step structure
             for s in steps:
                 if not isinstance(s, dict) or "t" not in s or "readings" not in s:
                     logger.warning("Skipping scenario file %s: malformed step element", file_path.name)
@@ -81,7 +125,7 @@ class ReplayEngine:
 
             return {
                 "scenario_id": sc_id,
-                "leak_node": data.get("leak_node"),
+                "leak_node": str(data.get("leak_node")) if data.get("leak_node") else None,
                 "leak_size_lps": float(data.get("leak_size_lps", 0.0)),
                 "start_t": int(data.get("start_t", 0)),
                 "description": data.get("description", f"Replay scenario {sc_id}"),
@@ -97,9 +141,14 @@ class ReplayEngine:
             self.load_all_scenarios()
 
         summary = []
-        for sc in self.scenarios_cache.values():
+        seen_ids = set()
+        for sc_id, sc in self.scenarios_cache.items():
+            actual_id = sc["scenario_id"]
+            if actual_id in seen_ids:
+                continue
+            seen_ids.add(actual_id)
             summary.append({
-                "id": sc["scenario_id"],
+                "id": actual_id,
                 "leak_node": sc["leak_node"],
                 "leak_size_lps": sc["leak_size_lps"],
                 "start_t": sc["start_t"],
@@ -109,7 +158,6 @@ class ReplayEngine:
 
     async def start(self, scenario_id: str, speed: float) -> dict[str, Any]:
         async with self._lock:
-            # Refresh if scenario missing
             if scenario_id not in self.scenarios_cache:
                 self.load_all_scenarios()
 
@@ -120,11 +168,9 @@ class ReplayEngine:
             if int_speed is None:
                 raise ValueError(f"Invalid speed {speed}. Allowed speeds: {ALLOWED_REPLAY_SPEEDS}")
 
-            # Stop existing playback first
             if self.is_running:
                 await self._stop_internal()
 
-            # Reset pipeline state and prepare run
             self.pipeline.reset_state(clear_buffers=True)
             run_id = f"RUN-{scenario_id}-{int(time.time())}"
             self.current_run_id = run_id
@@ -132,7 +178,7 @@ class ReplayEngine:
             self.current_speed = float(int_speed)
             self.is_running = True
 
-            self.pipeline.set_current_run(run_id)
+            self.pipeline.set_current_run(run_id, speed=self.current_speed)
             self.db.enqueue("INSERT_RUN", {
                 "id": run_id,
                 "scenario_id": scenario_id,
@@ -195,24 +241,13 @@ class ReplayEngine:
             for step in steps:
                 step_t = int(step.get("t", 0))
 
-                # If there is a gap between previous step and current step, tick loss every simulated second
-                if step_t > prev_t:
-                    delta_sim_seconds = step_t - prev_t
-                    sleep_per_second = 1.0 / speed
-                    for sec in range(1, delta_sim_seconds):
-                        curr_sim_t = prev_t + sec
-                        await self.pipeline.tick_simulated_loss(curr_sim_t)
-                        await asyncio.sleep(sleep_per_second)
-
-                # Process the actual step
                 await self.pipeline.process_step(step, run_id=run_id)
                 prev_t = step_t
 
-                # Step pause (default 10s step / speed)
-                step_duration_s = 10.0 / speed
-                # Tick loss every simulated second within the step duration
+                # 10s interval progression with simulated loss updates
+                sleep_per_second = 1.0 / speed
                 for sec in range(1, 10):
-                    await asyncio.sleep(1.0 / speed)
+                    await asyncio.sleep(sleep_per_second)
                     await self.pipeline.tick_simulated_loss(step_t + sec)
 
             logger.info("Replay finished playback for scenario %s", scenario.get("scenario_id"))
@@ -228,3 +263,5 @@ class ReplayEngine:
                     "id": run_id,
                     "ended_at": _utcnow_iso()
                 })
+            # Ensure pipeline alert state is reset / loss ticks stop when replay ends or stops
+            self.pipeline.reset_state(clear_buffers=False)

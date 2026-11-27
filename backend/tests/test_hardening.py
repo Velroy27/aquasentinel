@@ -42,12 +42,11 @@ def test_malformed_payloads_return_4xx_never_500(client):
 def test_faulty_ml_returns_stub_and_does_not_crash():
     async def _run():
         bridge = MLBridge()
+        bridge.forced_stub = False
+        bridge.ml_mode = "real"
 
-        # Simulate ML raising an unhandled exception
         import backend.ml_bridge as ml_mod
         orig_detect = ml_mod._real_detect
-        orig_mode = ml_mod.ML_MODE
-        ml_mod.ML_MODE = "real"
 
         def broken_detect(w):
             raise RuntimeError("CUDA device out of memory!")
@@ -72,7 +71,6 @@ def test_faulty_ml_returns_stub_and_does_not_crash():
 
         # Restore
         ml_mod._real_detect = orig_detect
-        ml_mod.ML_MODE = orig_mode
 
     asyncio.run(_run())
 
