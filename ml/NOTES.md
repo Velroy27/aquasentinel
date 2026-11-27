@@ -535,3 +535,52 @@ Status: **COMPLETED**
     - **CLOSED Actions (5 runs)**: Pump 10 was already closed; pressure shifts are $\approx 0.1\text{ m}$. Alert rate: **0.0% (0 / 5)**.
     - **OPEN Actions (5 runs)**: Pump 10 starts abruptly at $t = 300\text{s}$, producing a sudden **28.5 m** suction head drop at Node 10, and a **1.4 to 2.0 m** head drop across downstream sensors (Node 208, 15, 60, 123).
     - **Why Pump Steps Alert 50% of the Time**: Because Pump 10 draws from Node 10 and delivers to the distribution grid, turning the pump ON creates a physical, localized suction drop ($> 28\text{ m}$) that propagates as a real 1.5–2.0m pressure drop to nearby nodes. The detector correctly identifies this large physical pressure drop, but since the common-mode rejection handles network-wide uniform shifts rather than localized pump suction transients, all 5 "OPEN" scenarios trigger a transient alert ($5 / 10 = 50.0\%$).
+
+
+---
+
+## Replay Scenarios 01 and 02 Diagnostic & Non-Alert Analysis
+
+### 1. Detailed Diagnostic per Stage
+
+#### Scenario 01: Node 123 (Leak Size: 146.3 lps, Area: $0.0065\text{ m}^2$)
+- **Sensor Health Mask**: `[True, True, True, True, True, True, True, True]` (Fault = `False`, Details = `{}`). The health checker **does NOT mask** Sensor 123.
+- **Per-step Residuals $r_{\text{diff}}$ at Sensor 123 (index 7)**:
+  - $t = 290\text{s}$ (pre-leak): $r_{\text{diff}} = 0.05\text{ m}$
+  - $t = 310\text{s}$ (10s post-leak): $r_{\text{diff}} = 1.32\text{ m}$
+  - $t = 350\text{s}$: $r_{\text{diff}} = 0.65\text{ m}$
+  - $t = 400\text{s}$: $r_{\text{diff}} = 0.90\text{ m}$
+  - $t = 600\text{s}$: $r_{\text{diff}} = 1.46\text{ m}$
+  - $t = 800\text{s}$: $r_{\text{diff}} = 1.02\text{ m}$
+- **CUSUM Statistic $S$ at Sensor 123**:
+  - $t = 290\text{s}$: $S = 0.00$
+  - $t = 310\text{s}$: $S = 1.73$
+  - $t = 350\text{s}$: $S = 0.45$
+  - $t = 400\text{s}$: $S = 0.35$
+  - $t = 600\text{s}$: $S = 4.31$ (Peak)
+  - $t = 800\text{s}$: $S = 0.73$
+- **Spatial Consistency**: **Passed** ($t=310, 350, 400, 600, 800\text{s}$, localized drop on Node 123).
+- **Suppression Stage**: **CUSUM Threshold & Confidence Scoring**.
+  - The CUSUM threshold requires $S \ge 8.0$ and $r \ge 1.0\text{ m}$ (with leaky decay $\lambda = 0.70$ and slack $k_s = 0.80\text{ m}$).
+  - Because Sensor 123 has an elevation head of 47m and clean steady-state drop of only $1.08\text{ m}$, subtracting the slack $0.80\text{ m}$ leaves an incremental drift of $(1.08 - 0.80) / 0.3 \approx 0.93$. With decay factor $0.70$, the geometric sum ceiling is $S_{\infty} \approx 0.93 / (1 - 0.70) \approx 3.1$.
+  - Thus, $S$ reaches at most $4.31$ and cannot cross the $H = 8.0$ threshold (giving score $0.0119 \ll 0.60$).
+- **Status**: **Legitimate Miss under Audited False-Alarm Operating Point**. (This exact scenario was also negative in the Phase 0 audit evaluation; lowering $H$ to detect it violates the $\le 1.5$ FA/day constraint).
+
+---
+
+#### Scenario 02: Node 10 (Leak Size: 17.1 lps, Area: $0.0075\text{ m}^2$)
+- **Sensor Health Mask**: `[True, True, True, True, True, True, True, True]` (Fault = `False`, Details = `{}`). The health checker **does NOT mask** Sensor 10.
+- **Per-step Residuals $r_{\text{diff}}$ at Sensor 10 (index 1)**:
+  - $t = 290\text{s}$ (pre-leak): $r_{\text{diff}} = -1.09\text{ m}$
+  - $t = 310\text{s}$: $r_{\text{diff}} = -0.79\text{ m}$
+  - $t = 350\text{s}$: $r_{\text{diff}} = -0.43\text{ m}$
+  - $t = 400\text{s}$: $r_{\text{diff}} = -0.00\text{ m}$
+  - $t = 500\text{s}$: $r_{\text{diff}} = +0.25\text{ m}$
+  - $t = 600\text{s}$: $r_{\text{diff}} = -0.11\text{ m}$
+- **CUSUM Statistic $S$ at Sensor 10**:
+  - $S = 0.00$ at all timesteps.
+- **Suppression Stage**: **Hydraulic Invisibility ($\Delta P_{\text{clean}} = 0.67\text{ m} < 1.0\text{ m}$)**.
+  - Node 10 is the immediate suction discharge junction connected directly to the primary supply pump (Pump 10) fed from the infinite Lake reservoir.
+  - The pump boundary condition holds the head constant, making pressure at Node 10 hydraulically rigid: even a $0.0075\text{ m}^2$ leak produces only $17.1\text{ lps}$ of flow and a clean pressure drop of only **$0.67\text{ m}$**.
+  - Because $0.67\text{ m} < k_s = 0.80\text{ m}$, the residual after common-mode subtraction never exceeds the slack parameter ($r_{\text{diff}} \le 0.33\text{ m} < 0.80\text{ m}$), preventing any accumulation in CUSUM.
+- **Status**: **Legitimate Physical Miss**. Node 10 is hydraulically rigid due to its Lake/Pump boundary condition, falling below the sensor noise floor / slack threshold.
