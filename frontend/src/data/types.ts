@@ -10,12 +10,16 @@ export type Pipe = {
   id: string;
   from: string;
   to: string;
+  length?: number;
+  diameter?: number;
 };
 
 export type Network = {
   junctions: Junction[];
   pipes: Pipe[];
   sensors: string[];
+  viewBoxWidth: number;
+  viewBoxHeight: number;
 };
 
 export type Scenario = {

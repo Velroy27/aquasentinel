@@ -75,7 +75,7 @@
 .main-content { min-width: 0; height: 100%; }
 
 .home-ops { min-height: 0; height: 100%; display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); gap: 12px; }
-.ops-main { min-width: 0; display: grid; grid-template-rows: minmax(400px, 1fr) 244px; gap: 12px; }
+.ops-main { min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(400px, calc(100vh - 170px)) 220px; gap: 12px; }
 .ops-side { min-height: 0; display: grid; grid-template-rows: auto minmax(260px, 1fr); gap: 12px; }
 .chart-strip { min-height: 0; display: grid; grid-template-columns: 150px minmax(0, 1fr); border: 1px solid var(--line); background: var(--surface); }
 .chart-strip-meta { display: flex; flex-direction: column; justify-content: center; padding: 14px 16px; border-right: 1px solid var(--line); }
@@ -112,7 +112,7 @@
 
 @media (max-width: 1100px) {
   .home-ops { grid-template-columns: minmax(0, 1fr) 300px; }
-  .ops-main { grid-template-rows: minmax(370px, 1fr) 230px; }
+  .ops-main { grid-template-rows: minmax(400px, calc(100vh - 330px)) 220px; }
   .network-name { display: none; }
   .system-status-bar { gap: 14px; }
 }

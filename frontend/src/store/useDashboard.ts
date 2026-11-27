@@ -32,6 +32,7 @@ type State = {
   stubBackend: boolean;
   anomalyAt: string | null;
   litresLost: number;
+  mapFitRevision: number;
   loading: boolean;
   error: string | null;
   init: () => Promise<void>;
@@ -73,6 +74,7 @@ export const useDashboard = create<State>((set, get) => ({
   stubBackend: false,
   anomalyAt: null,
   litresLost: 0,
+  mapFitRevision: 0,
   loading: true,
   error: null,
 
@@ -101,7 +103,6 @@ export const useDashboard = create<State>((set, get) => ({
         pressuresBySensor: emptyReadings(network.sensors),
         loading: false,
         error: null,
-        streamStatus: 'idle',
       });
     } catch {
       set({ loading: false, error: 'Could not load network data. Check the API or mock fixtures.' });
@@ -134,6 +135,7 @@ export const useDashboard = create<State>((set, get) => ({
       leakRateEstimate: null,
       anomalyAt: null,
       litresLost: 0,
+      mapFitRevision: get().mapFitRevision + 1,
     });
   },
 
@@ -158,6 +160,7 @@ export const useDashboard = create<State>((set, get) => ({
       leakRateEstimate: null,
       anomalyAt: null,
       litresLost: 0,
+      mapFitRevision: get().mapFitRevision + 1,
     });
   },
 
@@ -169,6 +172,9 @@ export const useDashboard = create<State>((set, get) => ({
       const next = [...existing, message.point].slice(-MAX_POINTS);
       return {
         pressuresBySensor: { ...state.pressuresBySensor, [message.point.sensorId]: next },
+        // A pressure frame is authoritative proof that the socket is open. This
+        // also recovers the pill if the browser missed the WebSocket open event.
+        streamStatus: 'live',
         anomalyAt: message.point.anomaly ? message.point.timestamp : state.anomalyAt,
       };
     }

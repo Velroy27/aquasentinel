@@ -1,4 +1,4 @@
-import { memo, useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Copy, LocateFixed, Minus, Plus, X } from 'lucide-react';
 import { demoMode, pressureDelta, pressureScale } from '../config/settings';
 import { selectCurrentScenario, useDashboard } from '../store/useDashboard';
@@ -25,6 +25,8 @@ type NodeViewProps = {
   hovered: boolean;
   rank?: number;
   leak: boolean;
+  screenUnit: number;
+  label?: { x: number; y: number; anchor: 'middle' | 'start' | 'end' };
   onHover: (junction: Junction | null) => void;
   onSelect: (junction: Junction) => void;
 };
@@ -50,6 +52,8 @@ const JunctionNode = memo(function JunctionNode({
   hovered,
   rank,
   leak,
+  screenUnit,
+  label,
   onHover,
   onSelect,
 }: NodeViewProps) {
@@ -72,27 +76,81 @@ const JunctionNode = memo(function JunctionNode({
         }
       }}
     >
-      {selected && <circle cx={junction.x} cy={junction.y} r="6.2" className="node-selection-ring" />}
-      {rank && <circle cx={junction.x} cy={junction.y} r="5.4" className="rank-halo" />}
-      {leak && <circle cx={junction.x} cy={junction.y} r="7" className="leak-ring" />}
+      <circle cx={junction.x} cy={junction.y} r={6 * screenUnit} className="node-hit" />
+      {selected && <circle cx={junction.x} cy={junction.y} r={8 * screenUnit} className="node-selection-ring" />}
+      {rank && <circle cx={junction.x} cy={junction.y} r={7 * screenUnit} className="rank-halo" />}
+      {leak && <circle cx={junction.x} cy={junction.y} r={10 * screenUnit} className="leak-ring" />}
       {isSensor ? (
-        <path d={`M ${junction.x} ${junction.y - 2.9} L ${junction.x + 2.9} ${junction.y} L ${junction.x} ${junction.y + 2.9} L ${junction.x - 2.9} ${junction.y} Z`} fill={color} stroke="#dce9e5" strokeWidth="0.55" className="node-dot sensor-diamond" />
+        <path d={`M ${junction.x} ${junction.y - 4.5 * screenUnit} L ${junction.x + 4.5 * screenUnit} ${junction.y} L ${junction.x} ${junction.y + 4.5 * screenUnit} L ${junction.x - 4.5 * screenUnit} ${junction.y} Z`} fill={color} stroke="#dce9e5" strokeWidth="1.2" vectorEffect="non-scaling-stroke" className="node-dot sensor-diamond" />
       ) : (
-        <circle cx={junction.x} cy={junction.y} r="1.55" fill={color} stroke="#a9b6b4" strokeWidth="0.2" className="node-dot" />
+        <circle cx={junction.x} cy={junction.y} r={3.3 * screenUnit} fill={color} stroke="#a9b6b4" strokeWidth="0.7" vectorEffect="non-scaling-stroke" className="node-dot" />
       )}
-      {(isSensor || rank || hovered || selected) && (
-        <text x={junction.x} y={junction.y - (isSensor ? 4.5 : 3)} className={`node-label ${isSensor ? 'sensor-label' : ''}`}>{junction.id}</text>
+      {label && (
+        <text x={label.x} y={label.y} textAnchor={label.anchor} style={{ fontSize: `${12 * screenUnit}px` }} className={`node-label ${isSensor ? 'sensor-label' : ''}`}>{junction.id}</text>
       )}
       {rank && (
         <g className={`rank-badge rank-${rank}`}>
-          <circle cx={junction.x + 3.8} cy={junction.y - 3.8} r="2.35" />
-          <text x={junction.x + 3.8} y={junction.y - 3.05}>{rank}</text>
+          <circle cx={junction.x + 5 * screenUnit} cy={junction.y - 5 * screenUnit} r={6 * screenUnit} />
+          <text x={junction.x + 5 * screenUnit} y={junction.y - 2.2 * screenUnit} style={{ fontSize: `${9 * screenUnit}px` }}>{rank}</text>
         </g>
       )}
-      {leak && <text x={junction.x} y={junction.y + 7.8} className="leak-label">ACTUAL LEAK</text>}
+      {leak && <text x={junction.x} y={junction.y + 15 * screenUnit} style={{ fontSize: `${10 * screenUnit}px` }} className="leak-label">ACTUAL LEAK</text>}
     </g>
   );
 });
+
+type LabelPlacement = { x: number; y: number; anchor: 'middle' | 'start' | 'end' };
+
+function placeLabels(
+  nodes: Junction[],
+  sensors: Set<string>,
+  ranks: Map<string, number>,
+  selectedId: string | null,
+  hoveredId: string | null,
+  unitsPerPixel: number,
+  pixelsPerUnit: number,
+  viewBoxWidth: number,
+  viewBoxHeight: number,
+  zoom: number,
+  pan: { x: number; y: number },
+): Map<string, LabelPlacement> {
+  const candidates = nodes
+    .filter((node) => sensors.has(node.id) || ranks.has(node.id) || node.id === selectedId || node.id === hoveredId)
+    .sort((a, b) => {
+      const priority = (node: Junction) => node.id === selectedId ? 4 : ranks.has(node.id) ? 3 : sensors.has(node.id) ? 2 : 1;
+      return priority(b) - priority(a);
+    });
+  const occupied: { left: number; right: number; top: number; bottom: number }[] = [];
+  const placed = new Map<string, LabelPlacement>();
+  const offsets = [
+    { dx: 0, dy: -7, anchor: 'middle' as const },
+    { dx: 7, dy: 4, anchor: 'start' as const },
+    { dx: -7, dy: 4, anchor: 'end' as const },
+    { dx: 0, dy: 15, anchor: 'middle' as const },
+  ];
+  const screenPoint = (node: Junction) => ({
+    x: (viewBoxWidth / 2 + pan.x + (node.x - viewBoxWidth / 2) * zoom) * pixelsPerUnit,
+    y: (viewBoxHeight / 2 + pan.y + (node.y - viewBoxHeight / 2) * zoom) * pixelsPerUnit,
+  });
+
+  for (const node of candidates) {
+    const screen = screenPoint(node);
+    const width = Math.max(18, node.id.length * 7);
+    for (const offset of offsets) {
+      const x = node.x + offset.dx * unitsPerPixel;
+      const y = node.y + offset.dy * unitsPerPixel;
+      const labelScreenX = screen.x + offset.dx;
+      const labelScreenY = screen.y + offset.dy;
+      const left = offset.anchor === 'middle' ? labelScreenX - width / 2 : offset.anchor === 'start' ? labelScreenX : labelScreenX - width;
+      const box = { left: left - 2, right: left + width + 2, top: labelScreenY - 12, bottom: labelScreenY + 3 };
+      if (occupied.some((other) => box.left < other.right + 2 && box.right + 2 > other.left && box.top < other.bottom + 2 && box.bottom + 2 > other.top)) continue;
+      occupied.push(box);
+      placed.set(node.id, { x, y, anchor: offset.anchor });
+      break;
+    }
+  }
+  return placed;
+}
 
 export function LiveMap({
   selectedSensor,
@@ -113,10 +171,16 @@ export function LiveMap({
   const scenario = useDashboard(selectCurrentScenario);
   const loading = useDashboard((state) => state.loading);
   const error = useDashboard((state) => state.error);
+  const mapFitRevision = useDashboard((state) => state.mapFitRevision);
   const [selectedJunctionId, setSelectedJunctionId] = useState<string | null>(null);
   const [hovered, setHovered] = useState<Junction | null>(null);
   const [copied, setCopied] = useState(false);
   const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [viewSize, setViewSize] = useState({ width: 0, height: 0 });
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const dragRef = useRef<{ pointerId: number; x: number; y: number; panX: number; panY: number } | null>(null);
 
   const latest = useMemo(() => {
     const points: Record<string, (typeof pressuresBySensor)[string][number] | undefined> = {};
@@ -130,8 +194,7 @@ export function LiveMap({
       const from = nodes.get(pipe.from);
       const to = nodes.get(pipe.to);
       if (!from || !to) return [];
-      const length = Math.hypot(from.x - to.x, from.y - to.y);
-      return [{ id: pipe.id, from, to, trunk: length > 17 }];
+      return [{ id: pipe.id, from, to, diameter: pipe.diameter ?? 0, trunk: (pipe.diameter ?? 0) >= 18 }];
     });
   }, [network]);
   const suspicionMap = useMemo(
@@ -161,6 +224,64 @@ export function LiveMap({
       .map((item) => item.id)
     : [];
   const hasPressure = Object.values(latest).some(Boolean);
+  const viewBoxWidth = network?.viewBoxWidth ?? 100;
+  const viewBoxHeight = network?.viewBoxHeight ?? 100;
+  const pixelsPerUnit = Math.max(0.001, Math.min((viewSize.width || viewBoxWidth) / viewBoxWidth, (viewSize.height || viewBoxHeight) / viewBoxHeight));
+  const screenUnit = 1 / (pixelsPerUnit * zoom);
+  const labelPlacements = useMemo(
+    () => placeLabels(network?.junctions ?? [], sensorSet, rankMap, selectedJunctionId, hovered?.id ?? null, screenUnit, pixelsPerUnit, viewBoxWidth, viewBoxHeight, zoom, pan),
+    [network, sensorSet, rankMap, selectedJunctionId, hovered?.id, screenUnit, pixelsPerUnit, viewBoxWidth, viewBoxHeight, zoom, pan],
+  );
+
+  useEffect(() => {
+    const element = canvasRef.current;
+    if (!element) return;
+    const observer = new ResizeObserver(([entry]) => {
+      const { width, height } = entry.contentRect;
+      setViewSize({ width, height });
+      setZoom(1);
+      setPan({ x: 0, y: 0 });
+    });
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [loading, network]);
+
+  useEffect(() => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  }, [mapFitRevision]);
+
+  function zoomAt(nextZoom: number, clientX?: number, clientY?: number) {
+    const bounded = Math.max(0.75, Math.min(4, nextZoom));
+    if (clientX === undefined || clientY === undefined || !svgRef.current || bounded === zoom) {
+      setZoom(bounded);
+      return;
+    }
+    const svgPoint = svgRef.current.createSVGPoint();
+    svgPoint.x = clientX;
+    svgPoint.y = clientY;
+    const matrix = svgRef.current.getScreenCTM();
+    if (!matrix) return;
+    const point = svgPoint.matrixTransform(matrix.inverse());
+    const centerX = viewBoxWidth / 2;
+    const centerY = viewBoxHeight / 2;
+    const worldX = (point.x - pan.x - centerX * (1 - zoom)) / zoom;
+    const worldY = (point.y - pan.y - centerY * (1 - zoom)) / zoom;
+    setPan({ x: point.x - centerX * (1 - bounded) - worldX * bounded, y: point.y - centerY * (1 - bounded) - worldY * bounded });
+    setZoom(bounded);
+  }
+
+  function beginPan(event: ReactPointerEvent<HTMLDivElement>) {
+    if (event.button !== 0 || (event.target instanceof Element && event.target.closest('.map-node'))) return;
+    dragRef.current = { pointerId: event.pointerId, x: event.clientX, y: event.clientY, panX: pan.x, panY: pan.y };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function movePan(event: ReactPointerEvent<HTMLDivElement>) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    setPan({ x: drag.panX + (event.clientX - drag.x) / pixelsPerUnit, y: drag.panY + (event.clientY - drag.y) / pixelsPerUnit });
+  }
 
   useEffect(() => {
     function onEscape(event: KeyboardEvent) {
@@ -194,29 +315,38 @@ export function LiveMap({
         <div className="map-actions">
           {showLocalization && alertActive && <button type="button" className={`map-toggle ${heatmapEnabled ? 'is-on' : ''}`} onClick={() => onHeatmapChange?.(!heatmapEnabled)} aria-pressed={heatmapEnabled}>Relative suspicion <kbd>G</kbd></button>}
           {showLocalization && alertActive && demoMode && <button type="button" className={`map-toggle reveal-toggle ${revealLeak ? 'is-on' : ''}`} onClick={() => onRevealLeakChange?.(!revealLeak)} aria-pressed={revealLeak}>Reveal true leak <kbd>L</kbd></button>}
-          <div className="map-zoom"><button type="button" aria-label="Zoom out" onClick={() => setZoom((value) => Math.max(1, value - 0.25))}><Minus size={16} /></button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Zoom in" onClick={() => setZoom((value) => Math.min(2, value + 0.25))}><Plus size={16} /></button></div>
+          <div className="map-zoom"><button type="button" aria-label="Zoom out" onClick={() => zoomAt(zoom - 0.25)} disabled={zoom <= 0.75}><Minus size={16} /></button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Zoom in" onClick={() => zoomAt(zoom + 0.25)} disabled={zoom >= 4}><Plus size={16} /></button><button type="button" className="fit-button" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}>Fit</button></div>
         </div>
       </div>
 
       {top3.length > 0 && showLocalization && alertActive && <div className="suspect-strip" aria-label="Ranked suspect nodes"><span className="eyebrow">RANKED NODES</span>{top3.map((item, index) => <button type="button" key={item.junctionId} className={`suspect-rank suspect-${index + 1}`} onClick={() => setSelectedJunctionId(item.junctionId)}><b>#{index + 1}</b><span>{item.junctionId}</span></button>)}</div>}
 
-      <div className="map-canvas map-viewport">
-        <svg viewBox="0 0 100 100" role="img" aria-label="Water distribution network map" preserveAspectRatio="xMidYMid meet">
+      <div
+        className="map-canvas map-viewport"
+        ref={canvasRef}
+        onPointerDown={beginPan}
+        onPointerMove={movePan}
+        onPointerUp={(event) => { if (dragRef.current?.pointerId === event.pointerId) dragRef.current = null; }}
+        onPointerCancel={() => { dragRef.current = null; }}
+        onWheel={(event) => { event.preventDefault(); zoomAt(zoom + (event.deltaY < 0 ? 0.15 : -0.15), event.clientX, event.clientY); }}
+        style={{ touchAction: 'none', cursor: dragRef.current ? 'grabbing' : zoom > 1 ? 'grab' : 'crosshair' }}
+      >
+        <svg ref={svgRef} viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`} role="img" aria-label="Water distribution network map" preserveAspectRatio="xMidYMid meet">
           <defs>
             <pattern id="graticule" width="20" height="20" patternUnits="userSpaceOnUse">
               <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#263238" strokeWidth="0.13" />
               <path d="M 10 0 L 10 20 M 0 10 L 20 10" fill="none" stroke="#1d292d" strokeWidth="0.08" strokeDasharray="0.5 0.8" />
             </pattern>
           </defs>
-          <rect width="100" height="100" fill="url(#graticule)" />
-          <g className="map-zoom-layer" transform={`translate(${50 - 50 * zoom} ${50 - 50 * zoom}) scale(${zoom})`}>
+          <rect width={viewBoxWidth} height={viewBoxHeight} fill="url(#graticule)" />
+          <g className="map-zoom-layer" transform={`translate(${pan.x + viewBoxWidth / 2 - (viewBoxWidth / 2) * zoom} ${pan.y + viewBoxHeight / 2 - (viewBoxHeight / 2) * zoom}) scale(${zoom})`}>
             {heatmapEnabled && showLocalization && alertActive && localization && network.junctions.map((junction) => {
               const suspicion = suspicionMap.get(junction.id) ?? 0;
               if (suspicion < 0.008) return null;
-              return <circle key={`heat-${junction.id}`} cx={junction.x} cy={junction.y} r={1.3 + suspicion * 16} fill="#56b9ac" opacity={Math.min(0.32, suspicion * 2.5)} className="heat-cell" />;
+              return <circle key={`heat-${junction.id}`} cx={junction.x} cy={junction.y} r={(2 + Math.min(8, suspicion * 18)) * screenUnit} fill="#56b9ac" opacity={Math.min(0.32, suspicion * 2.5)} className="heat-cell" />;
             })}
-            {pipeEndpoints.map(({ id, from, to, trunk }) => (
-              <g key={id} className={trunk ? 'pipe-group pipe-trunk' : 'pipe-group pipe-branch'}>
+            {pipeEndpoints.map(({ id, from, to, diameter, trunk }) => (
+              <g key={id} className={`pipe-group ${trunk ? 'pipe-main' : diameter >= 11 ? 'pipe-secondary' : 'pipe-branch'}`}>
                 <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe-casing" />
                 <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe" />
               </g>
@@ -234,6 +364,8 @@ export function LiveMap({
                   hovered={hovered?.id === junction.id}
                   rank={showLocalization && alertActive ? rankMap.get(junction.id) : undefined}
                   leak={demoMode && revealLeak && scenario?.leakNode === junction.id}
+                  screenUnit={screenUnit}
+                  label={labelPlacements.get(junction.id)}
                   onHover={setHovered}
                   onSelect={(node) => {
                     setSelectedJunctionId(node.id);
@@ -242,16 +374,13 @@ export function LiveMap({
                 />
               );
             })}
-            {hovered && <g className="map-crosshair"><line x1={hovered.x} y1="0" x2={hovered.x} y2="100" /><line x1="0" y1={hovered.y} x2="100" y2={hovered.y} /></g>}
+            {hovered && <g className="map-crosshair"><line x1={hovered.x} y1="0" x2={hovered.x} y2={viewBoxHeight} /><line x1="0" y1={hovered.y} x2={viewBoxWidth} y2={hovered.y} /></g>}
           </g>
         </svg>
 
         <div className="map-orientation"><span className="north-arrow">↑</span><span>N</span></div>
         <div className="map-scale"><i /><span>0</span><span>schematic</span></div>
-        {hovered && <div className="map-hover-hud"><b>{hovered.id}</b><span>{hovered.x.toFixed(1)}, {hovered.y.toFixed(1)}</span><span>{network.sensors.includes(hovered.id) ? 'SENSOR' : 'JUNCTION'}</span></div>}
-        {hovered && <div className="map-tooltip" style={{ left: `${Math.min(hovered.x, 74)}%`, top: `${Math.min(hovered.y, 72)}%` }}>
-          <b>{hovered.id}</b><span>{latest[hovered.id] ? `${latest[hovered.id]!.pressureM.toFixed(1)} m` : 'No pressure sample'}</span><span>Δ {latest[hovered.id] ? `${(latest[hovered.id]!.pressureM - scenarioBase).toFixed(1)} m` : '—'}</span><span>{showLocalization && alertActive && rankMap.has(hovered.id) ? `RANK #${rankMap.get(hovered.id)}` : network.sensors.includes(hovered.id) ? 'Sensor' : 'Junction'}</span>
-        </div>}
+        {hovered && <div className="map-hover-hud" role="status"><b>{hovered.id}</b><span>GRID {hovered.x.toFixed(1)} / {hovered.y.toFixed(1)}</span><span>{network.sensors.includes(hovered.id) ? 'SENSOR' : 'JUNCTION'}</span><span>{latest[hovered.id] ? `P ${latest[hovered.id]!.pressureM.toFixed(1)} m` : 'P —'}</span><span>Δ {latest[hovered.id] ? `${(latest[hovered.id]!.pressureM - scenarioBase).toFixed(1)} m` : '—'}</span><span>{showLocalization && alertActive && rankMap.has(hovered.id) ? `RANK #${rankMap.get(hovered.id)}` : 'RANK —'}</span></div>}
         {selectedJunction && <aside className="node-inspector" aria-label={`${selectedJunction.id} inspector`}>
           <div className="inspector-head"><div><span className="eyebrow">NODE INSPECTOR</span><h3>{selectedJunction.id}</h3></div><button type="button" className="icon-button" onClick={() => setSelectedJunctionId(null)} aria-label="Close inspector"><X size={17} /></button></div>
           <button type="button" className="copy-id" onClick={() => void copyId(selectedJunction.id)}><Copy size={14} />{copied ? 'Copied' : 'Copy ID'}</button>
