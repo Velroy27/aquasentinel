@@ -4,6 +4,10 @@
 .results-note, .cost-summary { grid-column: span 12; }
 .results-note h2, .cost-summary h2, .controls-panel h2 { margin: 6px 0 10px; font-size: 20px; font-weight: 500; }
 .results-note code { color: #c4cfcb; font-family: var(--font-number); }
+.placement-results { overflow-x: auto; }
+.placement-results table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; text-align: right; }
+.placement-results th, .placement-results td { padding: 8px 12px; border-top: 1px solid #2b3332; white-space: nowrap; }
+.placement-results th:first-child { text-align: left; }
 .metric-list { display: grid; gap: 0; }
 .slider-block { display: grid; gap: 10px; margin: 16px 0 8px; }
 .slider-head, .slider-scale { display: flex; justify-content: space-between; color: #aeb7b4; font: 14px var(--font-number); }

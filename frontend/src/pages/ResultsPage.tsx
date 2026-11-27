@@ -28,7 +28,19 @@ export function ResultsPage() {
       <section className="panel results-note">
         <div className="eyebrow">Measured</div>
         <h2>Evaluation snapshot</h2>
-        <p>Results loaded from <code>/api/results</code>. Measured on {new Date(results.measuredAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}.</p>
+        <p>Measured on {new Date(results.measuredAt).toLocaleDateString('en-IN', { timeZone: 'UTC', day: '2-digit', month: 'short', year: 'numeric' })}.</p>
+      </section>
+      <section className="panel results-note placement-results">
+        <div className="eyebrow">Placement curve</div>
+        <h2>Coverage by sensor count</h2>
+        <table><thead><tr><th>Sensors</th><th>Optimized</th><th>Random mean</th><th>Random SD</th></tr></thead>
+          <tbody>{results.placement.map((row) => <tr key={row.sensorCount}>
+            <th scope="row">{row.sensorCount}</th>
+            <td>{(row.optimized * 100).toFixed(2)}%</td>
+            <td>{(row.randomMean * 100).toFixed(2)}%</td>
+            <td>{(row.randomStd * 100).toFixed(2)} pp</td>
+          </tr>)}</tbody>
+        </table>
       </section>
     </div>
   );

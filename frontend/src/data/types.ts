@@ -56,6 +56,13 @@ export type LocalizationMessage = {
   probabilities: LocalizationProbability[];
 };
 
+export type LossMessage = {
+  type: 'loss';
+  alertId: string;
+  estimateLps: number;
+  litresLost: number;
+};
+
 export type PressureMessage = {
   type: 'pressure';
   timestamp: string;
@@ -64,7 +71,7 @@ export type PressureMessage = {
 
 export type StreamStatus = 'idle' | 'connecting' | 'live' | 'disconnected' | 'error';
 
-export type StreamMessage = AlertMessage | LocalizationMessage | PressureMessage;
+export type StreamMessage = AlertMessage | LocalizationMessage | PressureMessage | LossMessage;
 
 export type Results = {
   detectionRate: number;
@@ -73,6 +80,12 @@ export type Results = {
   top3: number;
   neighbourAccuracy: number;
   chanceBaseline: number;
+  placement: {
+    sensorCount: number;
+    optimized: number;
+    randomMean: number;
+    randomStd: number;
+  }[];
   measuredAt: string;
 };
 

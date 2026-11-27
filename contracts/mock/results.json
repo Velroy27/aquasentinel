@@ -1,29 +1,15 @@
 {
-  "detection_rate": 0.717,
-  "false_alarm_per_day": 4.33,
-  "top1": 0.25,
-  "top3": 0.478,
-  "neighbour_acc": 0.511,
+  "detection_rate": 0.562,
+  "false_alarm_per_day": 1.5,
+  "top1": 0.34,
+  "top3": 0.62,
+  "neighbour_acc": 0.576,
   "chance_baseline": 0.0109,
   "placement": [
-    {
-      "n_sensors": 8,
-      "optimized": 0.717,
-      "random_mean": 0.511,
-      "random_std": 0.126
-    },
-    {
-      "n_sensors": 12,
-      "optimized": 0.75,
-      "random_mean": 0.603,
-      "random_std": 0.051
-    },
-    {
-      "n_sensors": 16,
-      "optimized": 0.75,
-      "random_mean": 0.626,
-      "random_std": 0.049
-    }
+    { "n_sensors": 4, "optimized": 0.6522, "random_mean": 0.4, "random_std": 0.1132 },
+    { "n_sensors": 8, "optimized": 0.7174, "random_mean": 0.5489, "random_std": 0.1087 },
+    { "n_sensors": 12, "optimized": 0.75, "random_mean": 0.6076, "random_std": 0.0743 },
+    { "n_sensors": 16, "optimized": 0.75, "random_mean": 0.6424, "random_std": 0.0452 }
   ],
-  "measured_at": "2026-11-27T12:12:30Z"
+  "measured_at": "2026-11-27T14:32:00Z"
 }

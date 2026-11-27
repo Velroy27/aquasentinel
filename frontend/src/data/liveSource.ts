@@ -1,5 +1,7 @@
 import { apiBaseUrl, wsUrl } from '../config/settings';
 import { isStreamMessage, type DataSource } from './DataSource';
+import { normalizeResults } from './normalizeResults';
+import { normalizeNetwork, normalizeScenarios } from './normalizeNetwork';
 import type { DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamStatus } from './types';
 
 async function getJson<T>(path: string): Promise<T> {
@@ -62,10 +64,10 @@ export class LiveSource implements DataSource {
     if (this.ws?.readyState === WebSocket.OPEN) this.ws.send(JSON.stringify(payload));
   }
 
-  async getNetwork(): Promise<Network> { return getJson<Network>('/network'); }
-  async getResults(): Promise<Results> { return getJson<Results>('/results'); }
+  async getNetwork(): Promise<Network> { return normalizeNetwork(await getJson<unknown>('/network')); }
+  async getResults(): Promise<Results> { return normalizeResults(await getJson<unknown>('/results')); }
   async getPlacement(): Promise<Placement[]> { return getJson<Placement[]>('/placement'); }
-  async getScenarios(): Promise<Scenario[]> { return getJson<Scenario[]>('/scenarios'); }
+  async getScenarios(): Promise<Scenario[]> { return normalizeScenarios(await getJson<unknown>('/scenarios')); }
 
   startScenario(id: string, speed: 1 | 5 | 20): void {
     this.lastStart = { id, speed };
