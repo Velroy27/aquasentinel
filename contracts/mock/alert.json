@@ -1,0 +1,8 @@
+{
+  "type": "alert",
+  "id": "alert_001",
+  "t": 60,
+  "severity": "high",
+  "score": 0.85,
+  "detector": "isolation_forest_zscore"
+}

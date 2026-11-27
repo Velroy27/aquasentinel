@@ -1,0 +1,2762 @@
+[
+  {
+    "id": "scen_train_node_10_a0050",
+    "leak_node": "10",
+    "leak_size_lps": 8.19,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 10 (area 0.005 m2, 8.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_10_a0100",
+    "leak_node": "10",
+    "leak_size_lps": 0.0,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 10 (area 0.01 m2, 0.0 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_10_a0075",
+    "leak_node": "10",
+    "leak_size_lps": 15.37,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 10 (area 0.0075 m2, 15.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_15_a0050",
+    "leak_node": "15",
+    "leak_size_lps": 49.56,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 15 (area 0.005 m2, 49.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_15_a0100",
+    "leak_node": "15",
+    "leak_size_lps": 77.8,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 15 (area 0.01 m2, 77.8 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_15_a0075",
+    "leak_node": "15",
+    "leak_size_lps": 40.94,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 15 (area 0.0075 m2, 40.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_20_a0050",
+    "leak_node": "20",
+    "leak_size_lps": 49.57,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 20 (area 0.005 m2, 49.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_20_a0100",
+    "leak_node": "20",
+    "leak_size_lps": 98.96,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 20 (area 0.01 m2, 99.0 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_20_a0075",
+    "leak_node": "20",
+    "leak_size_lps": 74.42,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 20 (area 0.0075 m2, 74.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_35_a0050",
+    "leak_node": "35",
+    "leak_size_lps": 104.6,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 35 (area 0.005 m2, 104.6 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_35_a0100",
+    "leak_node": "35",
+    "leak_size_lps": 207.98,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 35 (area 0.01 m2, 208.0 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_35_a0075",
+    "leak_node": "35",
+    "leak_size_lps": 156.22,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 35 (area 0.0075 m2, 156.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_40_a0050",
+    "leak_node": "40",
+    "leak_size_lps": 33.42,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 40 (area 0.005 m2, 33.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_40_a0100",
+    "leak_node": "40",
+    "leak_size_lps": 65.89,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 40 (area 0.01 m2, 65.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_40_a0075",
+    "leak_node": "40",
+    "leak_size_lps": 50.06,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 40 (area 0.0075 m2, 50.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_50_a0050",
+    "leak_node": "50",
+    "leak_size_lps": 43.47,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 50 (area 0.005 m2, 43.5 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_50_a0100",
+    "leak_node": "50",
+    "leak_size_lps": 86.6,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 50 (area 0.01 m2, 86.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_50_a0075",
+    "leak_node": "50",
+    "leak_size_lps": 64.42,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 50 (area 0.0075 m2, 64.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_60_a0050",
+    "leak_node": "60",
+    "leak_size_lps": 131.52,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 60 (area 0.005 m2, 131.5 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_60_a0100",
+    "leak_node": "60",
+    "leak_size_lps": 260.8,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 60 (area 0.01 m2, 260.8 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_60_a0075",
+    "leak_node": "60",
+    "leak_size_lps": 196.53,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 60 (area 0.0075 m2, 196.5 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_601_a0050",
+    "leak_node": "601",
+    "leak_size_lps": 154.9,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 601 (area 0.005 m2, 154.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_601_a0100",
+    "leak_node": "601",
+    "leak_size_lps": 301.23,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 601 (area 0.01 m2, 301.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_601_a0075",
+    "leak_node": "601",
+    "leak_size_lps": 228.72,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 601 (area 0.0075 m2, 228.7 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_61_a0050",
+    "leak_node": "61",
+    "leak_size_lps": 155.05,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 61 (area 0.005 m2, 155.0 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_61_a0100",
+    "leak_node": "61",
+    "leak_size_lps": 300.65,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 61 (area 0.01 m2, 300.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_61_a0075",
+    "leak_node": "61",
+    "leak_size_lps": 228.87,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 61 (area 0.0075 m2, 228.9 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_101_a0050",
+    "leak_node": "101",
+    "leak_size_lps": 87.82,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 101 (area 0.005 m2, 87.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_101_a0100",
+    "leak_node": "101",
+    "leak_size_lps": 163.33,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 101 (area 0.01 m2, 163.3 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_101_a0075",
+    "leak_node": "101",
+    "leak_size_lps": 122.14,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 101 (area 0.0075 m2, 122.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_103_a0050",
+    "leak_node": "103",
+    "leak_size_lps": 89.59,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 103 (area 0.005 m2, 89.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_103_a0100",
+    "leak_node": "103",
+    "leak_size_lps": 152.21,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 103 (area 0.01 m2, 152.2 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_103_a0075",
+    "leak_node": "103",
+    "leak_size_lps": 126.58,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 103 (area 0.0075 m2, 126.6 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_105_a0050",
+    "leak_node": "105",
+    "leak_size_lps": 93.51,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 105 (area 0.005 m2, 93.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_105_a0100",
+    "leak_node": "105",
+    "leak_size_lps": 175.89,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 105 (area 0.01 m2, 175.9 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_105_a0075",
+    "leak_node": "105",
+    "leak_size_lps": 136.58,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 105 (area 0.0075 m2, 136.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_107_a0050",
+    "leak_node": "107",
+    "leak_size_lps": 97.11,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 107 (area 0.005 m2, 97.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_107_a0100",
+    "leak_node": "107",
+    "leak_size_lps": 170.79,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 107 (area 0.01 m2, 170.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_107_a0075",
+    "leak_node": "107",
+    "leak_size_lps": 139.72,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 107 (area 0.0075 m2, 139.7 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_109_a0050",
+    "leak_node": "109",
+    "leak_size_lps": 97.23,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 109 (area 0.005 m2, 97.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_109_a0100",
+    "leak_node": "109",
+    "leak_size_lps": 181.91,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 109 (area 0.01 m2, 181.9 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_109_a0075",
+    "leak_node": "109",
+    "leak_size_lps": 136.49,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 109 (area 0.0075 m2, 136.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_111_a0050",
+    "leak_node": "111",
+    "leak_size_lps": 105.59,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 111 (area 0.005 m2, 105.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_111_a0100",
+    "leak_node": "111",
+    "leak_size_lps": 194.68,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 111 (area 0.01 m2, 194.7 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_111_a0075",
+    "leak_node": "111",
+    "leak_size_lps": 154.02,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 111 (area 0.0075 m2, 154.0 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_113_a0050",
+    "leak_node": "113",
+    "leak_size_lps": 106.23,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 113 (area 0.005 m2, 106.2 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_113_a0100",
+    "leak_node": "113",
+    "leak_size_lps": 204.52,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 113 (area 0.01 m2, 204.5 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_113_a0075",
+    "leak_node": "113",
+    "leak_size_lps": 156.67,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 113 (area 0.0075 m2, 156.7 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_115_a0050",
+    "leak_node": "115",
+    "leak_size_lps": 103.6,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 115 (area 0.005 m2, 103.6 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_115_a0100",
+    "leak_node": "115",
+    "leak_size_lps": 194.4,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 115 (area 0.01 m2, 194.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_115_a0075",
+    "leak_node": "115",
+    "leak_size_lps": 152.9,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 115 (area 0.0075 m2, 152.9 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_117_a0050",
+    "leak_node": "117",
+    "leak_size_lps": 103.76,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 117 (area 0.005 m2, 103.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_117_a0100",
+    "leak_node": "117",
+    "leak_size_lps": 201.72,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 117 (area 0.01 m2, 201.7 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_117_a0075",
+    "leak_node": "117",
+    "leak_size_lps": 150.82,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 117 (area 0.0075 m2, 150.8 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_119_a0050",
+    "leak_node": "119",
+    "leak_size_lps": 113.67,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 119 (area 0.005 m2, 113.7 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_119_a0100",
+    "leak_node": "119",
+    "leak_size_lps": 225.13,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 119 (area 0.01 m2, 225.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_119_a0075",
+    "leak_node": "119",
+    "leak_size_lps": 170.22,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 119 (area 0.0075 m2, 170.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_120_a0050",
+    "leak_node": "120",
+    "leak_size_lps": 111.03,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 120 (area 0.005 m2, 111.0 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_120_a0100",
+    "leak_node": "120",
+    "leak_size_lps": 217.8,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 120 (area 0.01 m2, 217.8 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_120_a0075",
+    "leak_node": "120",
+    "leak_size_lps": 164.7,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 120 (area 0.0075 m2, 164.7 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_121_a0050",
+    "leak_node": "121",
+    "leak_size_lps": 116.7,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 121 (area 0.005 m2, 116.7 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_121_a0100",
+    "leak_node": "121",
+    "leak_size_lps": 231.25,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 121 (area 0.01 m2, 231.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_121_a0075",
+    "leak_node": "121",
+    "leak_size_lps": 174.07,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 121 (area 0.0075 m2, 174.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_123_a0050",
+    "leak_node": "123",
+    "leak_size_lps": 112.18,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 123 (area 0.005 m2, 112.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_123_a0100",
+    "leak_node": "123",
+    "leak_size_lps": 223.64,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 123 (area 0.01 m2, 223.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_123_a0075",
+    "leak_node": "123",
+    "leak_size_lps": 168.59,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 123 (area 0.0075 m2, 168.6 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_125_a0050",
+    "leak_node": "125",
+    "leak_size_lps": 111.42,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 125 (area 0.005 m2, 111.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_125_a0100",
+    "leak_node": "125",
+    "leak_size_lps": 222.21,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 125 (area 0.01 m2, 222.2 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_125_a0075",
+    "leak_node": "125",
+    "leak_size_lps": 167.17,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 125 (area 0.0075 m2, 167.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_127_a0050",
+    "leak_node": "127",
+    "leak_size_lps": 92.71,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 127 (area 0.005 m2, 92.7 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_127_a0100",
+    "leak_node": "127",
+    "leak_size_lps": 185.36,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 127 (area 0.01 m2, 185.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_127_a0075",
+    "leak_node": "127",
+    "leak_size_lps": 138.86,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 127 (area 0.0075 m2, 138.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_129_a0050",
+    "leak_node": "129",
+    "leak_size_lps": 95.08,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 129 (area 0.005 m2, 95.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_129_a0100",
+    "leak_node": "129",
+    "leak_size_lps": 188.75,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 129 (area 0.01 m2, 188.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_129_a0075",
+    "leak_node": "129",
+    "leak_size_lps": 142.12,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 129 (area 0.0075 m2, 142.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_131_a0050",
+    "leak_node": "131",
+    "leak_size_lps": 108.56,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 131 (area 0.005 m2, 108.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_131_a0100",
+    "leak_node": "131",
+    "leak_size_lps": 198.38,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 131 (area 0.01 m2, 198.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_131_a0075",
+    "leak_node": "131",
+    "leak_size_lps": 156.11,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 131 (area 0.0075 m2, 156.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_139_a0050",
+    "leak_node": "139",
+    "leak_size_lps": 88.64,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 139 (area 0.005 m2, 88.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_139_a0100",
+    "leak_node": "139",
+    "leak_size_lps": 119.73,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 139 (area 0.01 m2, 119.7 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_139_a0075",
+    "leak_node": "139",
+    "leak_size_lps": 116.3,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 139 (area 0.0075 m2, 116.3 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_141_a0050",
+    "leak_node": "141",
+    "leak_size_lps": 86.55,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 141 (area 0.005 m2, 86.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_141_a0100",
+    "leak_node": "141",
+    "leak_size_lps": 151.2,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 141 (area 0.01 m2, 151.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_141_a0075",
+    "leak_node": "141",
+    "leak_size_lps": 119.31,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 141 (area 0.0075 m2, 119.3 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_143_a0050",
+    "leak_node": "143",
+    "leak_size_lps": 85.37,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 143 (area 0.005 m2, 85.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_143_a0100",
+    "leak_node": "143",
+    "leak_size_lps": 110.85,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 143 (area 0.01 m2, 110.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_143_a0075",
+    "leak_node": "143",
+    "leak_size_lps": 103.1,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 143 (area 0.0075 m2, 103.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_145_a0050",
+    "leak_node": "145",
+    "leak_size_lps": 94.75,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 145 (area 0.005 m2, 94.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_145_a0100",
+    "leak_node": "145",
+    "leak_size_lps": 158.13,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 145 (area 0.01 m2, 158.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_145_a0075",
+    "leak_node": "145",
+    "leak_size_lps": 117.46,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 145 (area 0.0075 m2, 117.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_147_a0050",
+    "leak_node": "147",
+    "leak_size_lps": 95.72,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 147 (area 0.005 m2, 95.7 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_147_a0100",
+    "leak_node": "147",
+    "leak_size_lps": 131.74,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 147 (area 0.01 m2, 131.7 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_147_a0075",
+    "leak_node": "147",
+    "leak_size_lps": 128.33,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 147 (area 0.0075 m2, 128.3 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_149_a0050",
+    "leak_node": "149",
+    "leak_size_lps": 87.96,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 149 (area 0.005 m2, 88.0 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_149_a0100",
+    "leak_node": "149",
+    "leak_size_lps": 155.37,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 149 (area 0.01 m2, 155.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_149_a0075",
+    "leak_node": "149",
+    "leak_size_lps": 122.8,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 149 (area 0.0075 m2, 122.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_151_a0050",
+    "leak_node": "151",
+    "leak_size_lps": 97.4,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 151 (area 0.005 m2, 97.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_151_a0100",
+    "leak_node": "151",
+    "leak_size_lps": 170.44,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 151 (area 0.01 m2, 170.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_151_a0075",
+    "leak_node": "151",
+    "leak_size_lps": 139.76,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 151 (area 0.0075 m2, 139.8 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_153_a0050",
+    "leak_node": "153",
+    "leak_size_lps": 79.75,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 153 (area 0.005 m2, 79.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_153_a0100",
+    "leak_node": "153",
+    "leak_size_lps": 144.92,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 153 (area 0.01 m2, 144.9 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_153_a0075",
+    "leak_node": "153",
+    "leak_size_lps": 108.99,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 153 (area 0.0075 m2, 109.0 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_157_a0050",
+    "leak_node": "157",
+    "leak_size_lps": 108.55,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 157 (area 0.005 m2, 108.5 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_157_a0100",
+    "leak_node": "157",
+    "leak_size_lps": 214.0,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 157 (area 0.01 m2, 214.0 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_157_a0075",
+    "leak_node": "157",
+    "leak_size_lps": 162.34,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 157 (area 0.0075 m2, 162.3 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_159_a0050",
+    "leak_node": "159",
+    "leak_size_lps": 109.4,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 159 (area 0.005 m2, 109.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_159_a0100",
+    "leak_node": "159",
+    "leak_size_lps": 217.8,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 159 (area 0.01 m2, 217.8 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_159_a0075",
+    "leak_node": "159",
+    "leak_size_lps": 163.38,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 159 (area 0.0075 m2, 163.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_161_a0050",
+    "leak_node": "161",
+    "leak_size_lps": 110.04,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 161 (area 0.005 m2, 110.0 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_161_a0100",
+    "leak_node": "161",
+    "leak_size_lps": 216.44,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 161 (area 0.01 m2, 216.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_161_a0075",
+    "leak_node": "161",
+    "leak_size_lps": 164.4,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 161 (area 0.0075 m2, 164.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_163_a0050",
+    "leak_node": "163",
+    "leak_size_lps": 108.9,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 163 (area 0.005 m2, 108.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_163_a0100",
+    "leak_node": "163",
+    "leak_size_lps": 217.01,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 163 (area 0.01 m2, 217.0 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_163_a0075",
+    "leak_node": "163",
+    "leak_size_lps": 162.0,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 163 (area 0.0075 m2, 162.0 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_164_a0050",
+    "leak_node": "164",
+    "leak_size_lps": 109.32,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 164 (area 0.005 m2, 109.3 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_164_a0100",
+    "leak_node": "164",
+    "leak_size_lps": 213.19,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 164 (area 0.01 m2, 213.2 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_164_a0075",
+    "leak_node": "164",
+    "leak_size_lps": 162.79,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 164 (area 0.0075 m2, 162.8 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_166_a0050",
+    "leak_node": "166",
+    "leak_size_lps": 110.56,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 166 (area 0.005 m2, 110.6 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_166_a0100",
+    "leak_node": "166",
+    "leak_size_lps": 216.06,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 166 (area 0.01 m2, 216.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_166_a0075",
+    "leak_node": "166",
+    "leak_size_lps": 163.85,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 166 (area 0.0075 m2, 163.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_167_a0050",
+    "leak_node": "167",
+    "leak_size_lps": 111.44,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 167 (area 0.005 m2, 111.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_167_a0100",
+    "leak_node": "167",
+    "leak_size_lps": 213.48,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 167 (area 0.01 m2, 213.5 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_167_a0075",
+    "leak_node": "167",
+    "leak_size_lps": 164.75,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 167 (area 0.0075 m2, 164.7 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_169_a0050",
+    "leak_node": "169",
+    "leak_size_lps": 112.05,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 169 (area 0.005 m2, 112.1 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_169_a0100",
+    "leak_node": "169",
+    "leak_size_lps": 223.3,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 169 (area 0.01 m2, 223.3 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_169_a0075",
+    "leak_node": "169",
+    "leak_size_lps": 166.59,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 169 (area 0.0075 m2, 166.6 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_171_a0050",
+    "leak_node": "171",
+    "leak_size_lps": 112.01,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 171 (area 0.005 m2, 112.0 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_171_a0100",
+    "leak_node": "171",
+    "leak_size_lps": 218.95,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 171 (area 0.01 m2, 218.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_171_a0075",
+    "leak_node": "171",
+    "leak_size_lps": 166.88,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 171 (area 0.0075 m2, 166.9 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_173_a0050",
+    "leak_node": "173",
+    "leak_size_lps": 111.05,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 173 (area 0.005 m2, 111.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_173_a0100",
+    "leak_node": "173",
+    "leak_size_lps": 220.95,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 173 (area 0.01 m2, 220.9 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_173_a0075",
+    "leak_node": "173",
+    "leak_size_lps": 165.95,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 173 (area 0.0075 m2, 165.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_177_a0050",
+    "leak_node": "177",
+    "leak_size_lps": 107.19,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 177 (area 0.005 m2, 107.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_177_a0100",
+    "leak_node": "177",
+    "leak_size_lps": 210.3,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 177 (area 0.01 m2, 210.3 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_177_a0075",
+    "leak_node": "177",
+    "leak_size_lps": 160.27,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 177 (area 0.0075 m2, 160.3 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_179_a0050",
+    "leak_node": "179",
+    "leak_size_lps": 106.64,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 179 (area 0.005 m2, 106.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_179_a0100",
+    "leak_node": "179",
+    "leak_size_lps": 212.3,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 179 (area 0.01 m2, 212.3 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_179_a0075",
+    "leak_node": "179",
+    "leak_size_lps": 158.37,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 179 (area 0.0075 m2, 158.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_181_a0050",
+    "leak_node": "181",
+    "leak_size_lps": 107.35,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 181 (area 0.005 m2, 107.3 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_181_a0100",
+    "leak_node": "181",
+    "leak_size_lps": 209.42,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 181 (area 0.01 m2, 209.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_181_a0075",
+    "leak_node": "181",
+    "leak_size_lps": 159.83,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 181 (area 0.0075 m2, 159.8 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_183_a0050",
+    "leak_node": "183",
+    "leak_size_lps": 104.89,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 183 (area 0.005 m2, 104.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_183_a0100",
+    "leak_node": "183",
+    "leak_size_lps": 207.6,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 183 (area 0.01 m2, 207.6 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_183_a0075",
+    "leak_node": "183",
+    "leak_size_lps": 156.37,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 183 (area 0.0075 m2, 156.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_184_a0050",
+    "leak_node": "184",
+    "leak_size_lps": 101.11,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 184 (area 0.005 m2, 101.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_184_a0100",
+    "leak_node": "184",
+    "leak_size_lps": 190.48,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 184 (area 0.01 m2, 190.5 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_184_a0075",
+    "leak_node": "184",
+    "leak_size_lps": 148.98,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 184 (area 0.0075 m2, 149.0 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_185_a0050",
+    "leak_node": "185",
+    "leak_size_lps": 101.21,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 185 (area 0.005 m2, 101.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_185_a0100",
+    "leak_node": "185",
+    "leak_size_lps": 196.7,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 185 (area 0.01 m2, 196.7 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_185_a0075",
+    "leak_node": "185",
+    "leak_size_lps": 148.39,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 185 (area 0.0075 m2, 148.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_187_a0050",
+    "leak_node": "187",
+    "leak_size_lps": 104.12,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 187 (area 0.005 m2, 104.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_187_a0100",
+    "leak_node": "187",
+    "leak_size_lps": 197.07,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 187 (area 0.01 m2, 197.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_187_a0075",
+    "leak_node": "187",
+    "leak_size_lps": 153.08,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 187 (area 0.0075 m2, 153.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_189_a0050",
+    "leak_node": "189",
+    "leak_size_lps": 107.46,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 189 (area 0.005 m2, 107.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_189_a0100",
+    "leak_node": "189",
+    "leak_size_lps": 212.31,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 189 (area 0.01 m2, 212.3 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_189_a0075",
+    "leak_node": "189",
+    "leak_size_lps": 160.15,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 189 (area 0.0075 m2, 160.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_191_a0050",
+    "leak_node": "191",
+    "leak_size_lps": 99.42,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 191 (area 0.005 m2, 99.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_191_a0100",
+    "leak_node": "191",
+    "leak_size_lps": 189.56,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 191 (area 0.01 m2, 189.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_191_a0075",
+    "leak_node": "191",
+    "leak_size_lps": 147.56,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 191 (area 0.0075 m2, 147.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_193_a0050",
+    "leak_node": "193",
+    "leak_size_lps": 101.8,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 193 (area 0.005 m2, 101.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_193_a0100",
+    "leak_node": "193",
+    "leak_size_lps": 199.86,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 193 (area 0.01 m2, 199.9 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_193_a0075",
+    "leak_node": "193",
+    "leak_size_lps": 148.92,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 193 (area 0.0075 m2, 148.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_195_a0050",
+    "leak_node": "195",
+    "leak_size_lps": 103.39,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 195 (area 0.005 m2, 103.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_195_a0100",
+    "leak_node": "195",
+    "leak_size_lps": 193.09,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 195 (area 0.01 m2, 193.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_195_a0075",
+    "leak_node": "195",
+    "leak_size_lps": 151.44,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 195 (area 0.0075 m2, 151.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_197_a0050",
+    "leak_node": "197",
+    "leak_size_lps": 97.78,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 197 (area 0.005 m2, 97.8 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_197_a0100",
+    "leak_node": "197",
+    "leak_size_lps": 187.06,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 197 (area 0.01 m2, 187.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_197_a0075",
+    "leak_node": "197",
+    "leak_size_lps": 143.73,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 197 (area 0.0075 m2, 143.7 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_199_a0050",
+    "leak_node": "199",
+    "leak_size_lps": 108.14,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 199 (area 0.005 m2, 108.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_199_a0100",
+    "leak_node": "199",
+    "leak_size_lps": 210.37,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 199 (area 0.01 m2, 210.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_199_a0075",
+    "leak_node": "199",
+    "leak_size_lps": 161.47,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 199 (area 0.0075 m2, 161.5 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_201_a0050",
+    "leak_node": "201",
+    "leak_size_lps": 106.47,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 201 (area 0.005 m2, 106.5 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_201_a0100",
+    "leak_node": "201",
+    "leak_size_lps": 210.09,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 201 (area 0.01 m2, 210.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_201_a0075",
+    "leak_node": "201",
+    "leak_size_lps": 156.98,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 201 (area 0.0075 m2, 157.0 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_203_a0050",
+    "leak_node": "203",
+    "leak_size_lps": 106.51,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 203 (area 0.005 m2, 106.5 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_203_a0100",
+    "leak_node": "203",
+    "leak_size_lps": 204.46,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 203 (area 0.01 m2, 204.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_203_a0075",
+    "leak_node": "203",
+    "leak_size_lps": 157.24,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 203 (area 0.0075 m2, 157.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_204_a0050",
+    "leak_node": "204",
+    "leak_size_lps": 98.91,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 204 (area 0.005 m2, 98.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_204_a0100",
+    "leak_node": "204",
+    "leak_size_lps": 191.21,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 204 (area 0.01 m2, 191.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_204_a0075",
+    "leak_node": "204",
+    "leak_size_lps": 146.05,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 204 (area 0.0075 m2, 146.0 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_205_a0050",
+    "leak_node": "205",
+    "leak_size_lps": 98.45,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 205 (area 0.005 m2, 98.5 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_205_a0100",
+    "leak_node": "205",
+    "leak_size_lps": 188.94,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 205 (area 0.01 m2, 188.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_205_a0075",
+    "leak_node": "205",
+    "leak_size_lps": 146.42,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 205 (area 0.0075 m2, 146.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_206_a0050",
+    "leak_node": "206",
+    "leak_size_lps": 104.95,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 206 (area 0.005 m2, 104.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_206_a0100",
+    "leak_node": "206",
+    "leak_size_lps": 202.23,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 206 (area 0.01 m2, 202.2 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_206_a0075",
+    "leak_node": "206",
+    "leak_size_lps": 152.64,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 206 (area 0.0075 m2, 152.6 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_207_a0050",
+    "leak_node": "207",
+    "leak_size_lps": 103.46,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 207 (area 0.005 m2, 103.5 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_207_a0100",
+    "leak_node": "207",
+    "leak_size_lps": 195.26,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 207 (area 0.01 m2, 195.3 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_207_a0075",
+    "leak_node": "207",
+    "leak_size_lps": 151.73,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 207 (area 0.0075 m2, 151.7 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_208_a0050",
+    "leak_node": "208",
+    "leak_size_lps": 97.72,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 208 (area 0.005 m2, 97.7 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_208_a0100",
+    "leak_node": "208",
+    "leak_size_lps": 186.04,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 208 (area 0.01 m2, 186.0 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_208_a0075",
+    "leak_node": "208",
+    "leak_size_lps": 143.46,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 208 (area 0.0075 m2, 143.5 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_209_a0050",
+    "leak_node": "209",
+    "leak_size_lps": 105.04,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 209 (area 0.005 m2, 105.0 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_209_a0100",
+    "leak_node": "209",
+    "leak_size_lps": 194.25,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 209 (area 0.01 m2, 194.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_209_a0075",
+    "leak_node": "209",
+    "leak_size_lps": 153.76,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 209 (area 0.0075 m2, 153.8 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_211_a0050",
+    "leak_node": "211",
+    "leak_size_lps": 100.96,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 211 (area 0.005 m2, 101.0 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_211_a0100",
+    "leak_node": "211",
+    "leak_size_lps": 189.94,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 211 (area 0.01 m2, 189.9 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_211_a0075",
+    "leak_node": "211",
+    "leak_size_lps": 144.56,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 211 (area 0.0075 m2, 144.6 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_213_a0050",
+    "leak_node": "213",
+    "leak_size_lps": 101.71,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 213 (area 0.005 m2, 101.7 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_213_a0100",
+    "leak_node": "213",
+    "leak_size_lps": 181.43,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 213 (area 0.01 m2, 181.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_213_a0075",
+    "leak_node": "213",
+    "leak_size_lps": 145.41,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 213 (area 0.0075 m2, 145.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_215_a0050",
+    "leak_node": "215",
+    "leak_size_lps": 96.4,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 215 (area 0.005 m2, 96.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_215_a0100",
+    "leak_node": "215",
+    "leak_size_lps": 170.74,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 215 (area 0.01 m2, 170.7 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_215_a0075",
+    "leak_node": "215",
+    "leak_size_lps": 136.97,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 215 (area 0.0075 m2, 137.0 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_217_a0050",
+    "leak_node": "217",
+    "leak_size_lps": 97.36,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 217 (area 0.005 m2, 97.4 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_217_a0100",
+    "leak_node": "217",
+    "leak_size_lps": 165.6,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 217 (area 0.01 m2, 165.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_217_a0075",
+    "leak_node": "217",
+    "leak_size_lps": 137.53,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 217 (area 0.0075 m2, 137.5 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_219_a0050",
+    "leak_node": "219",
+    "leak_size_lps": 95.51,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 219 (area 0.005 m2, 95.5 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_219_a0100",
+    "leak_node": "219",
+    "leak_size_lps": 160.95,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 219 (area 0.01 m2, 160.9 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_219_a0075",
+    "leak_node": "219",
+    "leak_size_lps": 128.91,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 219 (area 0.0075 m2, 128.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_225_a0050",
+    "leak_node": "225",
+    "leak_size_lps": 94.4,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 225 (area 0.005 m2, 94.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_225_a0100",
+    "leak_node": "225",
+    "leak_size_lps": 147.83,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 225 (area 0.01 m2, 147.8 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_225_a0075",
+    "leak_node": "225",
+    "leak_size_lps": 126.65,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 225 (area 0.0075 m2, 126.7 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_229_a0050",
+    "leak_node": "229",
+    "leak_size_lps": 92.87,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 229 (area 0.005 m2, 92.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_229_a0100",
+    "leak_node": "229",
+    "leak_size_lps": 157.31,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 229 (area 0.01 m2, 157.3 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_229_a0075",
+    "leak_node": "229",
+    "leak_size_lps": 129.11,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 229 (area 0.0075 m2, 129.1 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_231_a0050",
+    "leak_node": "231",
+    "leak_size_lps": 92.5,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 231 (area 0.005 m2, 92.5 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_231_a0100",
+    "leak_node": "231",
+    "leak_size_lps": 144.3,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 231 (area 0.01 m2, 144.3 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_231_a0075",
+    "leak_node": "231",
+    "leak_size_lps": 124.81,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 231 (area 0.0075 m2, 124.8 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_237_a0050",
+    "leak_node": "237",
+    "leak_size_lps": 97.91,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 237 (area 0.005 m2, 97.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_237_a0100",
+    "leak_node": "237",
+    "leak_size_lps": 183.15,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 237 (area 0.01 m2, 183.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_237_a0075",
+    "leak_node": "237",
+    "leak_size_lps": 139.78,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 237 (area 0.0075 m2, 139.8 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_239_a0050",
+    "leak_node": "239",
+    "leak_size_lps": 99.58,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 239 (area 0.005 m2, 99.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_239_a0100",
+    "leak_node": "239",
+    "leak_size_lps": 178.74,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 239 (area 0.01 m2, 178.7 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_239_a0075",
+    "leak_node": "239",
+    "leak_size_lps": 142.69,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 239 (area 0.0075 m2, 142.7 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_241_a0050",
+    "leak_node": "241",
+    "leak_size_lps": 97.48,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 241 (area 0.005 m2, 97.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_241_a0100",
+    "leak_node": "241",
+    "leak_size_lps": 181.8,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 241 (area 0.01 m2, 181.8 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_241_a0075",
+    "leak_node": "241",
+    "leak_size_lps": 141.91,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 241 (area 0.0075 m2, 141.9 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_243_a0050",
+    "leak_node": "243",
+    "leak_size_lps": 93.58,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 243 (area 0.005 m2, 93.6 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_243_a0100",
+    "leak_node": "243",
+    "leak_size_lps": 155.99,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 243 (area 0.01 m2, 156.0 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_243_a0075",
+    "leak_node": "243",
+    "leak_size_lps": 130.38,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 243 (area 0.0075 m2, 130.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_247_a0050",
+    "leak_node": "247",
+    "leak_size_lps": 96.38,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 247 (area 0.005 m2, 96.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_247_a0100",
+    "leak_node": "247",
+    "leak_size_lps": 180.39,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 247 (area 0.01 m2, 180.4 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_247_a0075",
+    "leak_node": "247",
+    "leak_size_lps": 137.68,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 247 (area 0.0075 m2, 137.7 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_249_a0050",
+    "leak_node": "249",
+    "leak_size_lps": 97.6,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 249 (area 0.005 m2, 97.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_249_a0100",
+    "leak_node": "249",
+    "leak_size_lps": 175.14,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 249 (area 0.01 m2, 175.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_249_a0075",
+    "leak_node": "249",
+    "leak_size_lps": 139.84,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 249 (area 0.0075 m2, 139.8 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_251_a0050",
+    "leak_node": "251",
+    "leak_size_lps": 89.41,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 251 (area 0.005 m2, 89.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_251_a0100",
+    "leak_node": "251",
+    "leak_size_lps": 162.25,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 251 (area 0.01 m2, 162.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_251_a0075",
+    "leak_node": "251",
+    "leak_size_lps": 128.55,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 251 (area 0.0075 m2, 128.5 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_253_a0050",
+    "leak_node": "253",
+    "leak_size_lps": 84.27,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 253 (area 0.005 m2, 84.3 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_253_a0100",
+    "leak_node": "253",
+    "leak_size_lps": 138.76,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 253 (area 0.01 m2, 138.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_253_a0075",
+    "leak_node": "253",
+    "leak_size_lps": 116.81,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 253 (area 0.0075 m2, 116.8 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_255_a0050",
+    "leak_node": "255",
+    "leak_size_lps": 93.44,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 255 (area 0.005 m2, 93.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_255_a0100",
+    "leak_node": "255",
+    "leak_size_lps": 176.63,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 255 (area 0.01 m2, 176.6 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_255_a0075",
+    "leak_node": "255",
+    "leak_size_lps": 134.53,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 255 (area 0.0075 m2, 134.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_257_a0050",
+    "leak_node": "257",
+    "leak_size_lps": 102.23,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 257 (area 0.005 m2, 102.2 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_257_a0100",
+    "leak_node": "257",
+    "leak_size_lps": 183.48,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 257 (area 0.01 m2, 183.5 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_257_a0075",
+    "leak_node": "257",
+    "leak_size_lps": 147.13,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 257 (area 0.0075 m2, 147.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_259_a0050",
+    "leak_node": "259",
+    "leak_size_lps": 95.38,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 259 (area 0.005 m2, 95.4 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_259_a0100",
+    "leak_node": "259",
+    "leak_size_lps": 171.47,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 259 (area 0.01 m2, 171.5 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_259_a0075",
+    "leak_node": "259",
+    "leak_size_lps": 136.13,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 259 (area 0.0075 m2, 136.1 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_261_a0050",
+    "leak_node": "261",
+    "leak_size_lps": 109.2,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 261 (area 0.005 m2, 109.2 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_261_a0100",
+    "leak_node": "261",
+    "leak_size_lps": 205.81,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 261 (area 0.01 m2, 205.8 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_261_a0075",
+    "leak_node": "261",
+    "leak_size_lps": 161.28,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 261 (area 0.0075 m2, 161.3 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_263_a0050",
+    "leak_node": "263",
+    "leak_size_lps": 108.08,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 263 (area 0.005 m2, 108.1 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_263_a0100",
+    "leak_node": "263",
+    "leak_size_lps": 207.75,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 263 (area 0.01 m2, 207.8 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_263_a0075",
+    "leak_node": "263",
+    "leak_size_lps": 156.09,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 263 (area 0.0075 m2, 156.1 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_265_a0050",
+    "leak_node": "265",
+    "leak_size_lps": 111.02,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 265 (area 0.005 m2, 111.0 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_265_a0100",
+    "leak_node": "265",
+    "leak_size_lps": 217.27,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 265 (area 0.01 m2, 217.3 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_265_a0075",
+    "leak_node": "265",
+    "leak_size_lps": 165.54,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 265 (area 0.0075 m2, 165.5 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_267_a0050",
+    "leak_node": "267",
+    "leak_size_lps": 100.19,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 267 (area 0.005 m2, 100.2 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_267_a0100",
+    "leak_node": "267",
+    "leak_size_lps": 195.94,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 267 (area 0.01 m2, 195.9 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_267_a0075",
+    "leak_node": "267",
+    "leak_size_lps": 148.64,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 267 (area 0.0075 m2, 148.6 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_269_a0050",
+    "leak_node": "269",
+    "leak_size_lps": 110.13,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 269 (area 0.005 m2, 110.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_269_a0100",
+    "leak_node": "269",
+    "leak_size_lps": 214.22,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 269 (area 0.01 m2, 214.2 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_test_node_269_a0075",
+    "leak_node": "269",
+    "leak_size_lps": 164.06,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 269 (area 0.0075 m2, 164.1 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_271_a0050",
+    "leak_node": "271",
+    "leak_size_lps": 107.44,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 271 (area 0.005 m2, 107.4 lps) starting at t=300s (hour 13:00)"
+  },
+  {
+    "id": "scen_train_node_271_a0100",
+    "leak_node": "271",
+    "leak_size_lps": 213.99,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 271 (area 0.01 m2, 214.0 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_test_node_271_a0075",
+    "leak_node": "271",
+    "leak_size_lps": 159.58,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 271 (area 0.0075 m2, 159.6 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_273_a0050",
+    "leak_node": "273",
+    "leak_size_lps": 104.21,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 19,
+    "description": "Leak at node 273 (area 0.005 m2, 104.2 lps) starting at t=300s (hour 19:00)"
+  },
+  {
+    "id": "scen_train_node_273_a0100",
+    "leak_node": "273",
+    "leak_size_lps": 198.2,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 273 (area 0.01 m2, 198.2 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_test_node_273_a0075",
+    "leak_node": "273",
+    "leak_size_lps": 153.33,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 273 (area 0.0075 m2, 153.3 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_train_node_275_a0050",
+    "leak_node": "275",
+    "leak_size_lps": 101.9,
+    "leak_area_m2": 0.005,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 2,
+    "description": "Leak at node 275 (area 0.005 m2, 101.9 lps) starting at t=300s (hour 2:00)"
+  },
+  {
+    "id": "scen_train_node_275_a0100",
+    "leak_node": "275",
+    "leak_size_lps": 199.15,
+    "leak_area_m2": 0.01,
+    "start_t": 300,
+    "is_test": false,
+    "pattern_start_hour": 8,
+    "description": "Leak at node 275 (area 0.01 m2, 199.1 lps) starting at t=300s (hour 8:00)"
+  },
+  {
+    "id": "scen_test_node_275_a0075",
+    "leak_node": "275",
+    "leak_size_lps": 151.19,
+    "leak_area_m2": 0.0075,
+    "start_t": 300,
+    "is_test": true,
+    "pattern_start_hour": 13,
+    "description": "Leak at node 275 (area 0.0075 m2, 151.2 lps) starting at t=300s (hour 13:00)"
+  }
+]

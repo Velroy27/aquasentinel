@@ -1,0 +1,52 @@
+[
+  {
+    "id": "scenario_01",
+    "filename": "scenario_01_pipeburst_node164.json",
+    "leak_node": "164",
+    "leak_size_lps": 215.11,
+    "leak_area_m2": 0.01,
+    "start_t": 120,
+    "duration": 600,
+    "description": "High-severity pipe burst at sensor junction 164 during morning peak demand"
+  },
+  {
+    "id": "scenario_02",
+    "filename": "scenario_02_leak_node15.json",
+    "leak_node": "15",
+    "leak_size_lps": 54.89,
+    "leak_area_m2": 0.0075,
+    "start_t": 180,
+    "duration": 600,
+    "description": "Medium test leak at sensor junction 15 during midday demand"
+  },
+  {
+    "id": "scenario_03",
+    "filename": "scenario_03_small_node20.json",
+    "leak_node": "20",
+    "leak_size_lps": 49.49,
+    "leak_area_m2": 0.005,
+    "start_t": 240,
+    "duration": 600,
+    "description": "Small leak at non-sensor junction 20 near nodes 10 and 15 during evening peak"
+  },
+  {
+    "id": "scenario_04",
+    "filename": "scenario_04_burst_node60.json",
+    "leak_node": "60",
+    "leak_size_lps": 260.8,
+    "leak_area_m2": 0.01,
+    "start_t": 150,
+    "duration": 600,
+    "description": "Sudden nocturnal pipe burst at junction 60 during low-demand night hours"
+  },
+  {
+    "id": "scenario_05",
+    "filename": "scenario_05_unseen_node184.json",
+    "leak_node": "184",
+    "leak_size_lps": 147.16,
+    "leak_area_m2": 0.0075,
+    "start_t": 200,
+    "duration": 600,
+    "description": "Held-out test leak size (0.0075 m2) at sensor junction 184"
+  }
+]
