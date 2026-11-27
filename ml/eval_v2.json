@@ -1,0 +1,499 @@
+{
+  "fresh_holdout": {
+    "old_models": {
+      "detection": {
+        "detection_rate": 0.8103864734299517,
+        "detection_rate_ci_95": [
+          0.7771739130434783,
+          0.842391304347826
+        ],
+        "control_alert_rate": 0.5374396135265701,
+        "true_detection_rate_minus_control": 0.27294685990338163,
+        "visible_detection_rate": 0.9242819843342036,
+        "visible_ci_95": [
+          0.896431679721497,
+          0.9512619669277633
+        ],
+        "nonvisible_detection_rate": 0.5522682445759369,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0035": {
+            "rate": 0.7409420289855072,
+            "total_runs": 552,
+            "detected_runs": 409
+          },
+          "0.0045": {
+            "rate": 0.7807971014492754,
+            "total_runs": 552,
+            "detected_runs": 431
+          },
+          "0.0105": {
+            "rate": 0.9094202898550725,
+            "total_runs": 552,
+            "detected_runs": 502
+          }
+        },
+        "total_runs": 1656,
+        "total_detected": 1342
+      },
+      "localization": {
+        "top1": 0.3115942028985507,
+        "top1_ci_95": [
+          0.2807971014492754,
+          0.3423913043478261
+        ],
+        "top3": 0.6014492753623188,
+        "top3_ci_95": [
+          0.5688405797101449,
+          0.6334541062801933
+        ],
+        "total_runs": 1656,
+        "top1_count": 516,
+        "top3_count": 996
+      },
+      "false_alarms": {
+        "mean_per_day": 40.041666666666664,
+        "ci_95": [
+          38.541666666666664,
+          41.5
+        ],
+        "daily_events": [
+          40,
+          36,
+          37,
+          34,
+          48,
+          39,
+          40,
+          41,
+          46,
+          40,
+          39,
+          48,
+          40,
+          35,
+          39,
+          34,
+          40,
+          45,
+          42,
+          39,
+          42,
+          37,
+          40,
+          40
+        ]
+      }
+    },
+    "new_v2_models": {
+      "detection": {
+        "detection_rate": 0.7294685990338164,
+        "detection_rate_ci_95": [
+          0.6938254830917874,
+          0.7669082125603864
+        ],
+        "control_alert_rate": 0.5,
+        "true_detection_rate_minus_control": 0.22946859903381644,
+        "visible_detection_rate": 0.8337684943429069,
+        "visible_ci_95": [
+          0.7998259355961705,
+          0.8685813751087903
+        ],
+        "nonvisible_detection_rate": 0.4930966469428008,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0035": {
+            "rate": 0.6195652173913043,
+            "total_runs": 552,
+            "detected_runs": 342
+          },
+          "0.0045": {
+            "rate": 0.6938405797101449,
+            "total_runs": 552,
+            "detected_runs": 383
+          },
+          "0.0105": {
+            "rate": 0.875,
+            "total_runs": 552,
+            "detected_runs": 483
+          }
+        },
+        "total_runs": 1656,
+        "total_detected": 1208
+      },
+      "localization": {
+        "top1": 0.2457729468599034,
+        "top1_ci_95": [
+          0.21678743961352656,
+          0.2753623188405797
+        ],
+        "top3": 0.5404589371980676,
+        "top3_ci_95": [
+          0.5066425120772947,
+          0.5736714975845411
+        ],
+        "total_runs": 1656,
+        "top1_count": 407,
+        "top3_count": 895
+      },
+      "false_alarms": {
+        "mean_per_day": 23.833333333333332,
+        "ci_95": [
+          21.5,
+          26.333333333333332
+        ],
+        "daily_events": [
+          22,
+          19,
+          19,
+          16,
+          22,
+          19,
+          26,
+          19,
+          40,
+          24,
+          22,
+          24,
+          28,
+          17,
+          25,
+          19,
+          26,
+          39,
+          30,
+          18,
+          28,
+          22,
+          22,
+          26
+        ]
+      }
+    }
+  },
+  "dev_dataset": {
+    "old_models": {
+      "detection": {
+        "detection_rate": 0.9311594202898551,
+        "detection_rate_ci_95": [
+          0.9052696641140718,
+          0.9558037845791069
+        ],
+        "control_alert_rate": 0.7771739130434783,
+        "true_detection_rate_minus_control": 0.15398550724637683,
+        "visible_detection_rate": 0.9549266247379455,
+        "visible_ci_95": [
+          0.930153169548074,
+          0.977013290229885
+        ],
+        "nonvisible_detection_rate": 0.78,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0065": {
+            "rate": 0.9510869565217391,
+            "total_runs": 552,
+            "detected_runs": 525
+          },
+          "0.0075": {
+            "rate": 0.9112318840579711,
+            "total_runs": 552,
+            "detected_runs": 503
+          }
+        },
+        "total_runs": 1104,
+        "total_detected": 1028
+      },
+      "localization": {
+        "top1": 0.33967391304347827,
+        "top1_ci_95": [
+          0.29937401064015734,
+          0.3802952715410838
+        ],
+        "top3": 0.6195652173913043,
+        "top3_ci_95": [
+          0.5750219002695418,
+          0.663085010808838
+        ],
+        "total_runs": 1104,
+        "top1_count": 375,
+        "top3_count": 684
+      },
+      "false_alarms": 42.5
+    },
+    "new_v2_models": {
+      "detection": {
+        "detection_rate": 0.9085144927536232,
+        "detection_rate_ci_95": [
+          0.8785366684326043,
+          0.9368180539932508
+        ],
+        "control_alert_rate": 0.7472826086956522,
+        "true_detection_rate_minus_control": 0.16123188405797095,
+        "visible_detection_rate": 0.9318658280922432,
+        "visible_ci_95": [
+          0.9032223710879796,
+          0.9591252492713607
+        ],
+        "nonvisible_detection_rate": 0.76,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0065": {
+            "rate": 0.9365942028985508,
+            "total_runs": 552,
+            "detected_runs": 517
+          },
+          "0.0075": {
+            "rate": 0.8804347826086957,
+            "total_runs": 552,
+            "detected_runs": 486
+          }
+        },
+        "total_runs": 1104,
+        "total_detected": 1003
+      },
+      "localization": {
+        "top1": 0.276268115942029,
+        "top1_ci_95": [
+          0.23743676845253478,
+          0.31492215882216784
+        ],
+        "top3": 0.5733695652173914,
+        "top3_ci_95": [
+          0.5292551339418006,
+          0.6176203451407811
+        ],
+        "total_runs": 1104,
+        "top1_count": 305,
+        "top3_count": 633
+      },
+      "false_alarms": 23.0
+    }
+  },
+  "fitted_k_h": {
+    "0": 1.2,
+    "1": 1.2,
+    "2": 1.2,
+    "3": 1.2,
+    "4": 1.2,
+    "5": 1.2,
+    "6": 1.2,
+    "7": 1.1774186233200579,
+    "8": 1.2,
+    "9": 1.1671133516349443,
+    "10": 1.16643118977415,
+    "11": 1.2,
+    "12": 1.2,
+    "13": 1.2,
+    "14": 1.2,
+    "15": 1.2,
+    "16": 1.2,
+    "17": 1.2,
+    "18": 1.2,
+    "19": 1.2,
+    "20": 1.2,
+    "21": 1.2,
+    "22": 1.2,
+    "23": 1.2
+  },
+  "ablation": {
+    "step0_baseline": {
+      "det": {
+        "detection_rate": 0.9311594202898551,
+        "detection_rate_ci_95": [
+          0.9052696641140718,
+          0.9558037845791069
+        ],
+        "control_alert_rate": 0.7771739130434783,
+        "true_detection_rate_minus_control": 0.15398550724637683,
+        "visible_detection_rate": 0.9549266247379455,
+        "visible_ci_95": [
+          0.930153169548074,
+          0.977013290229885
+        ],
+        "nonvisible_detection_rate": 0.78,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0065": {
+            "rate": 0.9510869565217391,
+            "total_runs": 552,
+            "detected_runs": 525
+          },
+          "0.0075": {
+            "rate": 0.9112318840579711,
+            "total_runs": 552,
+            "detected_runs": 503
+          }
+        },
+        "total_runs": 1104,
+        "total_detected": 1028
+      },
+      "fa": 42.5,
+      "loc": {
+        "top1": 0.33967391304347827,
+        "top1_ci_95": [
+          0.29937401064015734,
+          0.3802952715410838
+        ],
+        "top3": 0.6195652173913043,
+        "top3_ci_95": [
+          0.5750219002695418,
+          0.663085010808838
+        ],
+        "total_runs": 1104,
+        "top1_count": 375,
+        "top3_count": 684
+      }
+    },
+    "step1_loc_features": {
+      "loc": {
+        "top1": 0.32971014492753625,
+        "top1_ci_95": [
+          0.2878356857058075,
+          0.37228526191604466
+        ],
+        "top3": 0.6322463768115942,
+        "top3_ci_95": [
+          0.5878136200716846,
+          0.6789522938361947
+        ],
+        "total_runs": 1104,
+        "top1_count": 364,
+        "top3_count": 698
+      }
+    },
+    "step2_loc_hgb": {
+      "loc": {
+        "top1": 0.27355072463768115,
+        "top1_ci_95": [
+          0.23378527735725976,
+          0.3115985976014688
+        ],
+        "top3": 0.5742753623188406,
+        "top3_ci_95": [
+          0.5298410393864939,
+          0.6184237415746451
+        ],
+        "total_runs": 1104,
+        "top1_count": 302,
+        "top3_count": 634
+      }
+    },
+    "step3_loc_full": {
+      "loc": {
+        "top1": 0.276268115942029,
+        "top1_ci_95": [
+          0.23743676845253478,
+          0.31492215882216784
+        ],
+        "top3": 0.5733695652173914,
+        "top3_ci_95": [
+          0.5292551339418006,
+          0.6176203451407811
+        ],
+        "total_runs": 1104,
+        "top1_count": 305,
+        "top3_count": 633
+      }
+    },
+    "step4_det_trimmed_common": {
+      "det": {
+        "detection_rate": 0.9211956521739131,
+        "detection_rate_ci_95": [
+          0.8940628722453842,
+          0.9476584022038568
+        ],
+        "control_alert_rate": 0.7527173913043478,
+        "true_detection_rate_minus_control": 0.1684782608695653,
+        "visible_detection_rate": 0.9465408805031447,
+        "visible_ci_95": [
+          0.9212435689984234,
+          0.9703720693170234
+        ],
+        "nonvisible_detection_rate": 0.76,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0065": {
+            "rate": 0.9510869565217391,
+            "total_runs": 552,
+            "detected_runs": 525
+          },
+          "0.0075": {
+            "rate": 0.8913043478260869,
+            "total_runs": 552,
+            "detected_runs": 492
+          }
+        },
+        "total_runs": 1104,
+        "total_detected": 1017
+      },
+      "fa": 27.75
+    },
+    "step5_det_hourly_k": {
+      "det": {
+        "detection_rate": 0.904891304347826,
+        "detection_rate_ci_95": [
+          0.8747717006700293,
+          0.9342468924403856
+        ],
+        "control_alert_rate": 0.7472826086956522,
+        "true_detection_rate_minus_control": 0.15760869565217384,
+        "visible_detection_rate": 0.9276729559748428,
+        "visible_ci_95": [
+          0.8986415882967607,
+          0.9552102388211382
+        ],
+        "nonvisible_detection_rate": 0.76,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0065": {
+            "rate": 0.9329710144927537,
+            "total_runs": 552,
+            "detected_runs": 515
+          },
+          "0.0075": {
+            "rate": 0.8768115942028986,
+            "total_runs": 552,
+            "detected_runs": 484
+          }
+        },
+        "total_runs": 1104,
+        "total_detected": 999
+      },
+      "fa": 21.25
+    },
+    "step6_det_full": {
+      "det": {
+        "detection_rate": 0.9085144927536232,
+        "detection_rate_ci_95": [
+          0.8785366684326043,
+          0.9368180539932508
+        ],
+        "control_alert_rate": 0.7472826086956522,
+        "true_detection_rate_minus_control": 0.16123188405797095,
+        "visible_detection_rate": 0.9318658280922432,
+        "visible_ci_95": [
+          0.9032223710879796,
+          0.9591252492713607
+        ],
+        "nonvisible_detection_rate": 0.76,
+        "median_delay_s": 0.0,
+        "by_leak_size": {
+          "0.0065": {
+            "rate": 0.9365942028985508,
+            "total_runs": 552,
+            "detected_runs": 517
+          },
+          "0.0075": {
+            "rate": 0.8804347826086957,
+            "total_runs": 552,
+            "detected_runs": 486
+          }
+        },
+        "total_runs": 1104,
+        "total_detected": 1003
+      },
+      "fa": 23.0
+    }
+  },
+  "measured_at": "2026-11-27T13:00:32Z"
+}
