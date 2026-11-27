@@ -15,7 +15,7 @@ From repository root:
 ```powershell
 .venv\Scripts\python.exe backend/run_all.py
 ```
-This checks port 8000, starts the FastAPI server (`http://0.0.0.0:8000`), waits for `/health`, and launches the supervised node emulator (`scenario_105_leak` @ 5x speed).
+This checks port 8000, starts the FastAPI server (`http://0.0.0.0:8000`), waits for `/health`, and launches the supervised node emulator (`scenario_03_nonsensor_node101` @ 5x speed).
 
 ### Manual Server Launch
 ```powershell
@@ -165,9 +165,10 @@ Plays scenario windows at 10-second intervals to test ingestion.
 
 ### MQTT Mode
 ```powershell
-.venv\Scripts\python.exe -m backend.emulator --scenario scenario_105_leak --speed 5 --mqtt --mqtt-host 127.0.0.1 --mqtt-port 1883
+.venv\Scripts\python.exe -m backend.emulator --scenario scenario_03_nonsensor_node101 --speed 5 --mqtt --mqtt-host 127.0.0.1 --mqtt-port 1883
 ```
 - Topic format: `aquasentinel/nodes/<node_id>`
+- Note: The backend has no native MQTT subscriber; MQTT mode requires an external bridge to HTTP `/api/ingest`.
 - If MQTT broker is unavailable, emulator logs a warning and falls back to HTTP POST `/api/ingest`.
 
 ---

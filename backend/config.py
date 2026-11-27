@@ -50,7 +50,8 @@ LOGS_DIR: Path = BACKEND_DIR / 'logs'
 LOG_FILE: Path = LOGS_DIR / 'backend.log'
 
 DB_DIR: Path = BACKEND_DIR / 'db'
-DB_PATH: Path = DB_DIR / 'aquasentinel.db'
+_db_env = os.getenv('AQUASENTINEL_DB_PATH')
+DB_PATH: Path = Path(_db_env) if _db_env else DB_DIR / 'aquasentinel.db'
 ENABLE_DB: bool = os.getenv('ENABLE_DB', 'true').lower() in ('true', '1', 'yes')
 READINGS_RETENTION_DAYS: int = 7
 

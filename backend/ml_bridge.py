@@ -6,6 +6,7 @@ import asyncio
 import concurrent.futures
 import logging
 import math
+import os
 import sys
 import time
 
@@ -92,6 +93,9 @@ def _is_valid_scalar_float(val: Any) -> bool:
 
 def stub_detect(window: list[Any]) -> dict[str, Any]:
     """Deterministic stub for detect(window) -> {'anomaly': bool, 'score': float, 'sensor_fault': bool}."""
+    if os.getenv("AQUASENTINEL_ALLOW_STUB_ALERTS") != "1":
+        return {"anomaly": False, "score": 0.0, "sensor_fault": False}
+
     if not window:
         return {"anomaly": False, "score": 0.05, "sensor_fault": False}
 
@@ -176,6 +180,8 @@ class MLBridge:
         self.ml_mode: str = _initial_mode
         self.forced_stub: bool = (_initial_mode == "stub")
         self.stub_calls: int = 0
+        self.stub_calls_run: int = 0
+        self.consecutive_real_calls: int = 0
         self.last_stub_reason: Optional[str] = None
         self.latencies: deque[float] = deque(maxlen=20)
         self.last_result_was_stub: bool = False
@@ -183,7 +189,7 @@ class MLBridge:
     def force_stub_mode(self, reason: str = "forced_stub_mode") -> None:
         self.forced_stub = True
         self.ml_mode = "stub"
-        self._record_stub(reason)
+        self._record_stub(reason, force_stub_mode=True)
 
     def set_real_mode(self) -> None:
         if _real_detect is not None:
@@ -193,18 +199,31 @@ class MLBridge:
     def get_mode(self) -> str:
         return self.ml_mode
 
+    def reset_run_stubs(self) -> None:
+        self.stub_calls_run = 0
+
     def get_avg_latency_ms(self) -> float:
         if not self.latencies:
             return 0.0
         return round(sum(self.latencies) / len(self.latencies), 1)
 
-    def _record_stub(self, reason: str) -> None:
+    def _record_stub(self, reason: str, force_stub_mode: bool = False) -> None:
         self.stub_calls += 1
+        self.stub_calls_run += 1
         self.last_stub_reason = reason
         self.last_result_was_stub = True
-        if self.ml_mode == "real":
+        self.consecutive_real_calls = 0
+        if force_stub_mode or _initial_mode == "stub" or self.ml_mode == "stub":
+            self.ml_mode = "stub"
+        else:
             self.ml_mode = "degraded"
         logger.warning("Using ML stub: %s (total stub calls: %d)", reason, self.stub_calls)
+
+    def _record_success(self) -> None:
+        self.consecutive_real_calls += 1
+        if self.consecutive_real_calls >= 20 and self.ml_mode == "degraded":
+            self.ml_mode = "real"
+            logger.info("ML mode recovered from degraded to real after %d consecutive successful calls", self.consecutive_real_calls)
 
     async def warmup(self, warm_window: list[Any]) -> bool:
         """Runs warm-up calls for detect, localize, and estimate_size."""
@@ -275,11 +294,15 @@ class MLBridge:
                 self._record_stub("detect call timed out")
             except Exception as e:
                 self._record_stub(f"detect raised exception: {e}")
+        else:
+            self._record_stub(self.last_stub_reason or "stub mode active: detect not available")
 
         if raw_res is None or not self._validate_detect_schema(raw_res):
             if raw_res is not None and not self.last_result_was_stub:
                 self._record_stub("detect returned contract-violating payload")
             raw_res = stub_detect(window)
+        else:
+            self._record_success()
 
         return self._normalize_detect(raw_res)
 
@@ -302,11 +325,15 @@ class MLBridge:
                 self._record_stub("localize call timed out")
             except Exception as e:
                 self._record_stub(f"localize raised exception: {e}")
+        else:
+            self._record_stub(self.last_stub_reason or "stub mode active: localize not available")
 
         if raw_res is None or not self._validate_localize_schema(raw_res):
             if raw_res is not None and not self.last_result_was_stub:
                 self._record_stub("localize returned contract-violating payload")
             raw_res = stub_localize(window)
+        else:
+            self._record_success()
 
         return self._normalize_localize(raw_res, valid_nodes)
 
@@ -329,11 +356,15 @@ class MLBridge:
                 self._record_stub("estimate_size call timed out")
             except Exception as e:
                 self._record_stub(f"estimate_size raised exception: {e}")
+        else:
+            self._record_stub(self.last_stub_reason or "stub mode active: estimate_size not available")
 
         if raw_res is None or not _is_valid_scalar_float(raw_res):
             if raw_res is not None and not self.last_result_was_stub:
                 self._record_stub("estimate_size returned invalid float")
             raw_res = stub_estimate_size(window)
+        else:
+            self._record_success()
 
         return max(0.1, round(_to_python_float(raw_res), 2))
 

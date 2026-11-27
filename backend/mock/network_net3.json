@@ -5,14 +5,14 @@
       "x": 9.0,
       "y": 27.85,
       "elevation": 147.0,
-      "is_sensor": false
+      "is_sensor": true
     },
     {
       "id": "15",
       "x": 38.68,
       "y": 23.76,
       "elevation": 32.0,
-      "is_sensor": false
+      "is_sensor": true
     },
     {
       "id": "20",
@@ -47,14 +47,14 @@
       "x": 23.9,
       "y": 29.94,
       "elevation": 0.0,
-      "is_sensor": false
+      "is_sensor": true
     },
     {
       "id": "601",
       "x": 23.0,
       "y": 29.49,
       "elevation": 0.0,
-      "is_sensor": false
+      "is_sensor": true
     },
     {
       "id": "61",
@@ -82,7 +82,7 @@
       "x": 16.97,
       "y": 21.28,
       "elevation": 28.5,
-      "is_sensor": true
+      "is_sensor": false
     },
     {
       "id": "107",
@@ -117,7 +117,7 @@
       "x": 20.98,
       "y": 19.18,
       "elevation": 14.0,
-      "is_sensor": true
+      "is_sensor": false
     },
     {
       "id": "117",
@@ -201,7 +201,7 @@
       "x": 37.47,
       "y": 21.97,
       "elevation": -4.5,
-      "is_sensor": true
+      "is_sensor": false
     },
     {
       "id": "145",
@@ -250,7 +250,7 @@
       "x": 23.12,
       "y": 17.5,
       "elevation": 6.0,
-      "is_sensor": true
+      "is_sensor": false
     },
     {
       "id": "161",
@@ -271,7 +271,7 @@
       "x": 25.98,
       "y": 15.14,
       "elevation": 5.0,
-      "is_sensor": false
+      "is_sensor": true
     },
     {
       "id": "166",
@@ -341,7 +341,7 @@
       "x": 25.15,
       "y": 9.52,
       "elevation": 16.0,
-      "is_sensor": false
+      "is_sensor": true
     },
     {
       "id": "185",
@@ -355,7 +355,7 @@
       "x": 23.64,
       "y": 11.04,
       "elevation": 12.5,
-      "is_sensor": true
+      "is_sensor": false
     },
     {
       "id": "189",
@@ -439,14 +439,14 @@
       "x": 31.0,
       "y": 6.61,
       "elevation": 9.0,
-      "is_sensor": true
+      "is_sensor": false
     },
     {
       "id": "208",
       "x": 32.54,
       "y": 6.81,
       "elevation": 16.0,
-      "is_sensor": false
+      "is_sensor": true
     },
     {
       "id": "209",
@@ -558,7 +558,7 @@
       "x": 34.15,
       "y": 1.1,
       "elevation": 30.0,
-      "is_sensor": true
+      "is_sensor": false
     },
     {
       "id": "253",
@@ -1467,13 +1467,13 @@
     }
   ],
   "sensors": [
-    "105",
-    "115",
-    "123",
-    "143",
-    "159",
-    "187",
-    "207",
-    "251"
+    "208",
+    "10",
+    "15",
+    "184",
+    "601",
+    "164",
+    "60",
+    "123"
   ]
 }

@@ -20,8 +20,9 @@ def is_port_in_use(host: str, port: int) -> bool:
         return s.connect_ex((host, port)) == 0
 
 
-def wait_for_api_ready(timeout_s: float = 15.0) -> bool:
+def wait_for_api_ready(timeout_s: float = 90.0) -> bool:
     start = time.time()
+    last_warmup_print = start
     url = f"http://{API_HOST}:{API_PORT}/health"
     while time.time() - start < timeout_s:
         try:
@@ -31,6 +32,9 @@ def wait_for_api_ready(timeout_s: float = 15.0) -> bool:
                     return True
         except Exception:
             pass
+        if time.time() - last_warmup_print >= 10.0:
+            print("warming up ML model...")
+            last_warmup_print = time.time()
         time.sleep(0.5)
     return False
 
@@ -59,8 +63,8 @@ def main():
     server_proc = subprocess.Popen(server_cmd, cwd=str(REPO_ROOT))
 
     # Wait for API to become ready
-    if not wait_for_api_ready(15.0):
-        print("\n[ERROR] API Server failed to respond to /health in 15 seconds.")
+    if not wait_for_api_ready(90.0):
+        print("\n[ERROR] API Server failed to respond to /health in 90 seconds.")
         server_proc.terminate()
         sys.exit(1)
 

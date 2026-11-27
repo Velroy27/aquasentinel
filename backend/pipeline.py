@@ -19,6 +19,8 @@ from backend.ml_bridge import MLBridge
 
 logger = logging.getLogger("aquasentinel.pipeline")
 
+ML_SENSORS: set[str] = {"208", "10", "15", "184", "601", "164", "60", "123"}
+
 
 def score_to_severity(score: float) -> str:
     if score >= SEVERITY_CRITICAL_THRESHOLD:
@@ -60,6 +62,7 @@ class Pipeline:
         self.non_anomaly_count: int = 0
         self.latest_t: int = 0
         self.fault_active: bool = False
+        self._step_evaluated_t: Optional[int] = None
 
         # Stub tracking per run
         self.run_had_stub: bool = False
@@ -90,6 +93,7 @@ class Pipeline:
         self.current_run_id = run_id
         self.current_speed = max(0.1, speed)
         self.run_had_stub = (self.ml_bridge.get_mode() == "stub")
+        self.ml_bridge.reset_run_stubs()
 
     def reset_state(self, clear_buffers: bool = True) -> None:
         """Resets active leak state and clears window buffers."""
@@ -101,11 +105,13 @@ class Pipeline:
         self.est_leak_lps = 0.0
         self.non_anomaly_count = 0
         self.run_had_stub = (self.ml_bridge.get_mode() == "stub")
+        self.ml_bridge.reset_run_stubs()
         self.window_eval_counter = 0
         self.last_detect_res = None
         self._last_throttle_log_t = 0.0
 
         self.fault_active = False
+        self._step_evaluated_t = None
         self.pending_ingest_t = None
         self.pending_ingest_readings.clear()
 
@@ -140,6 +146,7 @@ class Pipeline:
             run = active_run or self.current_run_id
             if len(self.recent_steps) >= MIN_STEPS_FOR_DETECT:
                 await self._evaluate_window(list(self.recent_steps), self.pending_ingest_t, run)
+                self._step_evaluated_t = self.pending_ingest_t
             elif self.active_alert_id is not None:
                 await self._update_loss_tick(self.pending_ingest_t)
             self.pending_ingest_t = None
@@ -149,8 +156,18 @@ class Pipeline:
         """Handles ingestion from HTTP POST /api/ingest by grouping readings by t into full steps."""
         async with self._lock:
             try:
+                node_id = str(reading.get("node_id", ""))
+                if self.valid_nodes and node_id not in self.valid_nodes:
+                    return
+
                 t = int(reading.get("t", self.latest_t))
-                self.latest_t = max(self.latest_t, t)
+                if self.latest_t - t > 100:
+                    logger.info("Detected time rewind (incoming t=%d vs latest_t=%d); resetting buffers and alert state", t, self.latest_t)
+                    self.reset_state(clear_buffers=True)
+                    self.latest_t = t
+                else:
+                    self.latest_t = max(self.latest_t, t)
+
                 active_run = run_id or self.current_run_id
 
                 self.db.enqueue("INSERT_READINGS", {
@@ -158,7 +175,6 @@ class Pipeline:
                     "readings": [reading]
                 })
 
-                node_id = str(reading.get("node_id", ""))
                 if node_id not in self.node_buffers:
                     self.node_buffers[node_id] = deque(maxlen=WINDOW_SIZE)
                 self.node_buffers[node_id].append(reading)
@@ -170,8 +186,14 @@ class Pipeline:
                     "readings": [reading]
                 })
 
+                # If a newer t arrives and previous step hasn't been evaluated yet, evaluate it
+                if self.recent_steps and t > self.recent_steps[-1]["t"]:
+                    prev_t = self.recent_steps[-1]["t"]
+                    if self._step_evaluated_t != prev_t and len(self.recent_steps) >= MIN_STEPS_FOR_DETECT:
+                        await self._evaluate_window(list(self.recent_steps), prev_t, active_run)
+                        self._step_evaluated_t = prev_t
+
                 # Grouping by t for the ML sliding window buffer (self.recent_steps):
-                # If the last step in recent_steps is for timestamp t, group reading into it
                 if self.recent_steps and self.recent_steps[-1]["t"] == t:
                     step_readings = self.recent_steps[-1]["readings"]
                     idx = next((i for i, r in enumerate(step_readings) if str(r.get("node_id")) == node_id), -1)
@@ -186,9 +208,16 @@ class Pipeline:
                         "readings": [reading]
                     })
 
-                if len(self.recent_steps) >= MIN_STEPS_FOR_DETECT:
-                    await self._evaluate_window(list(self.recent_steps), t, active_run)
-                elif self.active_alert_id is not None:
+                # Evaluate when all 8 sensors for t are in (or non-ML mock sensors, or when a newer t arrives)
+                step_nodes = {str(r.get("node_id")) for r in self.recent_steps[-1]["readings"]}
+                is_full_step = (len(step_nodes) >= 8) or bool(step_nodes - ML_SENSORS)
+                if is_full_step and self._step_evaluated_t != t:
+                    if len(self.recent_steps) >= MIN_STEPS_FOR_DETECT:
+                        await self._evaluate_window(list(self.recent_steps), t, active_run)
+                    elif self.active_alert_id is not None:
+                        await self._update_loss_tick(t)
+                    self._step_evaluated_t = t
+                elif self.active_alert_id is not None and self._step_evaluated_t == t:
                     await self._update_loss_tick(t)
 
             except Exception as e:
@@ -246,9 +275,9 @@ class Pipeline:
 
         # Speed Guard check
         avg_latency = self.ml_bridge.get_avg_latency_ms()
+        interval_ms = (10.0 / max(0.1, self.current_speed)) * 1000.0
         n_skip = 1
-        if avg_latency > 1000.0:
-            interval_ms = (10.0 / max(0.1, self.current_speed)) * 1000.0
+        if avg_latency > interval_ms:
             n_skip = min(5, max(1, math.ceil(avg_latency / interval_ms)))
 
         if n_skip > 1:
@@ -259,8 +288,8 @@ class Pipeline:
                 now_mono = time.monotonic()
                 if now_mono - self._last_throttle_log_t > 5.0:
                     logger.warning(
-                        "ML average latency %.1f ms exceeds 1000 ms; throttling evaluation to every %d windows",
-                        avg_latency, n_skip
+                        "ML average latency %.1f ms exceeds interval %.1f ms; throttling evaluation to every %d windows",
+                        avg_latency, interval_ms, n_skip
                     )
                     self._last_throttle_log_t = now_mono
                 detect_res = await self.ml_bridge.detect(window)

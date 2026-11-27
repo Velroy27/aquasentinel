@@ -152,3 +152,143 @@ def test_503_during_warmup(client):
         assert resp_ingest.json() == {"error": "ML warming up"}
     finally:
         main_mod.is_warming_up = False
+
+
+def test_failing_real_detect_produces_no_alert_without_env_flag():
+    import os
+    async def _run():
+        orig_env = os.environ.get("AQUASENTINEL_ALLOW_STUB_ALERTS")
+        orig_detect = bridge_mod._real_detect
+        try:
+            os.environ["AQUASENTINEL_ALLOW_STUB_ALERTS"] = "0"
+            bridge = bridge_mod.MLBridge()
+            bridge.forced_stub = False
+            bridge.ml_mode = "real"
+
+            def broken_detect(w):
+                raise RuntimeError("ML inference crashed")
+
+            bridge_mod._real_detect = broken_detect
+
+            # detect() returns anomaly=False, score=0.0, sensor_fault=False
+            res = await bridge.detect([{"pressure_m": 30.0}])
+            assert res == {"anomaly": False, "score": 0.0, "sensor_fault": False}
+            assert bridge.stub_calls == 1
+            assert bridge.stub_calls_run == 1
+            assert bridge.ml_mode == "degraded"
+            assert "stub" in bridge.last_stub_reason.lower() or "exception" in bridge.last_stub_reason.lower()
+
+            # In pipeline: with failing detect and no env flag, no alerts produced even on severe pressure drop
+            alerts = []
+            async def on_broadcast(msg):
+                if msg.get("type") == "alert":
+                    alerts.append(msg)
+
+            pipe = pipeline.__class__(db=pipeline.db, ml_bridge=bridge, broadcast_func=on_broadcast)
+            pipe.reset_state(clear_buffers=True)
+
+            for step_t in (0, 10, 20):
+                await pipe.process_step({
+                    "t": step_t,
+                    "readings": [{"t": step_t, "node_id": "105", "pressure_m": 25.0, "flow_lps": None}]
+                })
+
+            assert len(alerts) == 0
+            assert pipe.active_alert_id is None
+        finally:
+            bridge_mod._real_detect = orig_detect
+            if orig_env is not None:
+                os.environ["AQUASENTINEL_ALLOW_STUB_ALERTS"] = orig_env
+            else:
+                os.environ.pop("AQUASENTINEL_ALLOW_STUB_ALERTS", None)
+
+    asyncio.run(_run())
+
+
+def test_env_flag_preserves_old_stub_alert_behaviour():
+    import os
+    async def _run():
+        orig_env = os.environ.get("AQUASENTINEL_ALLOW_STUB_ALERTS")
+        orig_detect = bridge_mod._real_detect
+        try:
+            os.environ["AQUASENTINEL_ALLOW_STUB_ALERTS"] = "1"
+            bridge = bridge_mod.MLBridge()
+            bridge.forced_stub = False
+            bridge.ml_mode = "real"
+
+            def broken_detect(w):
+                raise RuntimeError("ML inference crashed")
+
+            bridge_mod._real_detect = broken_detect
+
+            # With env flag set to 1, stub_detect runs old anomaly logic
+            res = await bridge.detect([{"pressure_m": 35.0}])
+            assert res["anomaly"] is True
+            assert res["score"] > 0.5
+            assert bridge.stub_calls == 1
+        finally:
+            bridge_mod._real_detect = orig_detect
+            if orig_env is not None:
+                os.environ["AQUASENTINEL_ALLOW_STUB_ALERTS"] = orig_env
+            else:
+                os.environ.pop("AQUASENTINEL_ALLOW_STUB_ALERTS", None)
+
+    asyncio.run(_run())
+
+
+def test_mode_recovery_after_20_consecutive_successful_calls():
+    async def _run():
+        bridge = bridge_mod.MLBridge()
+        bridge.forced_stub = False
+        bridge.ml_mode = "real"
+
+        orig_detect = bridge_mod._real_detect
+
+        def successful_detect(w):
+            return {"anomaly": False, "score": 0.1, "sensor_fault": False}
+
+        bridge_mod._real_detect = successful_detect
+
+        # Cause a stub to degrade mode
+        bridge._record_stub("simulated failure")
+        assert bridge.ml_mode == "degraded"
+        assert bridge.consecutive_real_calls == 0
+
+        # Perform 19 successful calls: should remain degraded
+        for _ in range(19):
+            res = await bridge.detect([{"pressure_m": 50.0}])
+            assert res["anomaly"] is False
+            assert bridge.ml_mode == "degraded"
+
+        assert bridge.consecutive_real_calls == 19
+
+        # 20th successful call: must recover to "real"
+        res = await bridge.detect([{"pressure_m": 50.0}])
+        assert bridge.consecutive_real_calls == 20
+        assert bridge.ml_mode == "real"
+
+        bridge_mod._real_detect = orig_detect
+
+    asyncio.run(_run())
+
+
+def test_stub_calls_run_health_and_reset(client):
+    ml_bridge.stub_calls = 5
+    ml_bridge.stub_calls_run = 3
+
+    resp = client.get("/health")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["stub_calls"] == 5
+    assert data["stub_calls_run"] == 3
+
+    # Reset state resets stub_calls_run but keeps cumulative stub_calls
+    pipeline.reset_state(clear_buffers=True)
+    assert ml_bridge.stub_calls_run == 0
+    assert ml_bridge.stub_calls == 5
+
+    resp2 = client.get("/health")
+    data2 = resp2.json()
+    assert data2["stub_calls"] == 5
+    assert data2["stub_calls_run"] == 0
+

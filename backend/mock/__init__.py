@@ -1,1 +1,1 @@
-﻿"AquaSentinel Mock Data Package"
+"AquaSentinel Mock Data Package"

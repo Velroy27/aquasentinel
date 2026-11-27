@@ -276,3 +276,61 @@ def test_resolve_clear_windows_stops_loss_ticks(tmp_path):
         db.close()
 
     asyncio.run(_run())
+
+
+def test_scenario_03_ingest_single_reading_matches_process_step(tmp_path):
+    """Verifies that feeding scenario 03 through ingest one reading at a time gives the same first alert t as process_step (320)."""
+    async def _run():
+        import json
+        from backend.config import DATA_REPLAY_DIR
+        scen_path = DATA_REPLAY_DIR / "scenario_03_nonsensor_node101.json"
+        if not scen_path.exists():
+            pytest.skip("Scenario 03 file not found")
+
+        with open(scen_path, "r", encoding="utf-8") as f:
+            steps = json.load(f)
+
+        test_db_path = tmp_path / "test_pipe_scen03.db"
+        db = Database(db_path=test_db_path, enable=True)
+        mb = MLBridge()
+        mb.set_real_mode()
+        pipe = Pipeline(db=db, ml_bridge=mb)
+
+        # 1. Process via process_step to get baseline first alert t
+        alerts_process_step = []
+        async def bc1(msg):
+            if msg.get("type") == "alert":
+                alerts_process_step.append(msg)
+        pipe.broadcast_func = bc1
+        for s in steps:
+            await pipe.process_step(s)
+
+        assert len(alerts_process_step) >= 1
+        first_alert_ps = alerts_process_step[0]["t"]
+        assert first_alert_ps == 320
+
+        # 2. Reset and feed via ingest_single_reading one reading at a time
+        pipe.reset_state(clear_buffers=True)
+        alerts_ingest = []
+        async def bc2(msg):
+            if msg.get("type") == "alert":
+                alerts_ingest.append(msg)
+        pipe.broadcast_func = bc2
+
+        for s in steps:
+            for r in s.get("readings", []):
+                r_copy = dict(r)
+                if "t" not in r_copy:
+                    r_copy["t"] = s.get("t", 0)
+                await pipe.ingest_single_reading(r_copy)
+
+        assert len(alerts_ingest) >= 1
+        first_alert_ingest = alerts_ingest[0]["t"]
+        assert first_alert_ingest == 320
+        assert first_alert_ingest == first_alert_ps
+
+        pipe.reset_state(clear_buffers=True)
+        db.close()
+
+    asyncio.run(_run())
+

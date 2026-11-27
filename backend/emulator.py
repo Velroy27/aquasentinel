@@ -39,10 +39,15 @@ class NodeEmulator:
     def _init_mqtt(self) -> None:
         try:
             import paho.mqtt.client as mqtt
-            self.mqtt_client = mqtt.Client(client_id="aquasentinel_emulator")
+            callback_api_version = getattr(mqtt, 'CallbackAPIVersion', None)
+            if callback_api_version:
+                self.mqtt_client = mqtt.Client(callback_api_version.VERSION2, client_id="aquasentinel_emulator")
+            else:
+                self.mqtt_client = mqtt.Client(client_id="aquasentinel_emulator")
             self.mqtt_client.connect(self.mqtt_host, self.mqtt_port, keepalive=60)
             self.mqtt_client.loop_start()
             logger.info("Connected to MQTT broker at %s:%d", self.mqtt_host, self.mqtt_port)
+            logger.warning("Backend has no native MQTT subscriber; MQTT mode requires an external bridge to HTTP /api/ingest")
         except Exception as e:
             logger.warning("Failed to connect to MQTT broker (%s); falling back to HTTP POST", e)
             self.use_mqtt = False
