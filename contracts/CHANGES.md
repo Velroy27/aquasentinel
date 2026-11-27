@@ -1,0 +1,1 @@
+2026-11-27 backend: optional stub=true on alert/localization/loss; new fault message; localization/loss only while an alert is active; /health adds ml_avg_latency_ms, stub_calls, last_stub_reason; /api/scenarios lists audited scenarios first.

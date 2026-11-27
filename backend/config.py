@@ -18,16 +18,21 @@ COVERAGE_MAX_RATIO: float = 1.0        # Upper bound coverage cap
 # ==============================================================================
 # PIPELINE & DETECTION CONSTANTS
 # ==============================================================================
-WINDOW_SIZE: int = 6                   # Number of time steps in sliding detection window
+# Window size in steps (45 steps = 450s window, matching ml/smoke_test.py)
+WINDOW_SIZE: int = 45
 SEVERITY_CRITICAL_THRESHOLD: float = 0.85
 SEVERITY_HIGH_THRESHOLD: float = 0.70
 SEVERITY_MEDIUM_THRESHOLD: float = 0.50
 
-# Number of consecutive non-anomaly windows required to reset an active leak alert
-DEDUP_RESET_COUNT: int = 5
+# Number of consecutive non-anomaly windows required to reset/resolve an active leak alert
+RESOLVE_CLEAR_WINDOWS: int = 12
+
+# Minimum number of steps in sliding window before calling detector (detector requires >= 2 steps)
+MIN_STEPS_FOR_DETECT: int = 2
 
 # ML execution timeout in seconds
-ML_TIMEOUT_S: float = 2.0
+ML_TIMEOUT_S: float = 10.0
+WARMUP_TIMEOUT_S: float = 60.0
 
 # ==============================================================================
 # SERVER & PATHS
