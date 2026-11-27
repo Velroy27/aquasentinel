@@ -61,6 +61,7 @@
 .map-scale { position: absolute; bottom: 12px; left: 12px; display: flex; align-items: center; gap: 7px; padding: 4px 6px; background: rgba(16,23,24,.88); color: #a3adaa; font: 11px var(--font-number); }
 .map-scale i { display: block; width: 34px; border-top: 1px solid #bbc3bf; border-bottom: 1px solid #bbc3bf; height: 5px; }
 .map-hover-hud { position: absolute; z-index: 2; left: 10px; top: 10px; display: flex; flex-wrap: wrap; gap: 4px 10px; max-width: min(500px, calc(100% - 80px)); align-items: center; padding: 6px 8px; border: 1px solid #454d4a; background: rgba(16,23,24,.96); color: #aab3b0; font: 11px var(--font-number); pointer-events: none; }
+.map-data-notice { position: absolute; z-index: 3; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 8px 10px; border: 1px solid #6b5b3e; color: var(--amber); background: rgba(16,23,24,.95); font: 11px var(--font-number); letter-spacing: .04em; pointer-events: none; }
 .map-hover-hud b { color: #eef2ef; font-size: 14px; }
 .map-tooltip { position: absolute; z-index: 4; display: grid; grid-template-columns: auto auto; gap: 3px 12px; min-width: 172px; padding: 8px 10px; border: 1px solid #59615e; border-radius: 2px; background: #151b1c; box-shadow: 0 5px 16px rgba(0,0,0,.28); color: #aab4b0; font: 12px var(--font-number); pointer-events: none; transform: translate(8px, 8px); }
 .map-tooltip b { grid-column: 1 / -1; color: #edf1ee; font-size: 14px; }
@@ -109,6 +110,10 @@
 .chart-wrap.tall { height: 320px; }
 .empty-chart, .skeleton, .error-state { display: grid; place-items: center; color: #98a29f; min-height: 120px; text-align: left; padding: 12px; font: 12px var(--font-number); }
 .error-state { color: var(--amber); }
+.resource-state { min-height: 120px; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; color: #aab4b0; font: 12px var(--font-number); }
+.resource-state.error-state { color: var(--amber); }
+.resource-state button, .error-state button { min-height: 32px; padding: 0 12px; color: #d7ddda; background: #1a2224; border: 1px solid #414a48; border-radius: 2px; cursor: pointer; }
+.empty-inline { margin: 8px 0 0; color: #929d99; font: 12px var(--font-number); }
 
 .page-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; }
 .page-grid > .map-shell { grid-column: span 8; min-height: 540px; }

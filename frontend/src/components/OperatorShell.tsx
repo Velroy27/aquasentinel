@@ -1,5 +1,8 @@
+import { useEffect } from 'react';
 import { BarChart3, CircleDollarSign, Map, Waypoints } from 'lucide-react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { demoMode } from '../config/settings';
+import { ShortcutOverlay } from '../pages/HomePage';
 import { useDashboard } from '../store/useDashboard';
 import { ControlBar } from './ControlBar';
 import { Header } from './Header';
@@ -35,7 +38,52 @@ export function OperatorShell() {
   const loading = useDashboard((state) => state.loading);
   const error = useDashboard((state) => state.error);
   const location = useLocation();
+  const running = useDashboard((state) => state.running);
+  const network = useDashboard((state) => state.network);
+  const selectedSensor = useDashboard((state) => state.selectedSensor);
+  const start = useDashboard((state) => state.start);
+  const stop = useDashboard((state) => state.stop);
+  const reset = useDashboard((state) => state.reset);
+  const setSpeed = useDashboard((state) => state.setSpeed);
+  const setSelectedSensor = useDashboard((state) => state.setSelectedSensor);
+  const setHeatmapEnabled = useDashboard((state) => state.setHeatmapEnabled);
+  const setRevealLeak = useDashboard((state) => state.setRevealLeak);
+  const heatmapEnabled = useDashboard((state) => state.heatmapEnabled);
+  const revealLeak = useDashboard((state) => state.revealLeak);
+  const shortcutsOpen = useDashboard((state) => state.shortcutsOpen);
+  const setShortcutsOpen = useDashboard((state) => state.setShortcutsOpen);
   const pageTitle = pageTitles[location.pathname] ?? pageTitles['/'];
+
+  useEffect(() => {
+    function handleKey(event: KeyboardEvent) {
+      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      const target = event.target;
+      const editable = target instanceof HTMLElement && (/^(INPUT|SELECT|TEXTAREA|BUTTON|A)$/.test(target.tagName) || target.isContentEditable);
+      if (editable && event.key !== 'Escape' && event.key !== '?') return;
+      const key = event.key.toLowerCase();
+      if (event.key === '?') setShortcutsOpen(true);
+      else if (event.key === 'Escape') { setShortcutsOpen(false); setSelectedSensor(''); }
+      else if (event.code === 'Space') { event.preventDefault(); if (running) stop(); else start(); }
+      else if (key === 'r') { event.preventDefault(); reset(); }
+      else if (key === '1') setSpeed(1);
+      else if (key === '2') setSpeed(5);
+      else if (key === '3') setSpeed(20);
+      else if (key === 'g') setHeatmapEnabled(!heatmapEnabled);
+      else if (key === 'l' && demoMode) setRevealLeak(!revealLeak);
+      else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
+        const sensors = network?.sensors ?? [];
+        if (!sensors.length) return;
+        const current = sensors.indexOf(selectedSensor ?? '');
+        const next = current < 0
+          ? (event.key === 'ArrowRight' ? 0 : sensors.length - 1)
+          : (current + (event.key === 'ArrowRight' ? 1 : sensors.length - 1)) % sensors.length;
+        setSelectedSensor(sensors[next]);
+        event.preventDefault();
+      }
+    }
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [heatmapEnabled, network, reset, revealLeak, running, selectedSensor, setHeatmapEnabled, setRevealLeak, setSelectedSensor, setShortcutsOpen, setSpeed, start, stop]);
 
   return (
     <main className="app-shell">
@@ -53,6 +101,8 @@ export function OperatorShell() {
       <div className="workspace"><div className="main-content"><Outlet /></div></div>
       <ControlBar />
       <EventTicker />
+      <button type="button" className="shortcut-trigger" onClick={() => setShortcutsOpen(true)} aria-label="Show keyboard shortcuts">?</button>
+      {shortcutsOpen && <ShortcutOverlay onClose={() => setShortcutsOpen(false)} />}
     </main>
   );
 }

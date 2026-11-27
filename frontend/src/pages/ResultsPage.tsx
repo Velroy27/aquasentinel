@@ -1,4 +1,5 @@
 import { useDashboard } from '../store/useDashboard';
+import { ResourceNotice } from '../components/ResourceNotice';
 
 function Metric({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (
@@ -12,13 +13,10 @@ function Metric({ label, value, detail }: { label: string; value: string; detail
 
 export function ResultsPage() {
   const results = useDashboard((s) => s.results);
-  const loading = useDashboard((s) => s.loading);
-
-  if (loading) return <div className="panel map-shell skeleton">Loading results…</div>;
-  if (!results) return <div className="panel map-shell error-state">Results unavailable.</div>;
+  if (!results) return <ResourceNotice resource="results"><div className="panel resource-state">No results returned.</div></ResourceNotice>;
 
   return (
-    <div className="page-grid results-grid">
+    <ResourceNotice resource="results"><div className="page-grid results-grid">
       <Metric label="Detection rate" value={`${(results.detectionRate * 100).toFixed(1)}%`} detail="Share of simulated leaks detected." />
       <Metric label="False alarms / day" value={results.falseAlarmsPerDay.toFixed(1)} detail="Average false positives per day." />
       <Metric label="Top-1 accuracy" value={`${(results.top1 * 100).toFixed(1)}%`} detail="Leak node ranked first." />
@@ -42,6 +40,6 @@ export function ResultsPage() {
           </tr>)}</tbody>
         </table>
       </section>
-    </div>
+    </div></ResourceNotice>
   );
 }

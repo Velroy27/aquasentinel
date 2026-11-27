@@ -92,6 +92,10 @@
 .scenario-picker, .speed-control { display: flex; align-items: center; gap: 10px; }
 .scenario-picker .eyebrow, .speed-control .eyebrow { font-size: 12px; }
 .scenario-picker select { min-width: 220px; max-width: 310px; padding: 8px 10px; color: #d7ddda; background: #151c1e; border: 1px solid #394241; border-radius: 2px; }
+.scenario-picker select:disabled { opacity: .55; cursor: not-allowed; }
+.control-notice { color: #aeb8b5; font: 12px var(--font-number); }
+.control-notice.is-error { color: var(--amber); }
+.control-notice button, .empty-inline button { margin-left: 8px; padding: 3px 7px; color: #d7ddda; background: #1a2224; border: 1px solid #414a48; border-radius: 2px; cursor: pointer; }
 .speed-control { margin-left: auto; }
 .speed-options { display: inline-flex; border: 1px solid #394241; }
 .speed-options button { min-width: 46px; height: 36px; border: 0; border-right: 1px solid #394241; color: #aeb8b5; background: transparent; cursor: pointer; }

@@ -1,20 +1,25 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { costPerNode, formatRs, lossAvoided } from '../config/settings';
 import { useDashboard } from '../store/useDashboard';
+import { ResourceNotice } from '../components/ResourceNotice';
 
 export function CostPage() {
-  const network = useDashboard((s) => s.network);
-  const placements = useDashboard((s) => s.placements);
-  const max = Math.max(20, network?.junctions.length ?? 20);
-  const initial = placements.find((p) => p.sensorCount === 8)?.sensorCount ?? 8;
+  const results = useDashboard((s) => s.results);
+  const available = (results?.placement ?? []).map((p) => p.sensorCount).sort((a, b) => a - b);
+  const min = available[0] ?? 1;
+  const max = available[available.length - 1] ?? 1;
+  const initial = available.includes(8) ? 8 : min;
   const [nodes, setNodes] = useState(initial);
+  useEffect(() => { if (available.length && !available.includes(nodes)) setNodes(initial); }, [available.join(','), initial, nodes]);
+  const selectedCount = available.reduce((nearest, value) => Math.abs(value - nodes) < Math.abs(nearest - nodes) ? value : nearest, available[0] ?? nodes);
+  const selectedIndex = Math.max(0, available.indexOf(selectedCount));
 
-  const cost = nodes * costPerNode;
-  const avoided = useMemo(() => lossAvoided(nodes), [nodes]);
+  const cost = selectedCount * costPerNode;
+  const avoided = useMemo(() => lossAvoided(selectedCount), [selectedCount]);
   const paybackDays = avoided > 0 ? Math.ceil((cost / avoided) * 365) : null;
 
   return (
-    <div className="page-grid cost-grid">
+    <ResourceNotice resource="results"><div className="page-grid cost-grid">
       <section className="panel cost-panel">
         <div className="section-heading">
           <div>
@@ -23,11 +28,11 @@ export function CostPage() {
           </div>
           <span className="unit-chip">{formatRs(costPerNode)} / node</span>
         </div>
-        <label className="slider-block">
-          <div className="slider-head"><span>Node count</span><strong>{nodes} nodes</strong></div>
-          <input type="range" min={1} max={max} value={nodes} onChange={(e) => setNodes(Number(e.target.value))} aria-label="Sensor node count" />
-          <div className="slider-scale"><span>1</span><span>{max}</span></div>
-        </label>
+        {available.length ? <label className="slider-block">
+          <div className="slider-head"><span>Sensor count</span><strong>{selectedCount} sensors</strong></div>
+          <input type="range" min={0} max={Math.max(0, available.length - 1)} value={selectedIndex} step="1" disabled={available.length < 2} onChange={(e) => setNodes(available[Number(e.target.value)])} aria-label="Sensor count" />
+          <div className="slider-scale"><span>{min}</span><span>{max}</span></div>
+        </label> : <p className="empty-inline">No placement sensor counts returned.</p>}
         <div className="metric-list">
           <div><span>Total sensor cost</span><strong>{formatRs(cost)}</strong></div>
           <div><span>Estimated loss avoided / year</span><strong>{formatRs(avoided)}</strong></div>
@@ -44,6 +49,6 @@ export function CostPage() {
           <div className="cost-callout-label">Estimated year-one net benefit</div>
         </div>
       </section>
-    </div>
+    </div></ResourceNotice>
   );
 }

@@ -1,6 +1,7 @@
 import { apiBaseUrl, wsUrl } from '../config/settings';
 import { normalizeStreamMessage, type DataSource } from './DataSource';
 import { normalizeResults } from './normalizeResults';
+import { normalizePlacementResponse } from './normalizePlacement';
 import { normalizeNetwork, normalizeScenarios } from './normalizeNetwork';
 import type { BackendHealth, DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamStatus } from './types';
 
@@ -58,7 +59,20 @@ export class LiveSource implements DataSource {
 
   async getNetwork(): Promise<Network> { return normalizeNetwork(await getJson<unknown>('/network')); }
   async getResults(): Promise<Results> { return normalizeResults(await getJson<unknown>('/results')); }
-  async getPlacement(): Promise<Placement[]> { return getJson<Placement[]>('/placement'); }
+  async getPlacement(results?: Results | null): Promise<Placement[]> {
+    const counts = results?.placement.map((row) => row.sensorCount) ?? [8];
+    const responses = await Promise.all(counts.map(async (count) => {
+      try {
+        const response = await getJson<unknown>(`/placement?n=${count}`);
+        return normalizePlacementResponse(response, count, results);
+      } catch {
+        return null;
+      }
+    }));
+    const placements = responses.filter((row): row is Placement => row !== null);
+    if (!placements.length) throw new Error('Placement data unavailable');
+    return placements;
+  }
   async getScenarios(): Promise<Scenario[]> { return normalizeScenarios(await getJson<unknown>('/scenarios')); }
   async getHealth(): Promise<BackendHealth | null> {
     const base = apiBaseUrl.replace(/\/api\/?$/, '');

@@ -5,21 +5,21 @@ import { useDashboard } from '../store/useDashboard';
 
 export function PlacementPage() {
   const placements = useDashboard((s) => s.placements);
-  const network = useDashboard((s) => s.network);
+  const results = useDashboard((s) => s.results);
+  const placementStatus = useDashboard((s) => s.resources.placement);
+  const retryResource = useDashboard((s) => s.retryResource);
   const [count, setCount] = useState<number>(8);
   const [mode, setMode] = useState<'optimized' | 'random'>('optimized');
 
-  const available = useMemo(() => placements.map((p) => p.sensorCount).sort((a, b) => a - b), [placements]);
+  const available = useMemo(() => (results?.placement ?? []).map((p) => p.sensorCount).sort((a, b) => a - b), [results]);
   const activeCount = available.includes(count) ? count : available[0] ?? 8;
   const current = placements.find((p) => p.sensorCount === activeCount);
-  const sensors = current ? (mode === 'optimized' ? current.optimizedSensors : current.randomSensors) : [];
+  const sensors = current ? (mode === 'optimized' ? current.optimizedSensors : current.randomSensors ?? []) : [];
 
-  const chartData = placements.map((p) => ({
+  const chartData = (results?.placement ?? []).map((p) => ({
     name: `${p.sensorCount} sensors`,
-    Optimized: +(p.optimizedCoverage * 100).toFixed(1),
-    Random: +(p.randomCoverage * 100).toFixed(1),
-    optimizedAccuracy: +(p.optimizedAccuracy * 100).toFixed(1),
-    randomAccuracy: +(p.randomAccuracy * 100).toFixed(1),
+    Optimized: +(p.optimized * 100).toFixed(1),
+    Random: +(p.randomMean * 100).toFixed(1),
   }));
 
   return (
@@ -42,17 +42,22 @@ export function PlacementPage() {
         </div>
         {current && (
           <div className="metric-list">
-            <div><span>Coverage</span><strong>{((mode === 'optimized' ? current.optimizedCoverage : current.randomCoverage) * 100).toFixed(1)}%</strong></div>
-            <div><span>Accuracy</span><strong>{((mode === 'optimized' ? current.optimizedAccuracy : current.randomAccuracy) * 100).toFixed(1)}%</strong></div>
+            <div><span>Placement API coverage</span><strong>{mode === 'random' || current.optimizedCoverage === null ? '—' : `${(current.optimizedCoverage * 100).toFixed(1)}%`}</strong></div>
             <div><span>Selected sensors</span><strong>{sensors.length}</strong></div>
           </div>
         )}
+        {mode === 'random' && current?.randomSensors === null && <p className="empty-inline">Random sensor IDs are not provided by the backend.</p>}
+        {placementStatus.loading && <p className="empty-inline">Loading optimized sensor IDs…</p>}
+        {placementStatus.error && <p className="empty-inline" role="alert">Placement data unavailable <button type="button" onClick={() => void retryResource('placement')}>Retry</button></p>}
+        {mode === 'optimized' && !current && !placementStatus.loading && !placementStatus.error && <p className="empty-inline">Optimized sensor IDs are unavailable for this count.</p>}
+        {!results?.placement.length && <p className="empty-inline">No benchmark sensor counts returned.</p>}
       </section>
 
       <LiveMap
         selectedSensor={null}
-        highlightSensors={sensors.length ? sensors : network?.sensors}
+        highlightSensors={sensors}
         showLocalization={false}
+        emptyNotice={mode === 'random' && current?.randomSensors === null ? 'RANDOM SENSOR IDS NOT PROVIDED' : undefined}
         title={`${mode === 'optimized' ? 'Optimized' : 'Random'} placement`}
         subtitle={`${activeCount} sensors on Net3`}
       />
@@ -60,8 +65,8 @@ export function PlacementPage() {
       <section className="panel chart-block">
         <div className="section-heading">
           <div>
-            <div className="eyebrow">Coverage by sensor count</div>
-            <h2>Optimized vs random</h2>
+            <div className="eyebrow">Results endpoint</div>
+            <h2>Benchmark coverage</h2>
           </div>
           <span className="unit-chip">%</span>
         </div>

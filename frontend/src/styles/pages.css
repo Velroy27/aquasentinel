@@ -9,6 +9,12 @@
 .placement-results th, .placement-results td { padding: 8px 12px; border-top: 1px solid #2b3332; white-space: nowrap; }
 .placement-results th:first-child { text-align: left; }
 .metric-list { display: grid; gap: 0; }
+.segmented { display: flex; flex-wrap: wrap; gap: 0; margin: 12px 0; border: 1px solid #394241; width: fit-content; max-width: 100%; }
+.segmented button { min-height: 34px; padding: 0 10px; border: 0; border-right: 1px solid #394241; color: #aeb8b5; background: #151c1e; font: 12px var(--font-number); cursor: pointer; }
+.segmented button:last-child { border-right: 0; }
+.segmented button:hover { background: #202827; }
+.segmented button.selected { color: #edf1ef; background: #2a3331; box-shadow: inset 0 -2px #a5afac; }
+.segmented button:focus-visible, .shortcut-trigger:focus-visible { outline: 2px solid #d0d8d4; outline-offset: 2px; }
 .slider-block { display: grid; gap: 10px; margin: 16px 0 8px; }
 .slider-head, .slider-scale { display: flex; justify-content: space-between; color: #aeb7b4; font: 14px var(--font-number); }
 .slider-block input[type='range'] { width: 100%; accent-color: #a0aaa6; }

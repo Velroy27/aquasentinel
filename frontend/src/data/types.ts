@@ -97,13 +97,14 @@ export type Results = {
 
 export type Placement = {
   sensorCount: number;
-  optimizedCoverage: number;
-  randomCoverage: number;
-  optimizedAccuracy: number;
-  randomAccuracy: number;
+  optimizedCoverage: number | null;
+  randomCoverage: number | null;
   optimizedSensors: string[];
-  randomSensors: string[];
+  randomSensors: string[] | null;
 };
+
+export type ResourceKey = 'network' | 'scenarios' | 'results' | 'placement';
+export type ResourceStatus = { loading: boolean; error: string | null };
 
 export type DataHandler = (message: StreamMessage) => void;
 export type StatusHandler = (status: StreamStatus) => void;

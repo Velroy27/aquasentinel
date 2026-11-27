@@ -15,6 +15,7 @@ type Props = {
   onRevealLeakChange?: (enabled: boolean) => void;
   title?: string;
   subtitle?: string;
+  emptyNotice?: string;
 };
 
 type NodeViewProps = {
@@ -163,14 +164,15 @@ export function LiveMap({
   onRevealLeakChange,
   title = 'Pressure field',
   subtitle,
+  emptyNotice,
 }: Props) {
   const network = useDashboard((state) => state.network);
   const pressuresBySensor = useDashboard((state) => state.pressuresBySensor);
   const localization = useDashboard((state) => state.localization);
   const alertActive = useDashboard((state) => state.alertActive);
   const scenario = useDashboard(selectCurrentScenario);
-  const loading = useDashboard((state) => state.loading);
-  const error = useDashboard((state) => state.error);
+  const networkStatus = useDashboard((state) => state.resources.network);
+  const retryResource = useDashboard((state) => state.retryResource);
   const mapFitRevision = useDashboard((state) => state.mapFitRevision);
   const [selectedJunctionId, setSelectedJunctionId] = useState<string | null>(null);
   const [hovered, setHovered] = useState<Junction | null>(null);
@@ -244,7 +246,7 @@ export function LiveMap({
     });
     observer.observe(element);
     return () => observer.disconnect();
-  }, [loading, network]);
+  }, [networkStatus.loading, network]);
 
   useEffect(() => {
     setZoom(1);
@@ -301,8 +303,8 @@ export function LiveMap({
     }
   }
 
-  if (loading) return <div className="panel map-shell skeleton">Loading network…</div>;
-  if (error || !network) return <div className="panel map-shell error-state">{error ?? 'Network unavailable'}</div>;
+  if (networkStatus.loading) return <div className="panel map-shell skeleton">Loading network…</div>;
+  if (networkStatus.error || !network) return <div className="panel map-shell error-state" role="alert"><span>{networkStatus.error ?? 'Network unavailable'}</span><button type="button" onClick={() => void retryResource('network')}>Retry</button></div>;
 
   return (
     <section className="panel map-shell map-stage">
@@ -377,6 +379,7 @@ export function LiveMap({
             {hovered && <g className="map-crosshair"><line x1={hovered.x} y1="0" x2={hovered.x} y2={viewBoxHeight} /><line x1="0" y1={hovered.y} x2={viewBoxWidth} y2={hovered.y} /></g>}
           </g>
         </svg>
+        {emptyNotice && <div className="map-data-notice" role="status">{emptyNotice}</div>}
 
         <div className="map-orientation"><span className="north-arrow">↑</span><span>N</span></div>
         <div className="map-scale"><i /><span>0</span><span>schematic</span></div>

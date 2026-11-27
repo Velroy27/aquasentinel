@@ -3,7 +3,7 @@ import type { BackendHealth, DataHandler, Network, Placement, Results, Scenario,
 export interface DataSource {
   getNetwork(): Promise<Network>;
   getResults(): Promise<Results>;
-  getPlacement(): Promise<Placement[]>;
+  getPlacement(results?: Results | null): Promise<Placement[]>;
   getScenarios(): Promise<Scenario[]>;
   getHealth(): Promise<BackendHealth | null>;
   startScenario(id: string, speed: 1 | 5 | 20): void;

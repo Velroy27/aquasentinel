@@ -6,6 +6,7 @@ import { HomePage } from './pages/HomePage';
 import { PlacementPage } from './pages/PlacementPage';
 import { ResultsPage } from './pages/ResultsPage';
 import { useDashboard } from './store/useDashboard';
+import { RuntimeErrorBoundary } from './components/RuntimeErrorBoundary';
 
 export default function App() {
   const init = useDashboard((s) => s.init);
@@ -15,10 +16,10 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route element={<OperatorShell />}>
-          <Route index element={<HomePage />} />
-          <Route path="placement" element={<PlacementPage />} />
-          <Route path="results" element={<ResultsPage />} />
-          <Route path="cost" element={<CostPage />} />
+          <Route index element={<RuntimeErrorBoundary><HomePage /></RuntimeErrorBoundary>} />
+          <Route path="placement" element={<RuntimeErrorBoundary><PlacementPage /></RuntimeErrorBoundary>} />
+          <Route path="results" element={<RuntimeErrorBoundary><ResultsPage /></RuntimeErrorBoundary>} />
+          <Route path="cost" element={<RuntimeErrorBoundary><CostPage /></RuntimeErrorBoundary>} />
         </Route>
       </Routes>
     </HashRouter>
