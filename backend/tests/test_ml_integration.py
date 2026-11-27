@@ -70,48 +70,48 @@ def test_timeout_fallback_sets_stub_flag(client):
         orig_detect = bridge_mod._real_detect
         orig_timeout = bridge_mod.ML_TIMEOUT_S
         bridge_mod.ML_TIMEOUT_S = 0.1 # Fast timeout for test
+        try:
+            def hanging_detect(w):
+                import time
+                time.sleep(0.5)
+                return {"anomaly": True, "score": 0.9}
 
-        def hanging_detect(w):
-            import time
-            time.sleep(0.5)
-            return {"anomaly": True, "score": 0.9}
+            bridge_mod._real_detect = hanging_detect
+            ml_bridge.forced_stub = False
+            ml_bridge.ml_mode = "real"
+            ml_bridge.stub_calls = 0
+            ml_bridge.last_stub_reason = None
+            pipeline.reset_state(clear_buffers=True)
 
-        bridge_mod._real_detect = hanging_detect
-        ml_bridge.forced_stub = False
-        ml_bridge.ml_mode = "real"
-        ml_bridge.stub_calls = 0
-        ml_bridge.last_stub_reason = None
-        pipeline.reset_state(clear_buffers=True)
+            res = await ml_bridge.detect([{"pressure_m": 35.0}])
+            assert ml_bridge.stub_calls > 0
+            assert "timed out" in ml_bridge.last_stub_reason.lower()
+            assert ml_bridge.ml_mode == "degraded"
 
-        res = await ml_bridge.detect([{"pressure_m": 35.0}])
-        assert ml_bridge.stub_calls > 0
-        assert "timed out" in ml_bridge.last_stub_reason.lower()
-        assert ml_bridge.ml_mode == "degraded"
+            # Verify pipeline records run_had_stub and sets "stub": True on messages
+            with client.websocket_connect("/ws/stream") as ws:
+                # Trigger anomaly via ingest with low pressure
+                await pipeline.ingest_single_reading({"t": 0, "node_id": "105", "pressure_m": 35.0, "flow_lps": None})
+                await pipeline.ingest_single_reading({"t": 10, "node_id": "105", "pressure_m": 35.0, "flow_lps": None})
+                await pipeline.ingest_single_reading({"t": 20, "node_id": "105", "pressure_m": 35.0, "flow_lps": None})
 
-        # Verify pipeline records run_had_stub and sets "stub": True on messages
-        with client.websocket_connect("/ws/stream") as ws:
-            # Trigger anomaly via ingest with low pressure
-            await pipeline.ingest_single_reading({"t": 0, "node_id": "105", "pressure_m": 35.0, "flow_lps": None})
-            await pipeline.ingest_single_reading({"t": 10, "node_id": "105", "pressure_m": 35.0, "flow_lps": None})
-            await pipeline.ingest_single_reading({"t": 20, "node_id": "105", "pressure_m": 35.0, "flow_lps": None})
+                # Read WS messages
+                msg_types = {}
+                for _ in range(6):
+                    m = ws.receive_json()
+                    t = m.get("type")
+                    if t in ("alert", "localization", "loss"):
+                        msg_types[t] = m
 
-            # Read WS messages
-            msg_types = {}
-            for _ in range(6):
-                m = ws.receive_json()
-                t = m.get("type")
-                if t in ("alert", "localization", "loss"):
-                    msg_types[t] = m
-
-            assert "alert" in msg_types
-            assert msg_types["alert"].get("stub") is True
-            assert "localization" in msg_types
-            assert msg_types["localization"].get("stub") is True
-            assert "loss" in msg_types
-            assert msg_types["loss"].get("stub") is True
-
-        bridge_mod._real_detect = orig_detect
-        bridge_mod.ML_TIMEOUT_S = orig_timeout
+                assert "alert" in msg_types
+                assert msg_types["alert"].get("stub") is True
+                assert "localization" in msg_types
+                assert msg_types["localization"].get("stub") is True
+                assert "loss" in msg_types
+                assert msg_types["loss"].get("stub") is True
+        finally:
+            bridge_mod._real_detect = orig_detect
+            bridge_mod.ML_TIMEOUT_S = orig_timeout
 
     asyncio.run(_run())
 
