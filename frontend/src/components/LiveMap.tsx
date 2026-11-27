@@ -315,7 +315,7 @@ export function LiveMap({
           <span className="map-count">{network.sensors.length} sensors <i>·</i> {network.junctions.length} nodes <i>·</i> {network.pipes.length} links</span>
         </div>
         <div className="map-actions">
-          {showLocalization && alertActive && <button type="button" className={`map-toggle ${heatmapEnabled ? 'is-on' : ''}`} onClick={() => onHeatmapChange?.(!heatmapEnabled)} aria-pressed={heatmapEnabled}>Relative suspicion <kbd>G</kbd></button>}
+          {showLocalization && alertActive && <button type="button" className={`map-toggle ${heatmapEnabled ? 'is-on' : ''}`} onClick={() => onHeatmapChange?.(!heatmapEnabled)} aria-pressed={heatmapEnabled}>Suspicion field <kbd>G</kbd></button>}
           {showLocalization && alertActive && demoMode && <button type="button" className={`map-toggle reveal-toggle ${revealLeak ? 'is-on' : ''}`} onClick={() => onRevealLeakChange?.(!revealLeak)} aria-pressed={revealLeak}>Reveal true leak <kbd>L</kbd></button>}
           <div className="map-zoom"><button type="button" aria-label="Zoom out" onClick={() => zoomAt(zoom - 0.25)} disabled={zoom <= 0.75}><Minus size={16} /></button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Zoom in" onClick={() => zoomAt(zoom + 0.25)} disabled={zoom >= 4}><Plus size={16} /></button><button type="button" className="fit-button" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}>Fit</button></div>
         </div>

@@ -26,7 +26,7 @@ function EventTicker() {
   const anomalyAt = useDashboard((state) => state.anomalyAt);
   const latest = alerts[0];
   const event = latest
-    ? `${latest.severity.toUpperCase()} · ${new Date(latest.timestamp).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false })} IST · ${latest.sensorId} · SCORE ${(latest.score * 100).toFixed(0)}%`
+    ? `${latest.severity.toUpperCase()} · ${new Date(latest.timestamp).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false })} IST · ${latest.sensorId} · MODEL SCORE ${latest.score.toFixed(2)}`
     : anomalyAt
       ? `ANOMALY · ${new Date(anomalyAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false })} IST`
       : 'EVENT LOG · NO EVENTS';

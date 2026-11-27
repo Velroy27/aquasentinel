@@ -37,7 +37,7 @@ export function AlertPanel() {
               <span className="alert-body">
                 <span className="alert-top"><strong>{alert.severity.toUpperCase()}</strong><time>{new Date(alert.timestamp).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false })} IST</time></span>
                 <span className="alert-message">{alert.message}</span>
-                <span className="alert-meta"><span>{alert.sensorId}</span><span>SCORE {(alert.score * 100).toFixed(0)}%</span></span>
+                <span className="alert-meta"><span>{alert.sensorId}</span><span>MODEL SCORE {alert.score.toFixed(2)}</span></span>
               </span>
               {isNew && <span className="new-indicator">NEW</span>}
             </button>
