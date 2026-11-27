@@ -1,6 +1,7 @@
-import { memo, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
+import { memo, useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { Copy, LocateFixed, Minus, Plus, X } from 'lucide-react';
-import { demoMode, pressureDelta, pressureScale } from '../config/settings';
+import { demoMode, mapEffectMotion, pressureDelta, pressureScale } from '../config/settings';
+import { MapEffects, pressureStateForDelta } from './MapEffects';
 import { selectCurrentScenario, useDashboard } from '../store/useDashboard';
 import type { Junction } from '../data/types';
 
@@ -80,7 +81,6 @@ const JunctionNode = memo(function JunctionNode({
       <circle cx={junction.x} cy={junction.y} r={6 * screenUnit} className="node-hit" />
       {selected && <circle cx={junction.x} cy={junction.y} r={8 * screenUnit} className="node-selection-ring" />}
       {rank && <circle cx={junction.x} cy={junction.y} r={7 * screenUnit} className="rank-halo" />}
-      {leak && <circle cx={junction.x} cy={junction.y} r={10 * screenUnit} className="leak-ring" />}
       {isSensor ? (
         <path d={`M ${junction.x} ${junction.y - 4.5 * screenUnit} L ${junction.x + 4.5 * screenUnit} ${junction.y} L ${junction.x} ${junction.y + 4.5 * screenUnit} L ${junction.x - 4.5 * screenUnit} ${junction.y} Z`} fill={color} stroke="#dce9e5" strokeWidth="1.2" vectorEffect="non-scaling-stroke" className="node-dot sensor-diamond" />
       ) : (
@@ -174,14 +174,18 @@ export function LiveMap({
   const networkStatus = useDashboard((state) => state.resources.network);
   const retryResource = useDashboard((state) => state.retryResource);
   const mapFitRevision = useDashboard((state) => state.mapFitRevision);
+  const running = useDashboard((state) => state.running);
+  const leakRateEstimate = useDashboard((state) => state.leakRateEstimate);
   const [selectedJunctionId, setSelectedJunctionId] = useState<string | null>(null);
   const [hovered, setHovered] = useState<Junction | null>(null);
   const [copied, setCopied] = useState(false);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [viewSize, setViewSize] = useState({ width: 0, height: 0 });
+  const [effectsEnabled, setEffectsEnabled] = useState(true);
   const canvasRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
+  const fpsRef = useRef<HTMLSpanElement>(null);
   const dragRef = useRef<{ pointerId: number; x: number; y: number; panX: number; panY: number } | null>(null);
 
   const latest = useMemo(() => {
@@ -210,6 +214,7 @@ export function LiveMap({
   const rankMap = useMemo(() => new Map(top3.map((item, index) => [item.junctionId, index + 1])), [top3]);
   const junctionMap = useMemo(() => new Map((network?.junctions ?? []).map((node) => [node.id, node])), [network]);
   const sensorSet = useMemo(() => new Set(highlightSensors ?? network?.sensors ?? []), [highlightSensors, network]);
+  const sensorJunctions = useMemo(() => (network?.junctions ?? []).filter((junction) => sensorSet.has(junction.id)), [network, sensorSet]);
   const selectedJunction = selectedJunctionId ? junctionMap.get(selectedJunctionId) : undefined;
   const selectedReading = selectedJunction ? latest[selectedJunction.id] : undefined;
   const scenarioBase = scenario?.basePressureM ?? 52;
@@ -288,10 +293,43 @@ export function LiveMap({
   useEffect(() => {
     function onEscape(event: KeyboardEvent) {
       if (event.key === 'Escape') setSelectedJunctionId(null);
+      const target = event.target;
+      const editable = target instanceof HTMLElement && (/^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName) || target.isContentEditable);
+      if (event.key.toLowerCase() === 'e' && !editable && !event.ctrlKey && !event.metaKey && !event.altKey) setEffectsEnabled((enabled) => !enabled);
     }
     window.addEventListener('keydown', onEscape);
     return () => window.removeEventListener('keydown', onEscape);
   }, []);
+
+  useEffect(() => {
+    const output = fpsRef.current;
+    if (!output) return;
+    if (!running || !effectsEnabled) {
+      output.textContent = 'FPS —';
+      return;
+    }
+    let frame = 0;
+    let frameCount = 0;
+    let windowStart = performance.now();
+    let previous = windowStart;
+    let totalDelta = 0;
+    const measure = (now: number) => {
+      frameCount += 1;
+      totalDelta += now - previous;
+      previous = now;
+      if (now - windowStart >= 700) {
+        const fps = frameCount * 1000 / (now - windowStart);
+        const ms = totalDelta / frameCount;
+        output.textContent = `FPS ${fps.toFixed(0)} · ${ms.toFixed(1)} ms`;
+        frameCount = 0;
+        totalDelta = 0;
+        windowStart = now;
+      }
+      frame = requestAnimationFrame(measure);
+    };
+    frame = requestAnimationFrame(measure);
+    return () => cancelAnimationFrame(frame);
+  }, [running, effectsEnabled]);
 
   async function copyId(id: string) {
     try {
@@ -315,6 +353,7 @@ export function LiveMap({
           <span className="map-count">{network.sensors.length} sensors <i>·</i> {network.junctions.length} nodes <i>·</i> {network.pipes.length} links</span>
         </div>
         <div className="map-actions">
+          <button type="button" className={`map-toggle effects-toggle ${effectsEnabled ? 'is-on' : ''}`} onClick={() => setEffectsEnabled((enabled) => !enabled)} aria-pressed={effectsEnabled}>Effects <kbd>E</kbd></button>
           {showLocalization && alertActive && <button type="button" className={`map-toggle ${heatmapEnabled ? 'is-on' : ''}`} onClick={() => onHeatmapChange?.(!heatmapEnabled)} aria-pressed={heatmapEnabled}>Suspicion field <kbd>G</kbd></button>}
           {showLocalization && alertActive && demoMode && <button type="button" className={`map-toggle reveal-toggle ${revealLeak ? 'is-on' : ''}`} onClick={() => onRevealLeakChange?.(!revealLeak)} aria-pressed={revealLeak}>Reveal true leak <kbd>L</kbd></button>}
           <div className="map-zoom"><button type="button" aria-label="Zoom out" onClick={() => zoomAt(zoom - 0.25)} disabled={zoom <= 0.75}><Minus size={16} /></button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Zoom in" onClick={() => zoomAt(zoom + 0.25)} disabled={zoom >= 4}><Plus size={16} /></button><button type="button" className="fit-button" onClick={() => { setZoom(1); setPan({ x: 0, y: 0 }); }}>Fit</button></div>
@@ -341,18 +380,39 @@ export function LiveMap({
             </pattern>
           </defs>
           <rect width={viewBoxWidth} height={viewBoxHeight} fill="url(#graticule)" />
-          <g className="map-zoom-layer" transform={`translate(${pan.x + viewBoxWidth / 2 - (viewBoxWidth / 2) * zoom} ${pan.y + viewBoxHeight / 2 - (viewBoxHeight / 2) * zoom}) scale(${zoom})`}>
+          <g className="map-zoom-layer" style={{ '--effect-low': pressureScale.low, '--effect-high': pressureScale.high, '--effect-transition': `${mapEffectMotion.transitionMs}ms` } as CSSProperties} transform={`translate(${pan.x + viewBoxWidth / 2 - (viewBoxWidth / 2) * zoom} ${pan.y + viewBoxHeight / 2 - (viewBoxHeight / 2) * zoom}) scale(${zoom})`}>
             {heatmapEnabled && showLocalization && alertActive && localization && network.junctions.map((junction) => {
               const suspicion = suspicionMap.get(junction.id) ?? 0;
               if (suspicion < 0.008) return null;
               return <circle key={`heat-${junction.id}`} cx={junction.x} cy={junction.y} r={(2 + Math.min(8, suspicion * 18)) * screenUnit} fill="#56b9ac" opacity={Math.min(0.32, suspicion * 2.5)} className="heat-cell" />;
             })}
-            {pipeEndpoints.map(({ id, from, to, diameter, trunk }) => (
-              <g key={id} className={`pipe-group ${trunk ? 'pipe-main' : diameter >= 11 ? 'pipe-secondary' : 'pipe-branch'}`}>
-                <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe-casing" />
-                <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe" />
-              </g>
-            ))}
+            {pipeEndpoints.map(({ id, from, to, diameter, trunk }) => {
+              const fromState = pressureStateForDelta(latest[from.id] ? latest[from.id]!.pressureM - scenarioBase : undefined);
+              const toState = pressureStateForDelta(latest[to.id] ? latest[to.id]!.pressureM - scenarioBase : undefined);
+              const pipeState = !effectsEnabled ? '' : fromState.startsWith('low') || toState.startsWith('low')
+                ? 'pipe-pressure-low'
+                : fromState === 'high' || toState === 'high' ? 'pipe-pressure-high' : '';
+              return (
+                <g key={id} className={`pipe-group ${trunk ? 'pipe-main' : diameter >= 11 ? 'pipe-secondary' : 'pipe-branch'} ${pipeState}`}>
+                  <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe-casing" />
+                  <line x1={from.x} y1={from.y} x2={to.x} y2={to.y} className="pipe" />
+                </g>
+              );
+            })}
+            <MapEffects
+              junctions={network.junctions}
+              sensors={sensorJunctions}
+              pipes={pipeEndpoints}
+              latest={latest}
+              scenarioBase={scenarioBase}
+              screenUnit={screenUnit}
+              running={running}
+              enabled={effectsEnabled}
+              alertActive={alertActive}
+              suspectId={alertActive ? top3[0]?.junctionId : undefined}
+              leakNode={alertActive ? (demoMode ? (revealLeak ? scenario?.leakNode : undefined) : top3[0]?.junctionId) : undefined}
+              leakRate={leakRateEstimate}
+            />
             {network.junctions.map((junction) => {
               const point = latest[junction.id];
               const delta = point ? point.pressureM - scenarioBase : undefined;
@@ -382,6 +442,7 @@ export function LiveMap({
         {emptyNotice && <div className="map-data-notice" role="status">{emptyNotice}</div>}
 
         <div className="map-orientation"><span className="north-arrow">↑</span><span>N</span></div>
+        {running && effectsEnabled && <span className="map-fps" ref={fpsRef}>FPS —</span>}
         <div className="map-scale"><i /><span>0</span><span>schematic</span></div>
         {hovered && <div className="map-hover-hud" role="status"><b>{hovered.id}</b><span>GRID {hovered.x.toFixed(1)} / {hovered.y.toFixed(1)}</span><span>{network.sensors.includes(hovered.id) ? 'SENSOR' : 'JUNCTION'}</span><span>{latest[hovered.id] ? `P ${latest[hovered.id]!.pressureM.toFixed(1)} m` : 'P —'}</span><span>Δ {latest[hovered.id] ? `${(latest[hovered.id]!.pressureM - scenarioBase).toFixed(1)} m` : '—'}</span><span>{showLocalization && alertActive && rankMap.has(hovered.id) ? `RANK #${rankMap.get(hovered.id)}` : 'RANK —'}</span></div>}
         {selectedJunction && <aside className="node-inspector" aria-label={`${selectedJunction.id} inspector`}>
@@ -401,7 +462,7 @@ export function LiveMap({
       </div>
 
       <div className="map-footer">
-        <div className="map-legends"><span><i className="legend-dot low" />Drop ≤ {pressureDelta.loss} m</span><span><i className="legend-dot stable" />Nominal</span><span><i className="legend-dot high" />Rise ≥ +{pressureDelta.rise} m</span>
+        <div className="map-legends"><span><i className="legend-dot low" />Low Δ ≤ {pressureDelta.loss} m <i className="effect-icon effect-in" aria-hidden="true" />inward</span><span><i className="legend-dot stable" />Nominal</span><span><i className="legend-dot high" />High Δ ≥ +{pressureDelta.rise} m <i className="effect-icon effect-out" aria-hidden="true" />outward</span><span><i className="effect-icon effect-flow" aria-hidden="true" />Flow from → to</span>
           {heatmapEnabled && showLocalization && alertActive && localization && <span className="suspicion-key"><i />RELATIVE SUSPICION</span>}
         </div>
         <span className="map-data-state"><i className={`live-dot ${hasPressure ? 'active' : ''}`} />{hasPressure ? 'PRESSURE VALUES / SENSORS ONLY' : 'NO PRESSURE SAMPLE'}</span>

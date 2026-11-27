@@ -42,10 +42,8 @@ def main():
 
     # 1. Port Check
     if is_port_in_use(API_HOST, API_PORT):
-        print(f"
-[ERROR] Port {API_PORT} is already in use!")
-        print(f"Fix: Run 'Get-Process -Id (Get-NetTCPConnection -LocalPort {API_PORT}).OwningProcess | Stop-Process -Force' in PowerShell
-")
+        print(f"\n[ERROR] Port {API_PORT} is already in use!")
+        print(f"Fix: Run 'Get-Process -Id (Get-NetTCPConnection -LocalPort {API_PORT}).OwningProcess | Stop-Process -Force' in PowerShell\n")
         sys.exit(1)
 
     py_exe = sys.executable
@@ -62,8 +60,7 @@ def main():
 
     # Wait for API to become ready
     if not wait_for_api_ready(15.0):
-        print("
-[ERROR] API Server failed to respond to /health in 15 seconds.")
+        print("\n[ERROR] API Server failed to respond to /health in 15 seconds.")
         server_proc.terminate()
         sys.exit(1)
 
@@ -106,8 +103,7 @@ def main():
             time.sleep(1.0)
 
     except KeyboardInterrupt:
-        print("
-Received Ctrl+C, shutting down processes gracefully...")
+        print("\nReceived Ctrl+C, shutting down processes gracefully...")
     finally:
         if emulator_proc and emulator_proc.poll() is None:
             emulator_proc.terminate()

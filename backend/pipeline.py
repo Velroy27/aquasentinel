@@ -86,13 +86,12 @@ class Pipeline:
         self.est_leak_lps = 0.0
         self.non_anomaly_count = 0
         self.cached_loss = None
+        self.cached_alert = None
+        self.cached_localization = None
 
         if clear_buffers:
             self.node_buffers.clear()
             self.recent_steps.clear()
-            self.cached_alert = None
-            self.cached_localization = None
-            self.cached_loss = None
         logger.info("Pipeline state reset")
 
     async def _broadcast(self, msg: dict[str, Any]) -> None:

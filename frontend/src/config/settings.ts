@@ -12,8 +12,36 @@ export const pressureScale = {
 
 export const pressureDelta = {
   loss: -1.5,
+  strongLoss: -4,
   rise: 1.0,
 };
+
+export const mapEffectMotion = {
+  transitionMs: 400,
+  lowMildMs: 2_800,
+  lowStrongMs: 2_200,
+  highMs: 1_200,
+  flowNormalMs: 2_200,
+  flowLowMs: 3_200,
+  flowHighMs: 1_100,
+  leakCycleMs: 2_100,
+  puddleGrowthMs: 45_000,
+  maxAnimatedPipes: 5,
+  pressureRingPx: 7,
+  suspectRingPx: 10,
+  leakRingPx: 5,
+  puddleStartPx: 5,
+  puddleMaxPx: 28,
+  dropletRisePx: 16,
+  dropletSizePx: 4,
+  dropletArcPx: 7,
+  flowDashPx: 1.2,
+  flowGapPx: 3.8,
+  flowDashOffsetPx: 10,
+  flowStaggerMs: 180,
+  flowStaggerSlots: 3,
+  leakRateScale: 8,
+} as const;
 
 export const formatRs = (value: number) =>
   `Rs ${Math.round(value).toLocaleString('en-IN')}`;

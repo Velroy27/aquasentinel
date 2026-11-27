@@ -39,36 +39,57 @@ class ReplayEngine:
     def load_all_scenarios(self) -> dict[str, dict[str, Any]]:
         scenarios: dict[str, dict[str, Any]] = {}
 
-        # 1. Try loading from DATA_REPLAY_DIR first
+        # 1. Load audited replay traces using the adjacent catalog metadata.
         if DATA_REPLAY_DIR.exists():
-            for f in sorted(DATA_REPLAY_DIR.glob("*.json")):
-                sc = self._validate_and_load_file(f)
+            catalog_path = DATA_REPLAY_DIR / "scenarios_catalog.json"
+            catalog: list[dict[str, Any]] = []
+            if catalog_path.exists():
+                try:
+                    raw_catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+                    if isinstance(raw_catalog, list):
+                        catalog = [item for item in raw_catalog if isinstance(item, dict)]
+                except Exception as e:
+                    logger.warning("Failed to read replay catalog %s: %s", catalog_path.name, e)
+            for item in catalog:
+                filename = item.get("filename")
+                if not isinstance(filename, str):
+                    continue
+                f = DATA_REPLAY_DIR / filename
+                if not f.is_file():
+                    logger.warning("Replay file missing from catalog: %s", filename)
+                    continue
+                sc = self._validate_and_load_file(f, item)
                 if sc:
                     scenarios[sc["scenario_id"]] = sc
 
-        # 2. If no valid files in DATA_REPLAY_DIR, load from MOCK_REPLAY_DIR
-        if not scenarios and MOCK_REPLAY_DIR.exists():
+        # 2. Keep mock-only scenarios, including the no-leak baseline.
+        if MOCK_REPLAY_DIR.exists():
             for f in sorted(MOCK_REPLAY_DIR.glob("*.json")):
                 sc = self._validate_and_load_file(f)
                 if sc:
-                    scenarios[sc["scenario_id"]] = sc
+                    scenarios.setdefault(sc["scenario_id"], sc)
 
         self.scenarios_cache = scenarios
         logger.info("Loaded %d replay scenarios", len(scenarios))
         return scenarios
 
-    def _validate_and_load_file(self, file_path: Path) -> Optional[dict[str, Any]]:
+    def _validate_and_load_file(
+        self,
+        file_path: Path,
+        catalog_entry: Optional[dict[str, Any]] = None,
+    ) -> Optional[dict[str, Any]]:
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
-            # Support both 'scenario_id' and 'id'
-            sc_id = data.get("scenario_id") or data.get("id")
+            metadata = catalog_entry or (data if isinstance(data, dict) else {})
+            steps = data if isinstance(data, list) else metadata.get("steps")
+            # Support catalog, scenario_id and id metadata forms.
+            sc_id = metadata.get("scenario_id") or metadata.get("id")
             if not sc_id or not isinstance(sc_id, str):
                 logger.warning("Skipping scenario file %s: missing scenario_id", file_path.name)
                 return None
 
-            steps = data.get("steps")
             if not isinstance(steps, list):
                 logger.warning("Skipping scenario file %s: missing or invalid steps list", file_path.name)
                 return None
@@ -81,10 +102,10 @@ class ReplayEngine:
 
             return {
                 "scenario_id": sc_id,
-                "leak_node": data.get("leak_node"),
-                "leak_size_lps": float(data.get("leak_size_lps", 0.0)),
-                "start_t": int(data.get("start_t", 0)),
-                "description": data.get("description", f"Replay scenario {sc_id}"),
+                "leak_node": metadata.get("leak_node"),
+                "leak_size_lps": float(metadata.get("leak_size_lps", 0.0)),
+                "start_t": int(metadata.get("start_t", 0)),
+                "description": metadata.get("description", f"Replay scenario {sc_id}"),
                 "steps": steps,
             }
         except Exception as e:

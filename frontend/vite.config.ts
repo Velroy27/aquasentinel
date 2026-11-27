@@ -2,6 +2,11 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // The font packages resolve from the repository-level node_modules folder.
+    // Permit that workspace root so Vite can serve the bundled font assets.
+    fs: { allow: ['..'] },
+  },
   build: {
     rollupOptions: {
       output: {

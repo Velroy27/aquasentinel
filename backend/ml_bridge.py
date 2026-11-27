@@ -37,34 +37,32 @@ except Exception as e:
 
 
 def stub_detect(window: list[Any]) -> dict[str, Any]:
-    """Deterministic stub for detect(window) -> {'anomaly': bool, 'score': float}."""
+    """Conservative fallback detector based on within-sensor pressure movement."""
     if not window:
         return {"anomaly": False, "score": 0.05}
 
-    # Extract pressures
-    pressures: list[float] = []
+    # Comparing pressure across different nodes mistakes normal elevation and
+    # hydraulic head differences for a leak. Only compare readings from the
+    # same node across the active time window.
+    pressure_by_node: dict[str, list[float]] = {}
     for item in window:
         if isinstance(item, dict):
-            if "readings" in item and isinstance(item["readings"], list):
-                for r in item["readings"]:
-                    p = r.get("pressure_m")
-                    if isinstance(p, (int, float)) and not math.isnan(p):
-                        pressures.append(float(p))
-            elif "pressure_m" in item:
-                p = item.get("pressure_m")
-                if isinstance(p, (int, float)) and not math.isnan(p):
-                    pressures.append(float(p))
+            readings = item.get("readings") if isinstance(item.get("readings"), list) else [item]
+            for reading in readings:
+                if not isinstance(reading, dict):
+                    continue
+                node_id = str(reading.get("node_id", ""))
+                pressure = reading.get("pressure_m")
+                if node_id and isinstance(pressure, (int, float)) and math.isfinite(pressure):
+                    pressure_by_node.setdefault(node_id, []).append(float(pressure))
 
-    if not pressures:
+    node_ranges = [max(values) - min(values) for values in pressure_by_node.values() if len(values) > 1]
+    if not node_ranges:
         return {"anomaly": False, "score": 0.05}
 
-    # If any pressure drops below 48.0m or variance indicates a sudden dip
-    min_p = min(pressures)
-    avg_p = sum(pressures) / len(pressures)
-    drop = avg_p - min_p
-
-    if drop >= 2.5 or min_p < 48.0:
-        score = min(0.99, max(0.55, 0.50 + drop * 0.1))
+    largest_change = max(node_ranges)
+    if largest_change >= 2.5:
+        score = min(0.99, max(0.55, 0.50 + largest_change * 0.1))
         return {"anomaly": True, "score": round(score, 3)}
     return {"anomaly": False, "score": 0.08}
 
