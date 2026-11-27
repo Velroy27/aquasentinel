@@ -87,7 +87,7 @@ export function normalizeStreamMessage(value: unknown): import('./types').Stream
       : (message.top3 as { node_id: string; prob: number }[]).map((item) => [item.node_id, item.prob] as [string, number]);
     return [{
       type: 'localization', timestamp, alertId: String(message.alert_id),
-      probabilities: scores.map(([junctionId, probability]) => ({ junctionId, probability: Number(probability) })),
+      scores: scores.map(([junctionId, score]) => ({ junctionId, score: Number(score) })),
     }];
   }
   return [{

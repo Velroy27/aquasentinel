@@ -16,7 +16,7 @@ function ShortcutOverlay({ onClose }: { onClose: () => void }) {
           <div><dt><kbd>R</kbd></dt><dd>Reset run</dd></div>
           <div><dt><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></dt><dd>Speed 1× / 5× / 20×</dd></div>
           <div><dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Previous / next sensor</dd></div>
-          <div><dt><kbd>G</kbd></dt><dd>Toggle probability heatmap</dd></div>
+          <div><dt><kbd>G</kbd></dt><dd>Toggle relative suspicion</dd></div>
           {demoMode && <div><dt><kbd>L</kbd></dt><dd>Reveal actual leak</dd></div>}
         </dl>
       </section>

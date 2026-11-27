@@ -44,16 +44,16 @@ export type AlertMessage = {
   message: string;
 };
 
-export type LocalizationProbability = {
+export type LocalizationScore = {
   junctionId: string;
-  probability: number;
+  score: number;
 };
 
 export type LocalizationMessage = {
   type: 'localization';
   timestamp: string;
   alertId: string;
-  probabilities: LocalizationProbability[];
+  scores: LocalizationScore[];
 };
 
 export type LossMessage = {

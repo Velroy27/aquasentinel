@@ -85,11 +85,11 @@
 .legend-dot.low { background: var(--amber); }
 .legend-dot.stable { background: #818b88; }
 .legend-dot.high { background: var(--teal); }
-.probability-key i { width: 46px; height: 6px; background: linear-gradient(90deg, #273a39, #45978d); }
+.suspicion-key i { width: 46px; height: 6px; background: linear-gradient(90deg, #273a39, #45978d); }
+.suspect-strip > .eyebrow { align-self: center; margin-right: 4px; }
 .map-data-state { white-space: nowrap; }
 .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 7px; background: #707a77; }
 .live-dot.active { background: var(--teal); }
-.top3-summary { color: #b5bfbb; font: 12px var(--font-number); padding: 2px 0; }
 .map-coordinate { display: none; }
 .map-canvas:hover ~ .map-coordinate { display: inline-flex; }
 

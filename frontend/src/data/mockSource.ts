@@ -57,7 +57,7 @@ function buildTimeline(scenario: Scenario): StreamMessage[] {
         type: 'localization',
         timestamp,
         alertId: '',
-        probabilities: ranked.map((item) => ({ junctionId: item.junctionId, probability: +(item.raw / total).toFixed(4) })),
+        scores: ranked.map((item) => ({ junctionId: item.junctionId, score: +(item.raw / total).toFixed(4) })),
       });
     }
   }

@@ -134,12 +134,12 @@ export function LiveMap({
       return [{ id: pipe.id, from, to, trunk: length > 17 }];
     });
   }, [network]);
-  const probabilityMap = useMemo(
-    () => new Map((localization?.probabilities ?? []).map((item) => [item.junctionId, item.probability])),
+  const suspicionMap = useMemo(
+    () => new Map((localization?.scores ?? []).map((item) => [item.junctionId, item.score])),
     [localization],
   );
   const top3 = useMemo(
-    () => [...(localization?.probabilities ?? [])].sort((a, b) => b.probability - a.probability).slice(0, 3),
+    () => [...(localization?.scores ?? [])].sort((a, b) => b.score - a.score).slice(0, 3),
     [localization],
   );
   const rankMap = useMemo(() => new Map(top3.map((item, index) => [item.junctionId, index + 1])), [top3]);
@@ -192,13 +192,13 @@ export function LiveMap({
           <span className="map-count">{network.sensors.length} sensors <i>·</i> {network.junctions.length} nodes <i>·</i> {network.pipes.length} links</span>
         </div>
         <div className="map-actions">
-          {showLocalization && alertActive && <button type="button" className={`map-toggle ${heatmapEnabled ? 'is-on' : ''}`} onClick={() => onHeatmapChange?.(!heatmapEnabled)} aria-pressed={heatmapEnabled}>P(leak) field <kbd>G</kbd></button>}
+          {showLocalization && alertActive && <button type="button" className={`map-toggle ${heatmapEnabled ? 'is-on' : ''}`} onClick={() => onHeatmapChange?.(!heatmapEnabled)} aria-pressed={heatmapEnabled}>Relative suspicion <kbd>G</kbd></button>}
           {showLocalization && alertActive && demoMode && <button type="button" className={`map-toggle reveal-toggle ${revealLeak ? 'is-on' : ''}`} onClick={() => onRevealLeakChange?.(!revealLeak)} aria-pressed={revealLeak}>Reveal true leak <kbd>L</kbd></button>}
           <div className="map-zoom"><button type="button" aria-label="Zoom out" onClick={() => setZoom((value) => Math.max(1, value - 0.25))}><Minus size={16} /></button><span>{Math.round(zoom * 100)}%</span><button type="button" aria-label="Zoom in" onClick={() => setZoom((value) => Math.min(2, value + 0.25))}><Plus size={16} /></button></div>
         </div>
       </div>
 
-      {top3.length > 0 && showLocalization && alertActive && <div className="suspect-strip">{top3.map((item, index) => <button type="button" key={item.junctionId} className={`suspect-rank suspect-${index + 1}`} onClick={() => setSelectedJunctionId(item.junctionId)}><b>{index + 1}</b><span>{item.junctionId}</span></button>)}</div>}
+      {top3.length > 0 && showLocalization && alertActive && <div className="suspect-strip" aria-label="Ranked suspect nodes"><span className="eyebrow">RANKED NODES</span>{top3.map((item, index) => <button type="button" key={item.junctionId} className={`suspect-rank suspect-${index + 1}`} onClick={() => setSelectedJunctionId(item.junctionId)}><b>#{index + 1}</b><span>{item.junctionId}</span></button>)}</div>}
 
       <div className="map-canvas map-viewport">
         <svg viewBox="0 0 100 100" role="img" aria-label="Water distribution network map" preserveAspectRatio="xMidYMid meet">
@@ -211,9 +211,9 @@ export function LiveMap({
           <rect width="100" height="100" fill="url(#graticule)" />
           <g className="map-zoom-layer" transform={`translate(${50 - 50 * zoom} ${50 - 50 * zoom}) scale(${zoom})`}>
             {heatmapEnabled && showLocalization && alertActive && localization && network.junctions.map((junction) => {
-              const probability = probabilityMap.get(junction.id) ?? 0;
-              if (probability < 0.008) return null;
-              return <circle key={`heat-${junction.id}`} cx={junction.x} cy={junction.y} r={1.3 + probability * 16} fill="#56b9ac" opacity={Math.min(0.32, probability * 2.5)} className="heat-cell" />;
+              const suspicion = suspicionMap.get(junction.id) ?? 0;
+              if (suspicion < 0.008) return null;
+              return <circle key={`heat-${junction.id}`} cx={junction.x} cy={junction.y} r={1.3 + suspicion * 16} fill="#56b9ac" opacity={Math.min(0.32, suspicion * 2.5)} className="heat-cell" />;
             })}
             {pipeEndpoints.map(({ id, from, to, trunk }) => (
               <g key={id} className={trunk ? 'pipe-group pipe-trunk' : 'pipe-group pipe-branch'}>
@@ -250,7 +250,7 @@ export function LiveMap({
         <div className="map-scale"><i /><span>0</span><span>schematic</span></div>
         {hovered && <div className="map-hover-hud"><b>{hovered.id}</b><span>{hovered.x.toFixed(1)}, {hovered.y.toFixed(1)}</span><span>{network.sensors.includes(hovered.id) ? 'SENSOR' : 'JUNCTION'}</span></div>}
         {hovered && <div className="map-tooltip" style={{ left: `${Math.min(hovered.x, 74)}%`, top: `${Math.min(hovered.y, 72)}%` }}>
-          <b>{hovered.id}</b><span>{latest[hovered.id] ? `${latest[hovered.id]!.pressureM.toFixed(1)} m` : 'No pressure sample'}</span><span>Δ {latest[hovered.id] ? `${(latest[hovered.id]!.pressureM - scenarioBase).toFixed(1)} m` : '—'}</span><span>P(leak) {probabilityMap.has(hovered.id) ? `${((probabilityMap.get(hovered.id) ?? 0) * 100).toFixed(1)}%` : '—'}</span><span>{network.sensors.includes(hovered.id) ? 'Sensor' : 'Junction'}</span>
+          <b>{hovered.id}</b><span>{latest[hovered.id] ? `${latest[hovered.id]!.pressureM.toFixed(1)} m` : 'No pressure sample'}</span><span>Δ {latest[hovered.id] ? `${(latest[hovered.id]!.pressureM - scenarioBase).toFixed(1)} m` : '—'}</span><span>{showLocalization && alertActive && rankMap.has(hovered.id) ? `RANK #${rankMap.get(hovered.id)}` : network.sensors.includes(hovered.id) ? 'Sensor' : 'Junction'}</span>
         </div>}
         {selectedJunction && <aside className="node-inspector" aria-label={`${selectedJunction.id} inspector`}>
           <div className="inspector-head"><div><span className="eyebrow">NODE INSPECTOR</span><h3>{selectedJunction.id}</h3></div><button type="button" className="icon-button" onClick={() => setSelectedJunctionId(null)} aria-label="Close inspector"><X size={17} /></button></div>
@@ -260,7 +260,7 @@ export function LiveMap({
             <div><dt>Elevation</dt><dd>{selectedJunction.elevationM.toFixed(1)} m</dd></div>
             <div><dt>Pressure</dt><dd>{selectedReading ? `${selectedReading.pressureM.toFixed(1)} m` : '—'}</dd></div>
             <div><dt>Change</dt><dd className={selectedDelta !== undefined && selectedDelta <= pressureDelta.loss ? 'value-warn' : ''}>{selectedDelta === undefined ? '—' : `${selectedDelta > 0 ? '+' : ''}${selectedDelta.toFixed(1)} m`}</dd></div>
-            <div><dt>P(leak)</dt><dd>{probabilityMap.has(selectedJunction.id) ? `${((probabilityMap.get(selectedJunction.id) ?? 0) * 100).toFixed(1)}%` : '—'}</dd></div>
+            {showLocalization && alertActive && rankMap.has(selectedJunction.id) && <div><dt>Suspect rank</dt><dd>#{rankMap.get(selectedJunction.id)}</dd></div>}
             <div><dt>Connected</dt><dd>{neighbors.length} links</dd></div>
           </dl>
           <div className="inspector-links"><span>NEIGHBOURS</span><div>{neighbors.slice(0, 8).map((id) => <button key={id} type="button" onClick={() => setSelectedJunctionId(id)}>{id}</button>)}</div></div>
@@ -270,11 +270,10 @@ export function LiveMap({
 
       <div className="map-footer">
         <div className="map-legends"><span><i className="legend-dot low" />Drop ≤ {pressureDelta.loss} m</span><span><i className="legend-dot stable" />Nominal</span><span><i className="legend-dot high" />Rise ≥ +{pressureDelta.rise} m</span>
-          {heatmapEnabled && showLocalization && alertActive && localization && <span className="probability-key"><i />P(leak) low → high</span>}
+          {heatmapEnabled && showLocalization && alertActive && localization && <span className="suspicion-key"><i />RELATIVE SUSPICION</span>}
         </div>
         <span className="map-data-state"><i className={`live-dot ${hasPressure ? 'active' : ''}`} />{hasPressure ? 'PRESSURE VALUES / SENSORS ONLY' : 'NO PRESSURE SAMPLE'}</span>
       </div>
-      {showLocalization && alertActive && top3.length > 0 && <div className="top3-summary">{top3.map((item, index) => `${index + 1}. ${item.junctionId}`).join('     ')}</div>}
       <span className="map-coordinate"><LocateFixed size={13} /> {hovered ? `${hovered.x.toFixed(1)} / ${hovered.y.toFixed(1)}` : 'GRID REF —'}</span>
       {subtitle && <span className="visually-hidden">{subtitle}</span>}
     </section>
