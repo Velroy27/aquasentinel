@@ -90,6 +90,11 @@ export default function Network3DView({
   // Keyboard shortcut listener for 3D view
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setSelectedJunctionId(null);
+        return;
+      }
+
       const target = event.target;
       const editable = target instanceof HTMLElement && (/^(INPUT|SELECT|TEXTAREA)$/.test(target.tagName) || target.isContentEditable);
       if (editable || event.ctrlKey || event.metaKey || event.altKey) return;
@@ -107,8 +112,6 @@ export default function Network3DView({
       } else if (key === 'f') {
         event.preventDefault();
         setFpsVisible((prev) => !prev);
-      } else if (key === 'escape') {
-        setSelectedJunctionId(null);
       }
     }
 
@@ -152,7 +155,7 @@ export default function Network3DView({
           </span>
         </div>
 
-        <div className="map-actions">
+        <div className="map-actions toolbar-3d">
           {/* 2D / 3D Toggle Button */}
           <button
             type="button"
@@ -197,63 +200,63 @@ export default function Network3DView({
             </button>
           )}
 
-          {/* Camera Presets */}
-          <div className="map-zoom" style={{ gap: '4px' }}>
-            <button
-              type="button"
-              className={`map-toggle ${cameraPreset === 'top' ? 'is-on' : ''}`}
-              style={{ minHeight: '29px', padding: '0 6px', fontSize: '11px' }}
-              onClick={() => setCameraPreset('top')}
-              title="Camera Top-Down View"
-            >
-              Top
-            </button>
-            <button
-              type="button"
-              className={`map-toggle ${cameraPreset === 'angled' ? 'is-on' : ''}`}
-              style={{ minHeight: '29px', padding: '0 6px', fontSize: '11px' }}
-              onClick={() => setCameraPreset('angled')}
-              title="Camera Angled 3D Perspective"
-            >
-              Angled
-            </button>
-            <button
-              type="button"
-              className={`map-toggle ${cameraPreset === 'follow' ? 'is-on' : ''}`}
-              style={{ minHeight: '29px', padding: '0 6px', fontSize: '11px' }}
-              onClick={() => setCameraPreset('follow')}
-              disabled={!alertActive || top3.length === 0}
-              title="Follow #1 Ranked Suspect Node"
-            >
-              Follow #1
-            </button>
-            <button
-              type="button"
-              className={`map-toggle ${autoOrbit ? 'is-on' : ''}`}
-              style={{ minHeight: '29px', padding: '0 6px', fontSize: '11px' }}
-              onClick={() => setAutoOrbit((o) => !o)}
-              title="Slow Auto-Orbit (O)"
-            >
-              Orbit <kbd>O</kbd>
-            </button>
-            <button
-              type="button"
-              className="fit-button"
-              onClick={() => setCameraPreset('angled')}
-              title="Fit Entire Network"
-            >
-              Fit
-            </button>
-            <button
-              type="button"
-              className={`map-toggle ${fpsVisible ? 'is-on' : ''}`}
-              style={{ minHeight: '29px', padding: '0 6px', fontSize: '11px' }}
-              onClick={() => setFpsVisible((v) => !v)}
-              title="Toggle Dev FPS (F)"
-            >
-              FPS <kbd>F</kbd>
-            </button>
-          </div>
+          {/* Camera Presets & Actions */}
+          <button
+            type="button"
+            className={`map-toggle ${cameraPreset === 'top' ? 'is-on' : ''}`}
+            onClick={() => setCameraPreset('top')}
+            title="Camera Top-Down View"
+          >
+            Top
+          </button>
+          <button
+            type="button"
+            className={`map-toggle ${cameraPreset === 'angled' ? 'is-on' : ''}`}
+            onClick={() => setCameraPreset('angled')}
+            title="Camera Angled 3D Perspective"
+          >
+            Angled
+          </button>
+          <button
+            type="button"
+            className={`map-toggle ${cameraPreset === 'follow' ? 'is-on' : ''}`}
+            onClick={() => setCameraPreset('follow')}
+            disabled={!alertActive || top3.length === 0}
+            title="Follow #1 Ranked Suspect Node"
+          >
+            Follow #1
+          </button>
+          <button
+            type="button"
+            className={`map-toggle ${autoOrbit ? 'is-on' : ''}`}
+            onClick={() => setAutoOrbit((o) => !o)}
+            title="Slow Auto-Orbit (O)"
+          >
+            Orbit <kbd>O</kbd>
+          </button>
+          <button
+            type="button"
+            className="map-toggle fit-button"
+            onClick={() => setCameraPreset('angled')}
+            title="Fit Entire Network"
+          >
+            Fit
+          </button>
+          <button
+            type="button"
+            className={`map-toggle ${fpsVisible ? 'is-on' : ''}`}
+            onClick={() => setFpsVisible((v) => !v)}
+            title="Toggle Dev FPS (F)"
+          >
+            FPS <kbd>F</kbd>
+          </button>
+
+          {/* Inline FPS Badge inside toolbar */}
+          {fpsVisible && (
+            <span className="map-fps-inline">
+              {fpsData ? `${fpsData.fps} fps · ${fpsData.ms.toFixed(1)} ms` : 'FPS Measuring…'}
+            </span>
+          )}
         </div>
       </div>
 
@@ -317,13 +320,6 @@ export default function Network3DView({
         )}
 
         {emptyNotice && <div className="map-data-notice" role="status">{emptyNotice}</div>}
-
-        {/* FPS Counter Overlay */}
-        {fpsVisible && (
-          <span className="map-fps" style={{ display: 'block' }}>
-            {fpsData ? `FPS ${fpsData.fps} · ${fpsData.ms} ms` : 'FPS Measuring…'}
-          </span>
-        )}
 
         {/* Hover HUD */}
         {hoveredJunction && (
