@@ -1,4 +1,4 @@
-# AquaSentinel ML Development Notes
+﻿# AquaSentinel ML Development Notes
 
 ## Baseline Status
 - Network: Net3 (92 junctions, 3 tanks, 2 reservoirs, 117 pipes)
@@ -584,3 +584,9 @@ Status: **COMPLETED**
   - The pump boundary condition holds the head constant, making pressure at Node 10 hydraulically rigid: even a $0.0075\text{ m}^2$ leak produces only $17.1\text{ lps}$ of flow and a clean pressure drop of only **$0.67\text{ m}$**.
   - Because $0.67\text{ m} < k_s = 0.80\text{ m}$, the residual after common-mode subtraction never exceeds the slack parameter ($r_{\text{diff}} \le 0.33\text{ m} < 0.80\text{ m}$), preventing any accumulation in CUSUM.
 - **Status**: **Legitimate Physical Miss**. Node 10 is hydraulically rigid due to its Lake/Pump boundary condition, falling below the sensor noise floor / slack threshold.
+
+
+## Correction: classification of Scenario 01 and 02 misses
+- Scenario 02 (Node 10): physical miss. The pump and lake boundary pins the head, so a 17.1 lps leak gives only a 0.67 m drop, below the 0.80 m CUSUM slack. The CUSUM increment is zero at every step.
+- Scenario 01 (Node 123): sensitivity miss at the audited operating point, not a physical one. The drop is 1.08 m and clearly localized, but the CUSUM steady-state ceiling (about 3.1 with slack 0.80 m and decay 0.70) is below the threshold H = 8.0, so this leak size cannot trigger an alert however long it persists.
+- The detector was not retuned on these scenarios. Thresholds were set on the 30 tuning days, so the audited numbers (56% detection, about 1.5 false alarms per day) are unchanged.
