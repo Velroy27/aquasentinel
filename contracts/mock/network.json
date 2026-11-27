@@ -1,0 +1,70 @@
+{
+  "nodes": [
+    {
+      "id": "10",
+      "x": 9.0,
+      "y": 27.85,
+      "elevation": 44.8,
+      "is_sensor": true
+    },
+    {
+      "id": "15",
+      "x": 12.0,
+      "y": 25.5,
+      "elevation": 45.2,
+      "is_sensor": true
+    },
+    {
+      "id": "20",
+      "x": 15.0,
+      "y": 22.1,
+      "elevation": 43.9,
+      "is_sensor": false
+    },
+    {
+      "id": "60",
+      "x": 28.5,
+      "y": 31.0,
+      "elevation": 42.1,
+      "is_sensor": true
+    },
+    {
+      "id": "208",
+      "x": 35.0,
+      "y": 18.0,
+      "elevation": 46.5,
+      "is_sensor": true
+    }
+  ],
+  "pipes": [
+    {
+      "id": "P101",
+      "from": "10",
+      "to": "15",
+      "length": 300.0,
+      "diameter": 0.3
+    },
+    {
+      "id": "P102",
+      "from": "15",
+      "to": "20",
+      "length": 450.0,
+      "diameter": 0.25
+    },
+    {
+      "id": "P103",
+      "from": "20",
+      "to": "60",
+      "length": 600.0,
+      "diameter": 0.25
+    },
+    {
+      "id": "P104",
+      "from": "60",
+      "to": "208",
+      "length": 520.0,
+      "diameter": 0.2
+    }
+  ],
+  "sensors": ["10", "15", "60", "208"]
+}

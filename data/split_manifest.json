@@ -1,0 +1,28 @@
+{
+  "protocol": "AquaSentinel ML Hardening Split Protocol",
+  "created_at": "2026-11-27T12:24:00Z",
+  "leak_sizes": {
+    "train_areas_m2": [0.002, 0.003, 0.004, 0.005, 0.006, 0.008, 0.010, 0.012],
+    "held_out_test_areas_m2": [0.0065, 0.0075],
+    "note": "Models and thresholds must be chosen solely using train_areas_m2. Held-out areas are evaluated strictly once at the end."
+  },
+  "no_leak_days": {
+    "previous_tuning_days": 14,
+    "promoted_eval_days_to_tuning": 6,
+    "new_wide_variation_tuning_days": 6,
+    "new_stress_validation_days": 4,
+    "total_tuning_and_validation_days": 30,
+    "untouched_final_evaluation_days": 4,
+    "untouched_eval_day_ids": ["new_day_07", "new_day_08", "new_day_09", "new_day_10"],
+    "note": "Untouched final evaluation days are evaluated strictly once at the end."
+  },
+  "sensors": {
+    "count": 8,
+    "ids": ["208", "10", "15", "184", "601", "164", "60", "123"],
+    "noise_sd_m": 0.3
+  },
+  "visibility_criterion": {
+    "drop_threshold_m": 0.9,
+    "definition": "Steady-state pressure drop exceeding 3 * NOISE_SD (0.9 m) at any of the 8 sensors"
+  }
+}

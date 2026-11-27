@@ -1,0 +1,86 @@
+{
+  "budget_4": {
+    "n_sensors": 4,
+    "sensors": [
+      "208",
+      "10",
+      "15",
+      "184"
+    ],
+    "coverage_optimized": 0.6522,
+    "coverage_random_mean": 0.4245,
+    "coverage_random_std": 0.1327,
+    "localization_top3_optimized": 0.5,
+    "localization_top3_random_mean": 0.3327,
+    "localization_top3_random_std": 0.0811
+  },
+  "budget_8": {
+    "n_sensors": 8,
+    "sensors": [
+      "208",
+      "10",
+      "15",
+      "184",
+      "601",
+      "164",
+      "60",
+      "123"
+    ],
+    "coverage_optimized": 0.7174,
+    "coverage_random_mean": 0.5217,
+    "coverage_random_std": 0.1045,
+    "localization_top3_optimized": 0.6005,
+    "localization_top3_random_mean": 0.6005,
+    "localization_top3_random_std": 0.0
+  },
+  "budget_12": {
+    "n_sensors": 12,
+    "sensors": [
+      "208",
+      "10",
+      "15",
+      "184",
+      "601",
+      "164",
+      "60",
+      "123",
+      "131",
+      "167",
+      "189",
+      "20"
+    ],
+    "coverage_optimized": 0.75,
+    "coverage_random_mean": 0.6027,
+    "coverage_random_std": 0.0853,
+    "localization_top3_optimized": 0.6405,
+    "localization_top3_random_mean": 0.6005,
+    "localization_top3_random_std": 0.0
+  },
+  "budget_16": {
+    "n_sensors": 16,
+    "sensors": [
+      "208",
+      "10",
+      "15",
+      "184",
+      "601",
+      "164",
+      "60",
+      "123",
+      "131",
+      "167",
+      "189",
+      "20",
+      "35",
+      "40",
+      "50",
+      "61"
+    ],
+    "coverage_optimized": 0.75,
+    "coverage_random_mean": 0.625,
+    "coverage_random_std": 0.0555,
+    "localization_top3_optimized": 0.6705,
+    "localization_top3_random_mean": 0.6005,
+    "localization_top3_random_std": 0.0
+  }
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "scenario_01",
+    "leak_node": "10",
+    "leak_size_lps": 12.5,
+    "start_t": 60,
+    "description": "Medium pipe burst at junction 10 during morning peak"
+  },
+  {
+    "id": "scenario_02",
+    "leak_node": "15",
+    "leak_size_lps": 6.8,
+    "start_t": 120,
+    "description": "Small leak developing at junction 15"
+  },
+  {
+    "id": "scenario_03",
+    "leak_node": "null",
+    "leak_size_lps": 0.0,
+    "start_t": 0,
+    "description": "No-leak baseline with normal diurnal demand variation"
+  }
+]
