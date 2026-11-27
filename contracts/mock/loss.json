@@ -1,0 +1,6 @@
+{
+  "type": "loss",
+  "alert_id": "alert_001",
+  "est_leak_lps": 12.5,
+  "litres_lost_cum": 250.0
+}

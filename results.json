@@ -1,0 +1,22 @@
+{
+  "network": "Net3",
+  "junctions": 92,
+  "sensors": 8,
+  "sensor_nodes": [
+    "208",
+    "10",
+    "15",
+    "184",
+    "601",
+    "164",
+    "60",
+    "123"
+  ],
+  "coverage_pct": 71.7,
+  "noise_sd_m": 0.3,
+  "test_leak_area_m2": 0.0075,
+  "median_max_drop_m": 4.27,
+  "top1_pct": 15.3,
+  "top3_pct": 35.5,
+  "detection_delay_s": 0
+}
