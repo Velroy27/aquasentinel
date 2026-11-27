@@ -1,4 +1,4 @@
-export const currencyPerLitre = 0.012;
+export const currencyPerLitre = 0.25;
 export const costPerNode = 1_500;
 export const demoMode = import.meta.env.VITE_DATA_MODE !== 'live';
 export const apiBaseUrl = (import.meta.env.VITE_API_URL ?? 'http://127.0.0.1:8000/api').replace(/\/$/, '');

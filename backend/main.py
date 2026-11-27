@@ -369,7 +369,17 @@ async def start_replay(body: ReplayStartModel):
 
 @app.post("/api/replay/stop")
 async def stop_replay():
-    return await replay_engine.stop()
+    res = await replay_engine.stop()
+    await ws_manager.broadcast({"type": "replay_end"})
+    return res
+
+
+@app.post("/api/replay/reset")
+async def reset_replay():
+    await replay_engine.stop()
+    pipeline.reset_state(clear_buffers=True)
+    await ws_manager.broadcast({"type": "reset"})
+    return {"status": "reset"}
 
 
 @app.get("/api/results")
@@ -454,6 +464,8 @@ async def ingest_reading(reading: SensorReadingModel):
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content={"error": "ML warming up"}
         )
+    if replay_engine.is_running:
+        return {"status": "ignored_replay_active", "node_id": reading.node_id, "t": reading.t}
     if _valid_nodes and reading.node_id not in _valid_nodes:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,

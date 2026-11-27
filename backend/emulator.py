@@ -32,6 +32,7 @@ class NodeEmulator:
         self.mqtt_port = mqtt_port
         self.speed = max(0.1, speed)
         self.mqtt_client = None
+        self._http_client = httpx.Client(timeout=5.0)
 
         if self.use_mqtt:
             self._init_mqtt()
@@ -67,12 +68,11 @@ class NodeEmulator:
 
         # HTTP POST fallback / default
         try:
-            with httpx.Client(timeout=3.0) as client:
-                resp = client.post(f"{self.api_url}/api/ingest", json=reading)
-                if resp.status_code in (200, 201):
-                    return True
-                logger.warning("HTTP POST ingest returned status %d: %s", resp.status_code, resp.text)
-                return False
+            resp = self._http_client.post(f"{self.api_url}/api/ingest", json=reading)
+            if resp.status_code in (200, 201):
+                return True
+            logger.warning("HTTP POST ingest returned status %d: %s", resp.status_code, resp.text)
+            return False
         except Exception as e:
             logger.warning("HTTP POST ingest failed: %s", e)
             return False

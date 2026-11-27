@@ -59,6 +59,7 @@ class Pipeline:
         self.active_alert_id: Optional[str] = None
         self.alert_t: Optional[int] = None
         self.est_leak_lps: float = 0.0
+        self.pre_leak_pressures: Optional[dict[str, float]] = None
         self.non_anomaly_count: int = 0
         self.latest_t: int = 0
         self.fault_active: bool = False
@@ -103,6 +104,7 @@ class Pipeline:
         self.active_alert_id = None
         self.alert_t = None
         self.est_leak_lps = 0.0
+        self.pre_leak_pressures = None
         self.non_anomaly_count = 0
         self.run_had_stub = (self.ml_bridge.get_mode() == "stub")
         self.ml_bridge.reset_run_stubs()
@@ -124,6 +126,7 @@ class Pipeline:
         if clear_buffers:
             self.node_buffers.clear()
             self.recent_steps.clear()
+            self.latest_t = 0
         logger.info("Pipeline state reset")
 
     async def _broadcast(self, msg: dict[str, Any]) -> None:
@@ -331,13 +334,40 @@ class Pipeline:
         else:
             self.fault_active = False
 
-        if is_anomaly:
+        # Check if hydraulic pressure is still depressed compared to pre-leak baseline
+        is_depressed = False
+        if self.active_alert_id is not None and self.pre_leak_pressures and self.recent_steps:
+            latest_readings = self.recent_steps[-1].get("readings", [])
+            for r in latest_readings:
+                nid = str(r.get("node_id", ""))
+                p = r.get("pressure_m")
+                if nid in self.pre_leak_pressures and p is not None:
+                    drop = self.pre_leak_pressures[nid] - float(p)
+                    if drop >= 0.35:
+                        is_depressed = True
+                        break
+
+        if is_anomaly or is_depressed:
             self.non_anomaly_count = 0
             if self.active_alert_id is None:
                 alert_id = f"ALT-{int(time.time() * 1000)}"
                 severity = score_to_severity(score)
                 self.active_alert_id = alert_id
                 self.alert_t = t
+
+                # Compute pre-leak baseline pressure per sensor from early steps
+                if self.recent_steps:
+                    pre_steps = list(self.recent_steps)[:max(2, len(self.recent_steps) // 2)]
+                    node_readings: dict[str, list[float]] = {}
+                    for s in pre_steps:
+                        for r in s.get("readings", []):
+                            nid = str(r.get("node_id", ""))
+                            p = r.get("pressure_m")
+                            if nid and p is not None:
+                                node_readings.setdefault(nid, []).append(float(p))
+                    self.pre_leak_pressures = {
+                        nid: float(sum(vals) / len(vals)) for nid, vals in node_readings.items() if vals
+                    }
 
                 alert_msg = {
                     "type": "alert",
@@ -409,21 +439,27 @@ class Pipeline:
                 })
                 await self._broadcast(initial_loss_msg)
             else:
+                est_size = await self.ml_bridge.estimate_size(window)
+                if est_size > 0:
+                    self.est_leak_lps = est_size
                 await self._update_loss_tick(t)
         else:
             if self.active_alert_id is not None:
                 self.non_anomaly_count += 1
                 if self.non_anomaly_count >= RESOLVE_CLEAR_WINDOWS:
+                    resolved_id = self.active_alert_id
                     logger.info("Leak resolved after %d consecutive non-anomaly windows: alert_id=%s",
-                                self.non_anomaly_count, self.active_alert_id)
-                    self.db.enqueue("UPDATE_ALERT_STATUS", {"id": self.active_alert_id, "status": "resolved"})
+                                self.non_anomaly_count, resolved_id)
+                    self.db.enqueue("UPDATE_ALERT_STATUS", {"id": resolved_id, "status": "resolved"})
                     self.active_alert_id = None
                     self.alert_t = None
                     self.est_leak_lps = 0.0
+                    self.pre_leak_pressures = None
                     self.non_anomaly_count = 0
                     self.cached_loss = None
                     self.cached_alert = None
                     self.cached_localization = None
+                    await self._broadcast({"type": "leak_resolved", "alert_id": resolved_id})
                 else:
                     await self._update_loss_tick(t)
 
@@ -432,7 +468,9 @@ class Pipeline:
             return
 
         dt = max(0, t - self.alert_t)
-        litres = max(0.0, round(self.est_leak_lps * dt, 1))
+        calc_litres = max(0.0, round(self.est_leak_lps * dt, 1))
+        last_cum = self.cached_loss.get("litres_lost_cum", 0.0) if self.cached_loss else 0.0
+        litres = max(last_cum, calc_litres)
 
         loss_msg = {
             "type": "loss",

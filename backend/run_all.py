@@ -29,7 +29,9 @@ def wait_for_api_ready(timeout_s: float = 90.0) -> bool:
             with httpx.Client(timeout=1.0) as client:
                 r = client.get(url)
                 if r.status_code == 200:
-                    return True
+                    data = r.json()
+                    if data.get("status") == "ok" and not data.get("is_warming_up", True):
+                        return True
         except Exception:
             pass
         if time.time() - last_warmup_print >= 10.0:
@@ -39,10 +41,17 @@ def wait_for_api_ready(timeout_s: float = 90.0) -> bool:
     return False
 
 
+import argparse
+
 def main():
     print("=" * 60)
     print(" AquaSentinel Unified Runner")
     print("=" * 60)
+
+    parser = argparse.ArgumentParser(description="AquaSentinel Supervisor & Runner")
+    parser.add_argument("--scenario", type=str, default="scenario_03_nonsensor_node101")
+    parser.add_argument("--speed", type=str, default=os.environ.get("EMULATOR_SPEED", "1"))
+    args, _ = parser.parse_known_args()
 
     # 1. Port Check
     if is_port_in_use(API_HOST, API_PORT):
@@ -59,22 +68,22 @@ def main():
         "--port", str(API_PORT),
         "--log-level", "info"
     ]
-    print(f"Starting API Server on http://{API_HOST}:{API_PORT}...")
+    print(f"Starting API Server on http://{API_HOST}:{API_PORT}...", flush=True)
     server_proc = subprocess.Popen(server_cmd, cwd=str(REPO_ROOT))
 
     # Wait for API to become ready
     if not wait_for_api_ready(90.0):
-        print("\n[ERROR] API Server failed to respond to /health in 90 seconds.")
+        print("\n[ERROR] API Server failed to respond to /health in 90 seconds.", flush=True)
         server_proc.terminate()
         sys.exit(1)
 
-    print("API Server is healthy and listening.")
+    print("API Server is healthy and listening.", flush=True)
 
     # 3. Launch and Supervise Node Emulator
     emulator_cmd = [
         py_exe, "-m", "backend.emulator",
-        "--scenario", "scenario_03_nonsensor_node101",
-        "--speed", "5",
+        "--scenario", args.scenario,
+        "--speed", str(args.speed),
         "--api", f"http://{API_HOST}:{API_PORT}",
         "--repeat"
     ]
@@ -83,7 +92,7 @@ def main():
     emulator_proc = None
 
     try:
-        print("Starting Sensor Node Emulator (scenario_03_nonsensor_node101 @ 5x)...")
+        print(f"Starting Sensor Node Emulator ({args.scenario} @ {args.speed}x)...", flush=True)
         emulator_proc = subprocess.Popen(emulator_cmd, cwd=str(REPO_ROOT))
 
         while True:

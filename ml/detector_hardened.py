@@ -54,13 +54,17 @@ class SensorHealthChecker:
                 fault_details[s] = "dropout"
                 continue
             
-            # Stuck check (needs at least min_steps)
+            # Stuck check (needs at least min_steps or 8 consecutive identical readings)
             if W >= min_steps:
                 std_val = float(np.std(col))
                 if std_val < 0.04:
                     healthy_mask[s] = False
                     fault_details[s] = "stuck"
                     continue
+            if W >= 8 and float(np.std(col[-8:])) < 0.01:
+                healthy_mask[s] = False
+                fault_details[s] = "stuck"
+                continue
                     
         return healthy_mask, (len(fault_details) > 0), fault_details
 

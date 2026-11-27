@@ -163,6 +163,11 @@ def test_replay_start_stop(client):
     assert resp_stop2.status_code == 200
     assert resp_stop2.json()["status"] == "stopped"
 
+    # Reset
+    resp_reset = client.post("/api/replay/reset")
+    assert resp_reset.status_code == 200
+    assert resp_reset.json()["status"] == "reset"
+
 
 def test_history_endpoints(client):
     resp_runs = client.get("/api/history/runs")

@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { costPerNode, formatRs, lossAvoided } from '../config/settings';
+import { dataSource } from '../data';
+import type { CostData } from '../data/types';
 import { useDashboard } from '../store/useDashboard';
 import { ResourceNotice } from '../components/ResourceNotice';
 
@@ -14,8 +16,21 @@ export function CostPage() {
   const selectedCount = available.reduce((nearest, value) => Math.abs(value - nodes) < Math.abs(nearest - nodes) ? value : nearest, available[0] ?? nodes);
   const selectedIndex = Math.max(0, available.indexOf(selectedCount));
 
-  const cost = selectedCount * costPerNode;
-  const avoided = useMemo(() => lossAvoided(selectedCount), [selectedCount]);
+  const [costData, setCostData] = useState<CostData | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void dataSource.getCost(selectedCount).then((data) => {
+      if (active) setCostData(data);
+    }).catch(() => {
+      // Keep previous or fallback
+    });
+    return () => { active = false; };
+  }, [selectedCount]);
+
+  const cost = costData ? costData.hardwareRs : selectedCount * costPerNode;
+  const avoided = costData ? costData.estLossAvoidedRs : lossAvoided(selectedCount);
+  const perNode = costData ? costData.perNodeRs : costPerNode;
   const paybackDays = avoided > 0 ? Math.ceil((cost / avoided) * 365) : null;
 
   return (
@@ -26,7 +41,7 @@ export function CostPage() {
             <div className="eyebrow">Investment</div>
             <h2>Sensor deployment cost</h2>
           </div>
-          <span className="unit-chip">{formatRs(costPerNode)} / node</span>
+          <span className="unit-chip">{formatRs(perNode)} / node</span>
         </div>
         {available.length ? <label className="slider-block">
           <div className="slider-head"><span>Sensor count</span><strong>{selectedCount} sensors</strong></div>
@@ -43,7 +58,7 @@ export function CostPage() {
       <section className="panel cost-summary">
         <div className="eyebrow">Assumptions</div>
         <h2>Planning estimate</h2>
-        <p>The loss avoided estimate uses the planning defaults in the app configuration: Rs 0.012 per litre, 18,000 litres/day leak volume, 72% avoided after detection, and a 365-day year. Replace these with validated tariff and engineering assumptions before using outside the demo.</p>
+        <p>The loss avoided estimate uses the planning defaults in the app configuration: Rs 0.25 per litre, 18,000 litres/day leak volume, 72% avoided after detection, and a 365-day year. Replace these with validated tariff and engineering assumptions before using outside the demo.</p>
         <div className="cost-callout">
           <div className="cost-callout-value">{formatRs(avoided - cost)}</div>
           <div className="cost-callout-label">Estimated year-one net benefit</div>

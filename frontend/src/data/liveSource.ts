@@ -3,7 +3,7 @@ import { normalizeStreamMessage, type DataSource } from './DataSource';
 import { normalizeResults } from './normalizeResults';
 import { normalizePlacementResponse } from './normalizePlacement';
 import { normalizeNetwork, normalizeScenarios } from './normalizeNetwork';
-import type { BackendHealth, DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamStatus } from './types';
+import type { BackendHealth, CostData, DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamStatus } from './types';
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(`${apiBaseUrl}${path}`);
@@ -16,13 +16,16 @@ export class LiveSource implements DataSource {
   private statusHandlers = new Set<StatusHandler>();
   private ws: WebSocket | undefined;
   private reconnectTimer: number | undefined;
-  private shouldReconnect = false;
+  private shouldReconnect = true;
 
   private emitStatus(status: StreamStatus) {
     this.statusHandlers.forEach((handler) => handler(status));
   }
 
   private openSocket() {
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
     this.ws?.close();
     this.emitStatus('connecting');
     const ws = new WebSocket(wsUrl);
@@ -73,6 +76,14 @@ export class LiveSource implements DataSource {
     if (!placements.length) throw new Error('Placement data unavailable');
     return placements;
   }
+  async getCost(nodes = 8): Promise<CostData> {
+    const raw = await getJson<Record<string, unknown>>(`/cost?nodes=${nodes}`);
+    return {
+      hardwareRs: Number(raw.hardware_rs ?? 0),
+      perNodeRs: Number(raw.per_node_rs ?? 1500),
+      estLossAvoidedRs: Number(raw.est_loss_avoided_rs ?? 0),
+    };
+  }
   async getScenarios(): Promise<Scenario[]> { return normalizeScenarios(await getJson<unknown>('/scenarios')); }
   async getHealth(): Promise<BackendHealth | null> {
     const base = apiBaseUrl.replace(/\/api\/?$/, '');
@@ -102,16 +113,25 @@ export class LiveSource implements DataSource {
   }
 
   reset(): void {
-    this.stop();
+    void fetch(`${apiBaseUrl}/replay/reset`, { method: 'POST' }).catch((error) => console.error(error));
   }
 
   subscribe(handler: DataHandler): () => void {
     this.handlers.add(handler);
+    this.shouldReconnect = true;
+    if (!this.ws || this.ws.readyState === WebSocket.CLOSED || this.ws.readyState === WebSocket.CLOSING) {
+      this.openSocket();
+    }
     return () => this.handlers.delete(handler);
   }
 
   onStatus(handler: StatusHandler): () => void {
     this.statusHandlers.add(handler);
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      handler('live');
+    } else if (this.ws?.readyState === WebSocket.CONNECTING) {
+      handler('connecting');
+    }
     return () => this.statusHandlers.delete(handler);
   }
 }

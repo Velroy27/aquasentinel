@@ -1,9 +1,10 @@
-import type { BackendHealth, DataHandler, Network, Placement, Results, Scenario, StatusHandler } from './types';
+import type { BackendHealth, CostData, DataHandler, Network, Placement, Results, Scenario, StatusHandler } from './types';
 
 export interface DataSource {
   getNetwork(): Promise<Network>;
   getResults(): Promise<Results>;
   getPlacement(results?: Results | null): Promise<Placement[]>;
+  getCost(nodes?: number): Promise<CostData>;
   getScenarios(): Promise<Scenario[]>;
   getHealth(): Promise<BackendHealth | null>;
   startScenario(id: string, speed: 1 | 5 | 20): void;
@@ -51,6 +52,14 @@ export function isStreamMessage(value: unknown): value is import('./types').Stre
       });
   }
 
+  if (message.type === 'fault') {
+    return typeof message.t === 'number';
+  }
+
+  if (message.type === 'reset' || message.type === 'replay_end' || message.type === 'replay_stop' || message.type === 'leak_resolved') {
+    return true;
+  }
+
   return false;
 }
 
@@ -75,9 +84,14 @@ export function normalizeStreamMessage(value: unknown): import('./types').Stream
     });
   }
   if (message.type === 'alert') {
+    const rawSev = String(message.severity).toLowerCase();
+    const severity: import('./types').AlertMessage['severity'] =
+      (rawSev === 'critical' || rawSev === 'high' || rawSev === 'medium' || rawSev === 'low')
+        ? rawSev
+        : 'warning';
     return [{
       type: 'alert', timestamp, id: String(message.id),
-      severity: message.severity === 'critical' ? 'critical' : 'warning',
+      severity,
       sensorId: String(message.detector ?? 'DETECTOR'), score: Number(message.score),
       message: `${String(message.severity).toUpperCase()} · ${String(message.detector ?? 'DETECTOR')}`,
     }];
@@ -91,8 +105,29 @@ export function normalizeStreamMessage(value: unknown): import('./types').Stream
       scores: scores.map(([junctionId, score]) => ({ junctionId, score: Number(score) })),
     }];
   }
-  return [{
-    type: 'loss', alertId: String(message.alert_id),
-    estimateLps: Number(message.est_leak_lps), litresLost: Number(message.litres_lost_cum),
-  }];
+  if (message.type === 'fault') {
+    return [{
+      type: 'fault',
+      timestamp,
+      t: Number(message.t),
+      detail: (message.detail as Record<string, unknown> | string) ?? {},
+    }];
+  }
+  if (message.type === 'loss') {
+    return [{
+      type: 'loss', alertId: String(message.alert_id),
+      estimateLps: Number(message.est_leak_lps), litresLost: Number(message.litres_lost_cum),
+    }];
+  }
+  if (message.type === 'reset') {
+    return [{ type: 'reset' }];
+  }
+  if (message.type === 'replay_end' || message.type === 'replay_stop') {
+    return [{ type: 'replay_end' }];
+  }
+  if (message.type === 'leak_resolved') {
+    return [{ type: 'leak_resolved', alertId: String(message.alert_id ?? '') }];
+  }
+  return [];
 }
+

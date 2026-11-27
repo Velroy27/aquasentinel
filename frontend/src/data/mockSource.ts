@@ -1,18 +1,19 @@
 import type { DataSource } from './DataSource';
 import { network, placements, results, scenarios } from './mockData';
-import type { DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamMessage } from './types';
+import type { CostData, DataHandler, Network, Placement, Results, Scenario, StatusHandler, StreamMessage } from './types';
 
-type TimelineCache = Map<string, StreamMessage[]>;
+type TimelineCache = Map<string, StreamMessage[][]>;
 
-function buildTimeline(scenario: Scenario): StreamMessage[] {
+function buildTimeline(scenario: Scenario): StreamMessage[][] {
   const start = Date.parse(scenario.startedAt);
   const sensorIds = network.sensors;
   const leakNode = scenario.leakNode;
-  const messages: StreamMessage[] = [];
+  const steps: StreamMessage[][] = [];
   let anomalyAt = -1;
 
-  for (let step = 0; step < 90; step += 1) {
-    const timestamp = new Date(start + step * 2_000).toISOString();
+  for (let step = 0; step < 120; step += 1) {
+    const timestamp = new Date(start + step * 1_000).toISOString();
+    const batch: StreamMessage[] = [];
     let anomalySeen = false;
 
     for (let i = 0; i < sensorIds.length; i += 1) {
@@ -26,13 +27,13 @@ function buildTimeline(scenario: Scenario): StreamMessage[] {
       const pressureM = +(scenario.basePressureM + noise - drop).toFixed(2);
       const anomaly = step > 20 && drop > 0.55;
       if (anomaly) anomalySeen = true;
-      messages.push({ type: 'pressure', timestamp, point: { timestamp, sensorId, pressureM, anomaly } });
+      batch.push({ type: 'pressure', timestamp, point: { timestamp, sensorId, pressureM, anomaly } });
     }
 
     if (anomalySeen && anomalyAt < 0) anomalyAt = step;
     if (anomalyAt >= 0 && step === anomalyAt + 2) {
       const sensorId = sensorIds[Math.floor(sensorIds.length / 2)] ?? leakNode;
-      messages.push({
+      batch.push({
         type: 'alert',
         timestamp,
         id: `AL-${String(1000 + step)}`,
@@ -40,6 +41,17 @@ function buildTimeline(scenario: Scenario): StreamMessage[] {
         sensorId,
         score: 0.96,
         message: `Pressure anomaly detected near ${leakNode}`,
+      });
+    }
+
+    if (anomalyAt >= 0 && step >= anomalyAt + 2) {
+      const estimateLps = scenario.leakLitresPerSecond;
+      const elapsedSeconds = (step - (anomalyAt + 2)) * 10;
+      batch.push({
+        type: 'loss',
+        alertId: `AL-${String(1000 + anomalyAt + 2)}`,
+        estimateLps,
+        litresLost: Math.round(estimateLps * elapsedSeconds),
       });
     }
 
@@ -53,16 +65,18 @@ function buildTimeline(scenario: Scenario): StreamMessage[] {
         })
         .sort((a, b) => b.raw - a.raw);
       const total = ranked.reduce((sum, item) => sum + item.raw, 0) || 1;
-      messages.push({
+      batch.push({
         type: 'localization',
         timestamp,
         alertId: '',
         scores: ranked.map((item) => ({ junctionId: item.junctionId, score: +(item.raw / total).toFixed(4) })),
       });
     }
+
+    steps.push(batch);
   }
 
-  return messages;
+  return steps;
 }
 
 export class MockSource implements DataSource {
@@ -74,7 +88,7 @@ export class MockSource implements DataSource {
   private activeAlertId = '';
   private cache: TimelineCache = new Map();
 
-  private timeline(): StreamMessage[] {
+  private timeline(): StreamMessage[][] {
     const scenario = scenarios.find((s) => s.id === this.scenarioId) ?? scenarios[0];
     if (!scenario) return [];
     const cached = this.cache.get(scenario.id);
@@ -91,36 +105,55 @@ export class MockSource implements DataSource {
   async getNetwork(): Promise<Network> { return network; }
   async getResults(): Promise<Results> { return results; }
   async getPlacement(): Promise<Placement[]> { return placements; }
+  async getCost(nodes = 8): Promise<CostData> {
+    return {
+      hardwareRs: nodes * 1500,
+      perNodeRs: 1500,
+      estLossAvoidedRs: nodes * 32000,
+    };
+  }
   async getScenarios(): Promise<Scenario[]> { return scenarios; }
   async getHealth(): Promise<null> { return null; }
 
   startScenario(id: string, speed: 1 | 5 | 20): void {
-    this.stop();
-    this.scenarioId = id;
-    this.activeAlertId = '';
-    this.index = 0;
+    if (this.scenarioId === id && this.timer !== undefined) {
+      window.clearInterval(this.timer);
+    } else {
+      this.stop();
+      this.scenarioId = id;
+      this.activeAlertId = '';
+      this.index = 0;
+    }
     this.emitStatus('live');
-    const messages = this.timeline();
+    const steps = this.timeline();
     this.timer = window.setInterval(() => {
-      if (!messages.length) return;
-      const message = messages[this.index];
+      if (!steps.length) return;
+      const batch = steps[this.index];
       this.index += 1;
-      if (message?.type === 'alert') this.activeAlertId = message.id;
-      if (message?.type === 'localization') message.alertId = this.activeAlertId;
-      if (message) this.handlers.forEach((handler) => handler(message));
-      if (this.index >= messages.length) this.stop();
-    }, Math.max(80, 1000 / speed));
+      if (batch) {
+        batch.forEach((message) => {
+          if (message.type === 'alert') this.activeAlertId = message.id;
+          if (message.type === 'localization') message.alertId = this.activeAlertId;
+          this.handlers.forEach((handler) => handler(message));
+        });
+      }
+      if (this.index >= steps.length) this.stop();
+    }, Math.max(50, 1000 / speed));
   }
 
   stop(): void {
     if (this.timer !== undefined) window.clearInterval(this.timer);
     this.timer = undefined;
+    this.handlers.forEach((handler) => handler({ type: 'replay_end' }));
     this.emitStatus('idle');
   }
 
   reset(): void {
-    this.stop();
+    if (this.timer !== undefined) window.clearInterval(this.timer);
+    this.timer = undefined;
     this.index = 0;
+    this.activeAlertId = '';
+    this.handlers.forEach((handler) => handler({ type: 'reset' }));
     this.emitStatus('idle');
   }
 

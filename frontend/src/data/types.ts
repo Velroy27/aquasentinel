@@ -42,7 +42,7 @@ export type AlertMessage = {
   type: 'alert';
   timestamp: string;
   id: string;
-  severity: 'critical' | 'warning';
+  severity: 'critical' | 'high' | 'medium' | 'low' | 'warning';
   sensorId: string;
   score: number;
   message: string;
@@ -73,11 +73,37 @@ export type PressureMessage = {
   point: PressurePoint;
 };
 
+export type FaultMessage = {
+  type: 'fault';
+  timestamp: string;
+  t: number;
+  detail: Record<string, unknown> | string;
+};
+
+export type ResetMessage = {
+  type: 'reset';
+};
+
+export type ReplayEndMessage = {
+  type: 'replay_end';
+};
+
+export type LeakResolvedMessage = {
+  type: 'leak_resolved';
+  alertId?: string;
+};
+
 export type StreamStatus = 'idle' | 'connecting' | 'live' | 'disconnected' | 'error';
 
 export type BackendHealth = { ml_mode?: 'real' | 'stub' | string };
 
-export type StreamMessage = AlertMessage | LocalizationMessage | PressureMessage | LossMessage;
+export type StreamMessage = AlertMessage | LocalizationMessage | PressureMessage | LossMessage | FaultMessage | ResetMessage | ReplayEndMessage | LeakResolvedMessage;
+
+export type CostData = {
+  hardwareRs: number;
+  perNodeRs: number;
+  estLossAvoidedRs: number;
+};
 
 export type Results = {
   detectionRate: number;

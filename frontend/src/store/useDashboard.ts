@@ -151,9 +151,21 @@ export const useDashboard = create<State>((set, get) => ({
   },
 
   start: () => {
-    const { scenarioId, speed } = get();
+    const { scenarioId, speed, network } = get();
     if (!scenarioId) return;
-    set({ running: true, streamStatus: demoMode ? 'live' : 'connecting' });
+    const sensors = network?.sensors ?? [];
+    set({
+      running: true,
+      streamStatus: demoMode ? 'live' : 'connecting',
+      pressuresBySensor: emptyReadings(sensors),
+      alerts: [],
+      localization: null,
+      alertActive: false,
+      activeAlertId: null,
+      leakRateEstimate: null,
+      anomalyAt: null,
+      litresLost: 0,
+    });
     dataSource.startScenario(scenarioId, speed);
   },
 
@@ -187,7 +199,7 @@ export const useDashboard = create<State>((set, get) => ({
   },
 
   setScenario: (scenarioId) => {
-    dataSource.stop();
+    dataSource.reset();
     const sensors = get().network?.sensors ?? [];
     set({
       scenarioId,
@@ -211,6 +223,36 @@ export const useDashboard = create<State>((set, get) => ({
   setShortcutsOpen: (shortcutsOpen) => set({ shortcutsOpen }),
 
   receive: (message) => set((state) => {
+    if (message.type === 'reset') {
+      const sensors = state.network?.sensors ?? [];
+      return {
+        running: false,
+        streamStatus: 'idle',
+        pressuresBySensor: emptyReadings(sensors),
+        alerts: [],
+        localization: null,
+        alertActive: false,
+        activeAlertId: null,
+        leakRateEstimate: null,
+        anomalyAt: null,
+        litresLost: 0,
+      };
+    }
+
+    if (message.type === 'replay_end') {
+      return {
+        running: false,
+        alertActive: false,
+      };
+    }
+
+    if (message.type === 'leak_resolved') {
+      return {
+        alertActive: false,
+        leakRateEstimate: 0,
+      };
+    }
+
     if (message.type === 'pressure') {
       const existing = state.pressuresBySensor[message.point.sensorId] ?? [];
       const next = [...existing, message.point].slice(-MAX_POINTS);
@@ -224,28 +266,34 @@ export const useDashboard = create<State>((set, get) => ({
     }
 
     if (message.type === 'alert') {
-      if (state.alerts.some((a) => a.id === message.id)) return {};
+      const exists = state.alerts.some((a) => a.id === message.id);
       return {
-        alerts: [message, ...state.alerts].slice(0, MAX_ALERTS),
+        alerts: exists ? state.alerts : [message, ...state.alerts].slice(0, MAX_ALERTS),
         alertActive: true,
         activeAlertId: message.id,
+        anomalyAt: state.anomalyAt ?? message.timestamp,
       };
     }
 
     if (message.type === 'localization') {
-      if (!state.alertActive || state.activeAlertId !== message.alertId) {
-        if (import.meta.env.DEV) console.warn('Ignoring localization without a matching active alert', message.alertId);
-        return {};
-      }
-      return { localization: message };
+      return {
+        localization: message,
+        alertActive: true,
+        activeAlertId: message.alertId || state.activeAlertId,
+      };
     }
 
     if (message.type === 'loss') {
-      if (!state.alertActive || state.activeAlertId !== message.alertId) {
-        if (import.meta.env.DEV) console.warn('Ignoring size/loss message without a matching active alert', message.alertId);
-        return {};
-      }
-      return { leakRateEstimate: message.estimateLps, litresLost: message.litresLost };
+      return {
+        leakRateEstimate: message.estimateLps,
+        litresLost: message.litresLost,
+        alertActive: true,
+        activeAlertId: message.alertId || state.activeAlertId,
+      };
+    }
+
+    if (message.type === 'fault') {
+      return { streamStatus: 'live' };
     }
 
     return {};

@@ -215,10 +215,24 @@ class ReplayEngine:
             if int_speed is None:
                 raise ValueError(f"Invalid speed {speed}. Allowed speeds: {ALLOWED_REPLAY_SPEEDS}")
 
+            # If the same scenario is already running, seamlessly update playback speed
+            if self.is_running and self.current_scenario_id == scenario_id and self.current_task and not self.current_task.done():
+                self.current_speed = float(int_speed)
+                self.pipeline.set_current_run(self.current_run_id, speed=self.current_speed)
+                logger.info("REPLAY SPEED UPDATED: scenario=%s speed=%.1fx run_id=%s",
+                            scenario_id, self.current_speed, self.current_run_id)
+                return {
+                    "status": "started",
+                    "run_id": self.current_run_id,
+                    "scenario_id": scenario_id,
+                    "speed": self.current_speed
+                }
+
             if self.is_running:
                 await self._stop_internal()
 
             self.pipeline.reset_state(clear_buffers=True)
+
             run_id = f"RUN-{scenario_id}-{int(time.time())}"
             self.current_run_id = run_id
             self.current_scenario_id = scenario_id
@@ -274,7 +288,7 @@ class ReplayEngine:
             })
             logger.info("REPLAY STOPPED: run_id=%s", self.current_run_id)
 
-        self.pipeline.reset_state(clear_buffers=False)
+        self.pipeline.reset_state(clear_buffers=True)
         return {"status": "stopped"}
 
     async def _playback_loop(self, scenario: dict[str, Any], speed: float, run_id: str) -> None:
@@ -284,17 +298,18 @@ class ReplayEngine:
             return
 
         try:
-            sleep_per_second = 1.0 / speed
             for index, step in enumerate(steps):
                 step_t = int(step.get("t", 0))
                 await self.pipeline.process_step(step, run_id=run_id)
 
-                next_t = int(steps[index + 1].get("t", step_t + 10)) if index + 1 < len(steps) else step_t + 10
-                # Advance simulated time between samples without duplicating ticks
-                # when a scenario has gaps larger than its usual 10 second cadence.
-                for tick_t in range(step_t + 1, max(step_t + 1, next_t)):
+                if index + 1 < len(steps):
+                    next_t = int(steps[index + 1].get("t", step_t + 10))
+                    for tick_t in range(step_t + 1, next_t):
+                        sleep_per_second = 1.0 / max(0.1, self.current_speed)
+                        await asyncio.sleep(sleep_per_second)
+                        await self.pipeline.tick_simulated_loss(tick_t)
+                    sleep_per_second = 1.0 / max(0.1, self.current_speed)
                     await asyncio.sleep(sleep_per_second)
-                    await self.pipeline.tick_simulated_loss(tick_t)
 
             logger.info("Replay finished playback for scenario %s", scenario.get("scenario_id"))
         except asyncio.CancelledError:
@@ -311,3 +326,4 @@ class ReplayEngine:
                 })
             # Ensure pipeline alert state is reset / loss ticks stop when replay ends or stops
             self.pipeline.reset_state(clear_buffers=False)
+            await self.pipeline._broadcast({"type": "replay_end", "scenario_id": scenario.get("scenario_id")})

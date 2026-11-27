@@ -2,29 +2,47 @@ import { useEffect, useRef, useState } from 'react';
 import { formatRs, currencyPerLitre, demoMode } from '../config/settings';
 import { useDashboard } from '../store/useDashboard';
 
-function useCountUp(value: number): number {
-  const [display, setDisplay] = useState(value);
-  const current = useRef(value);
+function useContinuousLitres(
+  authoritativeLitres: number,
+  leakRate: number | null,
+  active: boolean,
+  running: boolean,
+  speed: number,
+): number {
+  const [display, setDisplay] = useState(authoritativeLitres);
+  const syncRef = useRef({ litres: authoritativeLitres, time: performance.now() });
+
+  // Whenever authoritative backend loss arrives, re-anchor interpolation base
+  useEffect(() => {
+    syncRef.current = {
+      litres: authoritativeLitres,
+      time: performance.now(),
+    };
+    if (authoritativeLitres === 0) {
+      setDisplay(0);
+    }
+  }, [authoritativeLitres]);
 
   useEffect(() => {
-    const from = current.current;
-    const start = performance.now();
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const duration = reduceMotion ? 0 : 520;
     let frame = 0;
 
-    function tick(now: number) {
-      const progress = duration === 0 ? 1 : Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      const next = from + (value - from) * eased;
-      current.current = next;
-      setDisplay(next);
-      if (progress < 1) frame = window.requestAnimationFrame(tick);
+    function tick() {
+      const now = performance.now();
+      if (!running || !active || leakRate === null || leakRate <= 0) {
+        setDisplay(authoritativeLitres);
+        return;
+      }
+
+      const elapsedSec = Math.max(0, (now - syncRef.current.time) / 1000);
+      const interpolated = syncRef.current.litres + leakRate * elapsedSec * speed;
+      setDisplay(interpolated);
+
+      frame = window.requestAnimationFrame(tick);
     }
 
     frame = window.requestAnimationFrame(tick);
     return () => window.cancelAnimationFrame(frame);
-  }, [value]);
+  }, [authoritativeLitres, leakRate, active, running, speed]);
 
   return display;
 }
@@ -34,8 +52,11 @@ export function LitresCounter() {
   const anomalyAt = useDashboard((state) => state.anomalyAt);
   const alertActive = useDashboard((state) => state.alertActive);
   const leakRateEstimate = useDashboard((state) => state.leakRateEstimate);
-  const displayedLitres = useCountUp(litresLost);
-  const estimatedRs = litresLost * currencyPerLitre;
+  const running = useDashboard((state) => state.running);
+  const speed = useDashboard((state) => state.speed);
+
+  const displayedLitres = useContinuousLitres(litresLost, leakRateEstimate, alertActive, running, speed);
+  const estimatedRs = displayedLitres * currencyPerLitre;
   const anomalyTime = anomalyAt
     ? new Date(anomalyAt).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false })
     : '—';
